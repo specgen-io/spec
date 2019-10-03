@@ -7,42 +7,33 @@ Spec is a API specification format. It currently can define models and HTTP-base
 Spec format is based on YAML. Each spec file is YAML file.
 In many aspects spec format resembles to [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md). Main purpose of spec is to provide more compact (then OpenAPI) way of defining API and also limit some capabilities of OpenAPI.
 
-Most entities are defined in YAML as dictinary. Some entities also support short form definition. Short form allows to define APIs in very compact way. While long form allows to specify all details of the API. Short form is basically a single field from entity full definition hence the dictionary is not needed to define the entity but only one field value is enough. Such short form field is marked accordingly in the documentation below, if it exists.
-
-Compare long and short forms of defining field as an example:
-```yaml
-field: string               # <- short form
-
-field:                      # <- long form
-  type: string
-  description: some field   # allows to specify more information 
-```
-
 ## Spec Structure
 
 Here's an example of simplest spec:
 ```yaml
-# meta information
-idl_version: 0
+idl_version: 0               # meta information
 service_name: example
 package_name: com.company.example
 
 operations:                  # HTTP operations
   sample:                    # group of operations
-    get_sample:              # name of the operation
-      endpoint: GET /sample  # endpoint
-      response:              # enpoint responses
-        ok: Sample           # HTTP status name: response model
+    get_sample:
+      endpoint: GET /sample
+      response:
+        ok: Sample
 
 models:                      # models specification
   Sample:                    # name of the model
-    field: string            # field name: type
+    field1: string
+    field2: int
 ```
 
 Spec YAML file consists of following sections:
 * Meta information
 * Operations
 * Models
+
+**Meta information**
 
 Meta information is presented in form for keys at the top level of the YAML file. In the example above `idl_version` and `service_name` are meta information fields.
 
@@ -54,9 +45,26 @@ Here's the list of supported meta information fields:
 | service_name | Name of the service, should be in [kebab-case](http://wiki.c2.com/?KebabCase)|
 | package_name | Name of the package, used for code generation |
 
+**Operations**
+
 Operations are defining HTTP requests in `operations` section of spec file. Operations are grouped, groups are used in code generation and normally should bundle together related operations. The operation group name should be in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
 
+**Models**
+
 Models section allows to define custom user types, including dictionaries, enums, etc. Described models can be used in operations where needed just by name of the model.
+
+**Short form**
+
+Most entities are defined in YAML as dictinary. Some entities also support short form definition. Short form allows to define APIs in very compact way. While long form allows to specify all details of the API. Short form is basically a single field from entity full definition hence the dictionary is not needed to define the entity but only one field value is enough. Such short form field is marked accordingly in the documentation below, if it exists.
+
+Compare long and short forms of defining field as an example:
+```yaml
+field: string               # <- short form
+
+field:                      # <- long form
+  type: string
+  description: some field   # allows to specify more information 
+```
 
 ## Types
 

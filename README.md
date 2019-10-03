@@ -57,7 +57,7 @@ The null is a problem across all JSON types. All fields can be null in JSON. Tho
 
 Spec has it's own list of supported types to close gaps mentioned above and to provide declarative way of describing types. This section describes these types.
 
-*Primitive types*
+**Primitive types**
 
 | Spec type         | JSON type | Notes                                             |
 | ----------------- | --------- | ------------------------------------------------- |
@@ -78,11 +78,11 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 | json              | object    | any JSON                                          |
 | empty             | N/A       | represents nothing, similar to unit is some langs |
 
-*Nullable types*
+**Nullable types**
 
 By default all types can't have `null` value. The `?` modifier after type describes nullable type. For example `string` can't be `null` though `string?` can have null value.
 
-*Structured types*
+**Structured types**
 
 | Spec type | JSON type | Notes                                          |
 | --------- | --------- | ---------------------------------------------- |
@@ -93,7 +93,7 @@ Structured types are similar to generic types: `array<string>` represents array 
 
 ## Model
 
-*Object model*
+**Object model**
 
 Here's an example of object model definition:
 ```yaml
@@ -107,8 +107,8 @@ Here's information about object model fields:
 
 | Field       | Required | Short form | Details                                          |
 | ----------- | -------- | ---------- | ------------------------------------------------ |
-| description | No       |            | description of the model, used for documentation |
-| fields      | Yes      | Yes        | dictionary of fields, keys are names of fields   |
+| description | no       |            | description of the model, used for documentation |
+| fields      | yes      | yes        | dictionary of fields, keys are names of fields   |
 
 As table above shows object model could be described in short form with fields only:
 
@@ -118,7 +118,7 @@ Model:
   field2: int
 ```
 
-*Model field*
+**Model field**
 
 Here's an example of field definition:
 ```yaml
@@ -131,11 +131,11 @@ Here's information about field definition fields:
 
 | Field       | Required | Short form | Details                                          |
 | ----------- | -------- | ---------- | ------------------------------------------------ |
-| description | No       |            | description of the field, used for documentation |
-| type        | Yes      | Yes        | type of the field                                |
+| description | no       |            | description of the field, used for documentation |
+| type        | yes      | yes        | type of the field                                |
 
 
-*Enum model*
+**Enum model**
 
 Enum is represented in JSON as a string with limited set of possible values.
 
@@ -171,14 +171,14 @@ Here's information about operation definition fields:
 
 | Field       | Required             | Details                                                  |
 | ----------- | -------------------- | -------------------------------------------------------- |
-| description | No                   | description of the field, used for documentation         |
-| endpoint    | Yes                  | HTTP endpoint of operation                               |
-| header      | No                   | dictionary of HTTP headers parameters and types          |
-| query       | No                   | dictionary of HTTP query parameters and types            |
-| body        | Yes for POST and PUT | HTTP body of the request                                 |
-| response    | Yes                  | dictionary of supported HTTP responses and response body |
+| description | no                   | description of the field, used for documentation         |
+| endpoint    | yes                  | HTTP endpoint of operation                               |
+| header      | no                   | dictionary of HTTP headers parameters and types          |
+| query       | no                   | dictionary of HTTP query parameters and types            |
+| body        | yes for POST and PUT | HTTP body of the request                                 |
+| response    | yes                  | dictionary of supported HTTP responses and response body |
 
-*Endpoint*
+**Endpoint**
 
 Endpoint determines what url operation is processing. Endpoint has following format: `METHOD url`. Method might be one of follwing: `GET`, `POST`, `PUT`, `DELETE`. Url is just a string always starting from `/`. Url can contain parameters in following format: `{param:type}`. Here's an example for enpoint with url parameter:
 ```

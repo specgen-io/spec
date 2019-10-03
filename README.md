@@ -1,13 +1,22 @@
 # spec
 
-Spec is a API specification format. It currently can describe models and HTTP-based enpoints.
+Spec is a API specification format. It currently can define models and HTTP-based enpoints.
 
 ## Format Overview
 
 Spec format is based on YAML. Each spec file is YAML file.
-In many aspects spec format resembles to [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md). Main purpose of spec is to provide more compact (then OpenAPI) way of describing API and also limit some capabilities of OpenAPI.
+In many aspects spec format resembles to [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md). Main purpose of spec is to provide more compact (then OpenAPI) way of defining API and also limit some capabilities of OpenAPI.
 
-Most entities are described in YAML with dictinary. Som entities also support short form. Short form allows to describe APIs in very compact way. While long form allows to specify all details of the API. Short form is basically a single field from entity full description hence the dictionary is not needed to define the entity. You can see [field definition](Put link here) for example. Such short form field is marked accordingly in the documentation below, if it exists.
+Most entities are defined in YAML as dictinary. Some entities also support short form definition. Short form allows to define APIs in very compact way. While long form allows to specify all details of the API. Short form is basically a single field from entity full definition hence the dictionary is not needed to define the entity but only one field value is enough. Such short form field is marked accordingly in the documentation below, if it exists.
+
+Compare long and short forms of defining field as an example:
+```yaml
+field: string               # <- short form
+
+field:                      # <- long form
+  type: string
+  description: some field   # allows to specify more information 
+```
 
 ## Spec Structure
 
@@ -45,17 +54,17 @@ Here's the list of supported meta information fields:
 | service_name | Name of the service, should be in [kebab-case](http://wiki.c2.com/?KebabCase)|
 | package_name | Name of the package, used for code generation |
 
-Operations are describing HTTP-based operations in `operations` section of spec file. Operations are grouped, groups are used in code generation and normally should bundle together related operations. The operation group name should be in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
+Operations are defining HTTP requests in `operations` section of spec file. Operations are grouped, groups are used in code generation and normally should bundle together related operations. The operation group name should be in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
 
-Models section allows to describe custom user types, including dictionaries, enums, etc. Described models can be used in operations where needed just by name of the model.
+Models section allows to define custom user types, including dictionaries, enums, etc. Described models can be used in operations where needed just by name of the model.
 
 ## Types
 
-JSON supports very limited number of types: string, number, boolean, object, array, null. Specifying JSON type is often not enough when it comes to describing HTTP API and what is allowed/prohibited as query/header/body value. For example, if the endpoint expects date and time in ISO 8601 format then in JSON it's just string, though API user supposed to pass a string only in a specific format.
+JSON supports very limited number of types: string, number, boolean, object, array, null. Specifying JSON type is often not enough when it comes HTTP API definition and to what is allowed/prohibited as query/header/body value. For example, if the endpoint expects date and time in ISO 8601 format then in JSON it's just string, though API user supposed to pass a string only in a specific format.
 
 The null is a problem across all JSON types. All fields can be null in JSON. Though usually API is very sensitive to null values and does not allow nulls everywhere.
 
-Spec has it's own list of supported types to close gaps mentioned above and to provide declarative way of describing types. This section describes these types.
+Spec has it's own list of supported types to close gaps mentioned above and to provide declarative way of defining types. This section describes these types.
 
 **Primitive types**
 
@@ -80,7 +89,7 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 
 **Nullable types**
 
-By default all types can't have `null` value. The `?` modifier after type describes nullable type. For example `string` can't be `null` though `string?` can have null value.
+By default all types can't have `null` value. The `?` modifier after type defines nullable type. For example `string` can not be `null` though `string?` can have null value.
 
 **Structured types**
 
@@ -110,7 +119,7 @@ Here's information about object model fields:
 | description | no       |            | description of the model, used for documentation |
 | fields      | yes      | yes        | dictionary of fields, keys are names of fields   |
 
-As table above shows object model could be described in short form with fields only:
+As table above shows object model could be defined in short form with fields only:
 
 ```yaml
 Model:

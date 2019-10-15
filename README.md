@@ -44,7 +44,6 @@ Here's an example of simplest spec:
 ```yaml
 idl_version: 0               # meta information
 service_name: example
-package_name: com.company.example
 version: '1'
 
 operations:                  # HTTP operations
@@ -75,7 +74,6 @@ Here's the list of supported meta information fields:
 | ------------ | ----------------------------------------------------------------------------- |
 | idl_version  | Version of spec format                                                        |
 | service_name | Name of the service, should be in [kebab-case](http://wiki.c2.com/?KebabCase) |
-| package_name | Name of the package, used for code generation                                 |
 | version      | Version of the specification                                                  |
 
 #### Operations

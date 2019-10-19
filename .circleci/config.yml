@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.12
+    working_directory: /go/src/spec
+
+    environment:
+      TEST_RESULTS: /tmp/test-results
+
+    steps:
+      - checkout
+      - run: mkdir -p $TEST_RESULTS
+
+      - run: dep ensure
+
+      - run: go get -u github.com/ains/go-test-html
+
+      - run: go test ./... -v 2> >(tee ${TEST_RESULTS}/go-test.err) | tee ${TEST_RESULTS}/go-test.out
+
+      - run: ../../bin/go-test-html ${TEST_RESULTS}/go-test.out ${TEST_RESULTS}/go-test.err ${TEST_RESULTS}/go-test-report.html
+
+      - store_test_results:
+          path: ${TEST_RESULTS}
+          destination: go-test-report.html

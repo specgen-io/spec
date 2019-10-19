@@ -18,8 +18,6 @@ jobs:
 
       - run: go test -v 2>&1 | ../../bin/go-junit-report > ${TEST_RESULTS}/go-test-report.xml
 
-      - run: ../../bin/go-test-html ${TEST_RESULTS}/go-test.out ${TEST_RESULTS}/go-test.err ${TEST_RESULTS}/go-test-report.html
-
       - store_artifacts:
           path: /tmp/test-results
           destination: go-test-report

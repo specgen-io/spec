@@ -14,12 +14,15 @@ jobs:
 
       - run: dep ensure
 
-      - run: go get -u github.com/ains/go-test-html
+      - run: go get -u github.com/jstemmer/go-junit-report
 
-      - run: go test ./... -v 2> >(tee ${TEST_RESULTS}/go-test.err) | tee ${TEST_RESULTS}/go-test.out
+      - run: go test -v 2>&1 | ../../bin/go-junit-report > ${TEST_RESULTS}/go-test-report.xml
 
       - run: ../../bin/go-test-html ${TEST_RESULTS}/go-test.out ${TEST_RESULTS}/go-test.err ${TEST_RESULTS}/go-test-report.html
 
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: go-test-report
+
       - store_test_results:
-          path: ${TEST_RESULTS}
-          destination: go-test-report.html
+          path: /tmp/test-results

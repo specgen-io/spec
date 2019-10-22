@@ -13,7 +13,7 @@ Spec is a API specification format. It currently can define models and HTTP-base
     - [Types](#types)
         - [Primitive Types](#primitive-types)
         - [Nullable Types](#nullable-types)
-        - [Structured Types](#structured-types)
+        - [Array and Dictionary](#array-and-dictionary)
     - [Model](#model)
         - [Object Model](#object-model)
         - [Model Field](#model-field)
@@ -130,14 +130,16 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 
 By default all types can't have `null` value. The `?` modifier after type defines nullable type. For example `string` can not be `null` though `string?` can have null value.
 
-#### Structured Types
+#### Array and Dictionary
 
-| Spec type | JSON type | Notes                                          |
-| --------- | --------- | ---------------------------------------------- |
-| array<_>  | array     | array items of the same type _                 |
-| map<_>    | object    | object with property values of the same type _ |
+Following modifiers allow to specify data structures:
 
-Structured types are similar to generic types: `array<string>` represents array of strings.
+| Modifier   | JSON type | Notes                                       |
+| ---------- | --------- | --------------------------------------------|
+| the_type[] | array     | array of items of the_type                  |
+| the_type{} | object    | dictionary with property values of the_type |
+
+For example `string[]` represents array of strings. The type `int{}` represents JSON object where all properties values are integers.
 
 ### Model
 
@@ -196,6 +198,33 @@ Model:
   - second
   - third
 ```
+
+Here's information about enum definition fields:
+
+| Field       | Required | Short form | Details                                                                              |
+| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------ |
+| description | no       |            | description of the model, used for documentation                                     |
+| enum        | yes      |            | either list of strings or dictionary with keys and values with enum item information |
+
+Here's an example of longer version of enum definition model:
+
+```yaml
+Model:
+  description: the model
+  enum:
+    first:
+      description: First option
+    second:
+      description: Second option
+    third:
+      description: Third option
+```
+
+Enum item definition supports following fields:
+
+| Field       | Required | Short form | Details                                                                              |
+| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------ |
+| description | no       |            | description of the item, used for documentation                                      |
 
 ### Operation
 

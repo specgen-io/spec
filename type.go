@@ -47,12 +47,6 @@ func ParseType(value string) Type {
 	} else if strings.HasSuffix(value, "{}") {
 		child := ParseType(value[:len(value)-2])
 		return Type{Node: MapType, Child: &child}
-	} else if strings.HasPrefix(value, "array<") && strings.HasSuffix(value, ">") {
-		child := ParseType(value[6 : len(value)-1])
-		return Type{Node: ArrayType, Child: &child}
-	} else if strings.HasPrefix(value, "map<") && strings.HasSuffix(value, ">") {
-		child := ParseType(value[4 : len(value)-1])
-		return Type{Node: MapType, Child: &child}
 	} else {
 		return Type{Node: PlainType, PlainType: value}
 	}

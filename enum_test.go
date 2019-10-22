@@ -9,6 +9,7 @@ import (
 
 func Test_Enum_Short_Unmarshal(t *testing.T) {
 	data := `
+description: Enum description
 enum:
 - the_first
 - the_second
@@ -17,6 +18,7 @@ enum:
 	var enum = Enum{}
 	err := yaml.UnmarshalStrict([]byte(data), &enum)
 	assert.Equal(t, err, nil)
+	assert.Equal(t, *enum.Description, "Enum description")
 	expected := Items{
 		{Name{"the_first"}, EnumItem{Description: nil}},
 		{Name{"the_second"}, EnumItem{Description: nil}},

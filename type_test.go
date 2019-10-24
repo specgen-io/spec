@@ -24,18 +24,6 @@ func Test_ParseType_Array_Short(t *testing.T) {
 	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
 }
 
-func Test_ParseType_Array(t *testing.T) {
-	expected := Type{Node: ArrayType, Child: &Type{Node: PlainType, PlainType: "string"}}
-	actual := ParseType("array<string>")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
-}
-
-func Test_ParseType_Map(t *testing.T) {
-	expected := Type{Node: MapType, Child: &Type{Node: PlainType, PlainType: "string"}}
-	actual := ParseType("map<string>")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
-}
-
 func Test_ParseType_Nested(t *testing.T) {
 	expected :=
 		Type{
@@ -48,7 +36,7 @@ func Test_ParseType_Nested(t *testing.T) {
 				},
 			},
 		}
-	actual := ParseType("array<string>?")
+	actual := ParseType("string[]?")
 	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
 }
 

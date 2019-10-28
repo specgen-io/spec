@@ -175,6 +175,7 @@ Here's an example of field definition:
 field1:
   description: some field
   type: string
+  default: some default value
 ```
 
 Here's information about field definition fields:
@@ -183,7 +184,13 @@ Here's information about field definition fields:
 | ----------- | -------- | ---------- | ------------------------------------------------ |
 | description | no       |            | description of the field, used for documentation |
 | type        | yes      | yes        | type of the field                                |
+| default     | no       | no         | default value for the field                      |
 
+When field is defined in a short form with type only, the default value might be defined through `=` separator:
+
+```yaml
+field1: string = some default value
+```
 
 #### Enum Model
 
@@ -272,6 +279,7 @@ The `header` field of [operation](#operation) allows to describe HTTP header par
 | ----------- | -------- | ---------- | ---------------------------------------------------- |
 | description | no       |            | description of the parameter, used for documentation |
 | type        | yes      | yes        | type of the parameter                                |
+| default     | no       | no         | default value for the parameter                      |
 
 Here's an example of two header parameters definition: `Authorization` (`string`) and `X-Request-Id` (`uuid`):
 
@@ -295,6 +303,14 @@ header:
   X-Request-Id: string
 ```
 
+When short form is used the default value for parameter could be specified through `=` separator:
+
+```yaml
+header:
+  X-Request-Id: string = some default id
+```
+
+
 #### Query Parameters
 
 The `query` field of [operation](#operation) allows to describe HTTP query parameters. The `query` is a dictionary where key is the name of the query parameter and value is the definition of the parameter. Here are fields of parameter definition:
@@ -303,6 +319,7 @@ The `query` field of [operation](#operation) allows to describe HTTP query param
 | ----------- | -------- | ---------- | ---------------------------------------------------- |
 | description | no       |            | description of the parameter, used for documentation |
 | type        | yes      | yes        | type of the parameter                                |
+| default     | no       | no         | default value for the parameter                      |
 
 Here's an example of two query parameters definition: `page_size` and `page_number`, both of them are `int`:
 
@@ -324,6 +341,14 @@ Query parameters could be declared in a short form:
 query:
   page_size: int
   page_number: int
+```
+
+When short form is used the default value for parameter could be specified through `=` separator:
+
+```yaml
+query:
+  page_size: int = 100
+  page_number: int = 0
 ```
 
 #### Request Body

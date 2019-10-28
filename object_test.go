@@ -7,26 +7,6 @@ import (
 	"testing"
 )
 
-func Test_Field_Unmarshal_Short(t *testing.T) {
-	data := "string"
-	var field Field
-	err := yaml.UnmarshalStrict([]byte(data), &field)
-	assert.Equal(t, err, nil)
-	assert.Equal(t, reflect.DeepEqual(field.Type, ParseType("string")), true)
-}
-
-func Test_Field_Unmarshal_Long(t *testing.T) {
-	data := `
-type: string
-description: some field
-`
-	var field Field
-	err := yaml.UnmarshalStrict([]byte(data), &field)
-	assert.Equal(t, err, nil)
-	assert.Equal(t, reflect.DeepEqual(field.Type, ParseType("string")), true)
-	assert.Equal(t, *field.Description, "some field")
-}
-
 func Test_Fields_Unmarshal(t *testing.T) {
 	data := `
 prop1: string

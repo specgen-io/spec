@@ -2,11 +2,16 @@ package spec
 
 type field struct {
 	Type        Type    `yaml:"type"`
+	Default     *string `yaml:"default"`
 	Description *string `yaml:"description"`
 }
 
 type Field struct {
 	field
+}
+
+type TypeWithDefault struct {
+	Type Type
 }
 
 func NewField(typ Type, description *string) *Field {
@@ -21,15 +26,16 @@ type NamedField struct {
 func (value *Field) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	internal := field{}
 
-	typ := Type{}
-	err := unmarshal(&typ)
+	defaulted := DefaultedType{}
+	err := unmarshal(&defaulted)
 	if err != nil {
 		err := unmarshal(&internal)
 		if err != nil {
 			return err
 		}
 	} else {
-		internal.Type = typ
+		internal.Type = defaulted.Type
+		internal.Default = defaulted.Default
 	}
 
 	*value = Field{internal}

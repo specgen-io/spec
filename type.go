@@ -37,6 +37,13 @@ func (self *Type) IsNullable() bool {
 	return self.Node == NullableType
 }
 
+func (self *Type) BaseType() *Type {
+	if self.IsNullable() {
+		return self.Child
+	}
+	return self
+}
+
 func ParseType(value string) Type {
 	if strings.HasSuffix(value, "?") {
 		child := ParseType(value[:len(value)-1])

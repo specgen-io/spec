@@ -1,6 +1,6 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import "gopkg.in/yaml.v3"
 
 type response struct {
 	Type        Type    `yaml:"type"`
@@ -22,15 +22,15 @@ type NamedResponse struct {
 
 type Responses []NamedResponse
 
-func (value *Response) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Response) UnmarshalYAML(node *yaml.Node) error {
 	internal := response{}
 
 	typ := Type{}
-	err := unmarshal(&typ)
+	err := node.Decode(&typ)
 	if err == nil {
 		internal.Type = typ
 	} else {
-		err = unmarshal(&internal)
+		err = node.Decode(&internal)
 		if err != nil {
 			return err
 		}
@@ -40,38 +40,24 @@ func (value *Response) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func unmarshalMultipleResponsesYAML(unmarshal func(interface{}) error) ([]NamedResponse, error) {
+func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 	data := make(map[string]Response)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return nil, err
-	}
-
+	names := mappingKeys(node)
 	array := make([]NamedResponse, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(SnakeCase)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		array[index] = NamedResponse{Name: name, Response: data[key]}
 	}
 
-	return array, nil
-}
-
-func (value *Responses) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	array, err := unmarshalMultipleResponsesYAML(unmarshal)
-	if err != nil {
-		return err
-	}
 	*value = array
 	return nil
 }

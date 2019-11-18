@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -10,7 +10,7 @@ import (
 func Test_Response_Unmarshal_Short(t *testing.T) {
 	data := "string"
 	var response Response
-	err := yaml.UnmarshalStrict([]byte(data), &response)
+	err := yaml.Unmarshal([]byte(data), &response)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(response.Type, ParseType("string")), true)
 }
@@ -21,7 +21,7 @@ type: string
 description: some response
 `
 	var response Response
-	err := yaml.UnmarshalStrict([]byte(data), &response)
+	err := yaml.Unmarshal([]byte(data), &response)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(response.Type, ParseType("string")), true)
 	assert.Equal(t, *response.Description, "some response")
@@ -37,7 +37,7 @@ bad_request:
   description: invalid request
 `
 	var responses Responses
-	err := yaml.UnmarshalStrict([]byte(data), &responses)
+	err := yaml.Unmarshal([]byte(data), &responses)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(responses), 2)

@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -15,7 +15,7 @@ prop2:
   description: some field
 `
 	var fields Fields
-	err := yaml.UnmarshalStrict([]byte(data), &fields)
+	err := yaml.Unmarshal([]byte(data), &fields)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(fields), 2)
@@ -31,7 +31,7 @@ prop2:
 
 func Test_Fields_Unmarshal_WrongNameFormat(t *testing.T) {
 	var fields Fields
-	err := yaml.UnmarshalStrict([]byte("PROP1: string"), &fields)
+	err := yaml.Unmarshal([]byte("PROP1: string"), &fields)
 	assert.ErrorContains(t, err, "PROP1")
 }
 
@@ -43,7 +43,7 @@ prop2:
   description: some field
 `
 	var model Object
-	err := yaml.UnmarshalStrict([]byte(data), &model)
+	err := yaml.Unmarshal([]byte(data), &model)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(model.Fields), 2)
@@ -63,7 +63,7 @@ fields:
     description: some field
 `
 	var model Object
-	err := yaml.UnmarshalStrict([]byte(data), &model)
+	err := yaml.Unmarshal([]byte(data), &model)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, *model.Description, "some model")

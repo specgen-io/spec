@@ -2,7 +2,7 @@ package spec
 
 import (
 	assertx "github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.UnmarshalStrict([]byte(data), &operation)
+	err := yaml.Unmarshal([]byte(data), &operation)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, operation.Endpoint, "GET /some/url")
@@ -39,7 +39,7 @@ ping:
 `
 
 	var operations Operations
-	err := yaml.UnmarshalStrict([]byte(data), &operations)
+	err := yaml.Unmarshal([]byte(data), &operations)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)

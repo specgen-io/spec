@@ -1,6 +1,6 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import "gopkg.in/yaml.v3"
 
 type EnumItem struct {
 	Description *string `yaml:"description"`
@@ -13,9 +13,9 @@ type NamedEnumItem struct {
 
 type Items []NamedEnumItem
 
-func unmarshalNamesArray(unmarshal func(interface{}) error) (Items, error) {
+func unmarshalNamesArray(node *yaml.Node) (Items, error) {
 	data := make([]string, 0)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return nil, err
 	}
@@ -31,22 +31,16 @@ func unmarshalNamesArray(unmarshal func(interface{}) error) (Items, error) {
 	return array, nil
 }
 
-func unmarshalNamesMap(unmarshal func(interface{}) error) (Items, error) {
+func unmarshalNamesMap(node *yaml.Node) (Items, error) {
 	data := make(map[string]EnumItem)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return nil, err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return nil, err
-	}
-
+	names := mappingKeys(node)
 	array := make(Items, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(SnakeCase)
 		if err != nil {
@@ -57,21 +51,21 @@ func unmarshalNamesMap(unmarshal func(interface{}) error) (Items, error) {
 	return array, nil
 }
 
-func isItemsArray(unmarshal func(interface{}) error) bool {
+func isItemsArray(node *yaml.Node) bool {
 	data := make([]string, 0)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	return err == nil
 }
 
-func (value *Items) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	if isItemsArray(unmarshal) {
-		array, err := unmarshalNamesArray(unmarshal)
+func (value *Items) UnmarshalYAML(node *yaml.Node) error {
+	if isItemsArray(node) {
+		array, err := unmarshalNamesArray(node)
 		if err != nil {
 			return err
 		}
 		*value = array
 	} else {
-		array, err := unmarshalNamesMap(unmarshal)
+		array, err := unmarshalNamesMap(node)
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -15,7 +15,7 @@ param2:
   description: some param
 `
 	var params QueryParams
-	err := yaml.UnmarshalStrict([]byte(data), &params)
+	err := yaml.Unmarshal([]byte(data), &params)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 2)
@@ -37,7 +37,7 @@ Accept-Language:
   description: some param
 `
 	var params HeaderParams
-	err := yaml.UnmarshalStrict([]byte(data), &params)
+	err := yaml.Unmarshal([]byte(data), &params)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 2)

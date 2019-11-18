@@ -1,5 +1,7 @@
 package spec
 
+import "gopkg.in/yaml.v3"
+
 type field struct {
 	Type        Type    `yaml:"type"`
 	Default     *string `yaml:"default"`
@@ -8,10 +10,6 @@ type field struct {
 
 type Field struct {
 	field
-}
-
-type TypeWithDefault struct {
-	Type Type
 }
 
 func NewField(typ Type, description *string) *Field {
@@ -23,13 +21,13 @@ type NamedField struct {
 	Field
 }
 
-func (value *Field) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Field) UnmarshalYAML(node *yaml.Node) error {
 	internal := field{}
 
 	defaulted := DefaultedType{}
-	err := unmarshal(&defaulted)
+	err := node.Decode(&defaulted)
 	if err != nil {
-		err := unmarshal(&internal)
+		err := node.Decode(&internal)
 		if err != nil {
 			return err
 		}

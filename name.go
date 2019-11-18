@@ -2,15 +2,16 @@ package spec
 
 import (
 	"github.com/vsapronov/casee"
+	"gopkg.in/yaml.v3"
 )
 
 type Name struct {
 	Source string
 }
 
-func (value *Name) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Name) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := unmarshal(&str)
+	err := node.Decode(&str)
 	if err != nil {
 		return err
 	}

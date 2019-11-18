@@ -1,27 +1,21 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import "gopkg.in/yaml.v3"
 
 type UrlParams []NamedParam
 type QueryParams []NamedParam
 type HeaderParams []NamedParam
 
-func unmarshalYAML(unmarshal func(interface{}) error, namesFormat Format) ([]NamedParam, error) {
+func unmarshalYAML(node *yaml.Node, namesFormat Format) ([]NamedParam, error) {
 	data := make(map[string]Param)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return nil, err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return nil, err
-	}
-
+	names := mappingKeys(node)
 	array := make([]NamedParam, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(namesFormat)
 		if err != nil {
@@ -33,8 +27,8 @@ func unmarshalYAML(unmarshal func(interface{}) error, namesFormat Format) ([]Nam
 	return array, nil
 }
 
-func (value *QueryParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	array, err := unmarshalYAML(unmarshal, SnakeCase)
+func (value *QueryParams) UnmarshalYAML(node *yaml.Node) error {
+	array, err := unmarshalYAML(node, SnakeCase)
 	if err != nil {
 		return err
 	}
@@ -43,8 +37,8 @@ func (value *QueryParams) UnmarshalYAML(unmarshal func(interface{}) error) error
 	return nil
 }
 
-func (value *HeaderParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	array, err := unmarshalYAML(unmarshal, UpperChainCase)
+func (value *HeaderParams) UnmarshalYAML(node *yaml.Node) error {
+	array, err := unmarshalYAML(node, UpperChainCase)
 	if err != nil {
 		return err
 	}

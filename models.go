@@ -1,6 +1,6 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import "gopkg.in/yaml.v3"
 
 type Model struct {
 	Object *Object
@@ -15,23 +15,26 @@ func (self *Model) IsEnum() bool {
 	return self.Enum != nil && self.Object == nil
 }
 
-func (value *Model) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	internal := Model{}
+func (value *Model) UnmarshalYAML(node *yaml.Node) error {
+	model := Model{}
 
-	enum := Enum{}
-	err := unmarshal(&enum)
-	if err == nil {
-		internal.Enum = &enum
-	} else {
-		object := Object{}
-		err := unmarshal(&object)
+	if mappingHasKey(node, "enum") {
+		enum := Enum{}
+		err := node.Decode(&enum)
 		if err != nil {
 			return err
 		}
-		internal.Object = &object
+		model.Enum = &enum
+	} else {
+		object := Object{}
+		err := node.Decode(&object)
+		if err != nil {
+			return err
+		}
+		model.Object = &object
 	}
 
-	*value = internal
+	*value = model
 	return nil
 }
 
@@ -42,22 +45,16 @@ type NamedModel struct {
 
 type Models []NamedModel
 
-func (value *Models) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 	data := make(map[string]Model)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return err
-	}
-
+	names := mappingKeys(node)
 	array := make([]NamedModel, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(PascalCase)
 		if err != nil {

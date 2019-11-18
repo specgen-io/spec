@@ -1,22 +1,25 @@
 package spec
 
-import "strings"
+import (
+	"gopkg.in/yaml.v3"
+	"strings"
+)
 
 type DefaultedType struct {
 	Type    Type
 	Default *string
 }
 
-func (value *DefaultedType) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *DefaultedType) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := unmarshal(&str)
+	err := node.Decode(&str)
 	if err != nil {
 		return err
 	}
 	typeStr := str
 	var defaultValue *string = nil
-	if strings.Contains(str, "=") {
-		parts := strings.SplitN(str, "=", 2)
+	if strings.Contains(typeStr, "=") {
+		parts := strings.SplitN(typeStr, "=", 2)
 		typeStr = strings.TrimSpace(parts[0])
 		theDefaultVaalue := strings.TrimSpace(parts[1])
 		defaultValue = &theDefaultVaalue

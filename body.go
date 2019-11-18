@@ -1,5 +1,7 @@
 package spec
 
+import "gopkg.in/yaml.v3"
+
 type body struct {
 	Type        Type    `yaml:"type"`
 	Description *string `yaml:"description"`
@@ -13,15 +15,15 @@ func NewBody(typ Type, description *string) *Body {
 	return &Body{body{Type: typ, Description: description}}
 }
 
-func (value *Body) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Body) UnmarshalYAML(node *yaml.Node) error {
 	internal := body{}
 
 	typ := Type{}
-	err := unmarshal(&typ)
+	err := node.Decode(&typ)
 	if err == nil {
 		internal.Type = typ
 	} else {
-		err = unmarshal(&internal)
+		err = node.Decode(&internal)
 		if err != nil {
 			return err
 		}

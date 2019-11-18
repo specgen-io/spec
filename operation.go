@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"regexp"
 	"strings"
 )
@@ -67,22 +67,16 @@ func UrlParamStr(paramName string) string {
 	return "{" + paramName + "}"
 }
 
-func (value *Operations) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 	data := make(map[string]Operation)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return err
-	}
-
+	names := mappingKeys(node)
 	array := make([]NamedOperation, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(SnakeCase)
 		if err != nil {
@@ -104,22 +98,16 @@ type Api struct {
 
 type Apis []Api
 
-func (value *Apis) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 	data := make(map[string]Operations)
-	err := unmarshal(&data)
+	err := node.Decode(&data)
 	if err != nil {
 		return err
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return err
-	}
-
+	names := mappingKeys(node)
 	array := make([]Api, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
+	for index, key := range names {
 		name := Name{key}
 		err := name.Check(SnakeCase)
 		if err != nil {

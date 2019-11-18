@@ -1,5 +1,7 @@
 package spec
 
+import "gopkg.in/yaml.v3"
+
 type param struct {
 	Type        Type    `yaml:"type"`
 	Default     *string `yaml:"default"`
@@ -19,13 +21,13 @@ type NamedParam struct {
 	Param
 }
 
-func (value *Param) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Param) UnmarshalYAML(node *yaml.Node) error {
 	internal := param{}
 
 	defaulted := DefaultedType{}
-	err := unmarshal(&defaulted)
+	err := node.Decode(&defaulted)
 	if err != nil {
-		err := unmarshal(&internal)
+		err := node.Decode(&internal)
 		if err != nil {
 			return err
 		}

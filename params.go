@@ -1,29 +1,38 @@
 package spec
 
-import "gopkg.in/yaml.v3"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type UrlParams []NamedParam
 type QueryParams []NamedParam
 type HeaderParams []NamedParam
 
 func unmarshalYAML(node *yaml.Node, namesFormat Format) ([]NamedParam, error) {
-	data := make(map[string]Param)
-	err := node.Decode(&data)
-	if err != nil {
-		return nil, err
+	if node.Kind != yaml.MappingNode {
+		return nil, errors.New("parameters should be YAML mapping")
 	}
-
-	names := mappingKeys(node)
-	array := make([]NamedParam, len(names))
-	for index, key := range names {
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedParam, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(namesFormat)
 		if err != nil {
 			return nil, err
 		}
-		array[index] = NamedParam{Name: name, Param: data[key]}
+		definition := DefinitionDefault{}
+		err = valueNode.Decode(&definition)
+		if err != nil {
+			return nil, err
+		}
+		if definition.Description == nil {
+			definition.Description = getDescription(keyNode)
+		}
+		array[index] = NamedParam{Name: name, DefinitionDefault: definition}
 	}
-
 	return array, nil
 }
 

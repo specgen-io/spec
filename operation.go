@@ -1,21 +1,38 @@
 package spec
 
 import (
+	"errors"
 	"gopkg.in/yaml.v3"
-	"regexp"
-	"strings"
 )
 
-type Operation struct {
+type operation struct {
 	Endpoint     string       `yaml:"endpoint"`
 	Description  *string      `yaml:"description"`
-	Body         *Body        `yaml:"body"`
+	Body         *Definition  `yaml:"body"`
 	HeaderParams HeaderParams `yaml:"header"`
 	QueryParams  QueryParams  `yaml:"query"`
 	Responses    Responses    `yaml:"response"`
 	Method       string
 	Url          string
 	UrlParams    UrlParams
+}
+
+type Operation struct {
+	operation
+}
+
+func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
+	internal := operation{}
+	err := node.Decode(&internal)
+	if err != nil {
+		return err
+	}
+	*value = Operation{internal}
+	if value.Body != nil && value.Body.Description == nil {
+		value.Body.Description = getDescription(getMappingKey(node, "body"))
+	}
+	value.Init()
+	return nil
 }
 
 func (self *Operation) Init() {
@@ -32,61 +49,31 @@ type NamedOperation struct {
 
 type Operations []NamedOperation
 
-type UrlParam struct {
-	Name Name
-	Type Type
-}
-
-func ParseEndpoint(endpoint string) (string, string, UrlParams) {
-	endpointParts := strings.SplitN(endpoint, " ", 2)
-	method := endpointParts[0]
-	url := endpointParts[1]
-	re := regexp.MustCompile(`\{[a-z][a-z0-9]*([a-z][a-z0-9]*)*:[a-z0-9_<>\\?]*\}`)
-	matches := re.FindAllStringIndex(url, -1)
-	params := UrlParams{}
-	cleanUrl := url
-	for _, match := range matches {
-		start := match[0]
-		end := match[1]
-		originalParamStr := url[start:end]
-		paramStr := originalParamStr
-		paramStr = strings.Replace(paramStr, "{", "", -1)
-		paramStr = strings.Replace(paramStr, "}", "", -1)
-		paramParts := strings.Split(paramStr, ":")
-		paramName := strings.TrimSpace(paramParts[0])
-		paramType := strings.TrimSpace(paramParts[1])
-		param := NamedParam{Name: Name{paramName}, Param: *NewParam(ParseType(paramType), nil)}
-		params = append(params, param)
-
-		cleanUrl = strings.Replace(cleanUrl, originalParamStr, UrlParamStr(paramName), 1)
-	}
-	return method, cleanUrl, params
-}
-
-func UrlParamStr(paramName string) string {
-	return "{" + paramName + "}"
-}
-
 func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
-	data := make(map[string]Operation)
-	err := node.Decode(&data)
-	if err != nil {
-		return err
+	if node.Kind != yaml.MappingNode {
+		return errors.New("operations should be YAML mapping")
 	}
-
-	names := mappingKeys(node)
-	array := make([]NamedOperation, len(names))
-	for index, key := range names {
+	count := len(node.Content) / 2
+	array := make([]NamedOperation, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		key := keyNode.Value
 		name := Name{key}
 		err := name.Check(SnakeCase)
 		if err != nil {
 			return err
 		}
-		operation := NamedOperation{Name: name, Operation: data[key]}
-		operation.Init()
-		array[index] = operation
+		operation := Operation{}
+		err = valueNode.Decode(&operation)
+		if err != nil {
+			return err
+		}
+		if operation.Description == nil {
+			operation.Description = getDescription(keyNode)
+		}
+		array[index] = NamedOperation{Name: name, Operation: operation}
 	}
-
 	*value = array
 	return nil
 }

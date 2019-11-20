@@ -9,11 +9,11 @@ import (
 func Test_Models_Unmarshal(t *testing.T) {
 	data := `
 Model1:
-  description: some model
+  description: first model
   fields:
     prop1: string
     prop2: int32
-Model2:
+Model2:      # second model
   prop1: string
   prop2: int32
 Model3:
@@ -33,8 +33,10 @@ Model3:
 
 	assert.Equal(t, model1.Name.Source, "Model1")
 	assert.Equal(t, model1.IsObject(), true)
+	assert.Equal(t, *model1.Object.Description, "first model")
 	assert.Equal(t, model2.Name.Source, "Model2")
 	assert.Equal(t, model2.IsObject(), true)
+	assert.Equal(t, *model2.Object.Description, "second model")
 	assert.Equal(t, model3.Name.Source, "Model3")
 	assert.Equal(t, model3.IsEnum(), true)
 }

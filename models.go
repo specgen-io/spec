@@ -1,6 +1,9 @@
 package spec
 
-import "gopkg.in/yaml.v3"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type Model struct {
 	Object *Object
@@ -18,7 +21,7 @@ func (self *Model) IsEnum() bool {
 func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 	model := Model{}
 
-	if mappingHasKey(node, "enum") {
+	if getMappingKey(node, "enum") != nil {
 		enum := Enum{}
 		err := node.Decode(&enum)
 		if err != nil {
@@ -46,24 +49,32 @@ type NamedModel struct {
 type Models []NamedModel
 
 func (value *Models) UnmarshalYAML(node *yaml.Node) error {
-	data := make(map[string]Model)
-	err := node.Decode(&data)
-	if err != nil {
-		return err
+	if node.Kind != yaml.MappingNode {
+		return errors.New("models should be YAML mapping")
 	}
-
-	names := mappingKeys(node)
-	array := make([]NamedModel, len(names))
-	for index, key := range names {
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedModel, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(PascalCase)
 		if err != nil {
 			return err
 		}
-		model := data[key]
+		model := Model{}
+		err = valueNode.Decode(&model)
+		if err != nil {
+			return err
+		}
+		if model.IsEnum() && model.Enum.Description == nil {
+			model.Enum.Description = getDescription(keyNode)
+		}
+		if model.IsObject() && model.Object.Description == nil {
+			model.Object.Description = getDescription(keyNode)
+		}
 		array[index] = NamedModel{Name: name, Model: model}
 	}
-
 	*value = array
 	return nil
 }

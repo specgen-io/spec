@@ -1,27 +1,36 @@
 package spec
 
-import "gopkg.in/yaml.v3"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type Fields []NamedField
 
 func (value *Fields) UnmarshalYAML(node *yaml.Node) error {
-	data := make(map[string]Field)
-	err := node.Decode(&data)
-	if err != nil {
-		return err
+	if node.Kind != yaml.MappingNode {
+		return errors.New("fields should be YAML mapping")
 	}
-
-	names := mappingKeys(node)
-	array := make([]NamedField, len(names))
-	for index, key := range names {
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedField, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(SnakeCase)
 		if err != nil {
 			return err
 		}
-		array[index] = NamedField{Name: name, Field: data[key]}
+		definition := DefinitionDefault{}
+		err = valueNode.Decode(&definition)
+		if err != nil {
+			return err
+		}
+		if definition.Description == nil {
+			definition.Description = getDescription(keyNode)
+		}
+		array[index] = NamedField{Name: name, DefinitionDefault: definition}
 	}
-
 	*value = array
 	return nil
 }
@@ -40,7 +49,7 @@ func NewObject(fields Fields, description *string) *Object {
 }
 
 func (value *Object) UnmarshalYAML(node *yaml.Node) error {
-	if !mappingHasKey(node, "fields") {
+	if getMappingKey(node, "fields") == nil {
 		fields := Fields{}
 		err := node.Decode(&fields)
 		if err != nil {

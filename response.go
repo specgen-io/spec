@@ -1,63 +1,38 @@
 package spec
 
-import "gopkg.in/yaml.v3"
-
-type response struct {
-	Type        Type    `yaml:"type"`
-	Description *string `yaml:"description"`
-}
-
-type Response struct {
-	response
-}
-
-func NewResponse(typ Type, description *string) *Response {
-	return &Response{response{Type: typ, Description: description}}
-}
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type NamedResponse struct {
 	Name Name
-	Response
+	Definition
 }
 
 type Responses []NamedResponse
 
-func (value *Response) UnmarshalYAML(node *yaml.Node) error {
-	internal := response{}
-
-	typ := Type{}
-	err := node.Decode(&typ)
-	if err == nil {
-		internal.Type = typ
-	} else {
-		err = node.Decode(&internal)
-		if err != nil {
-			return err
-		}
-	}
-
-	*value = Response{internal}
-	return nil
-}
-
 func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
-	data := make(map[string]Response)
-	err := node.Decode(&data)
-	if err != nil {
-		return err
+	if node.Kind != yaml.MappingNode {
+		return errors.New("response should be YAML mapping")
 	}
-
-	names := mappingKeys(node)
-	array := make([]NamedResponse, len(names))
-	for index, key := range names {
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedResponse, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(SnakeCase)
 		if err != nil {
 			return err
 		}
-		array[index] = NamedResponse{Name: name, Response: data[key]}
+		definition := Definition{}
+		err = valueNode.Decode(&definition)
+		if err != nil {
+			return err
+		}
+		array[index] = NamedResponse{Name: name, Definition: definition}
 	}
-
 	*value = array
 	return nil
 }

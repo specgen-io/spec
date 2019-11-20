@@ -1,6 +1,9 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type EnumItem struct {
 	Description *string `yaml:"description"`
@@ -13,70 +16,47 @@ type NamedEnumItem struct {
 
 type Items []NamedEnumItem
 
-func unmarshalNamesArray(unmarshal func(interface{}) error) (Items, error) {
-	data := make([]string, 0)
-	err := unmarshal(&data)
-	if err != nil {
-		return nil, err
-	}
-	array := make(Items, len(data))
-	for index, key := range data {
-		name := Name{key}
-		err := name.Check(SnakeCase)
-		if err != nil {
-			return nil, err
-		}
-		array[index] = NamedEnumItem{Name: name, EnumItem: EnumItem{Description: nil}}
-	}
-	return array, nil
-}
-
-func unmarshalNamesMap(unmarshal func(interface{}) error) (Items, error) {
-	data := make(map[string]EnumItem)
-	err := unmarshal(&data)
-	if err != nil {
-		return nil, err
+func (value *Items) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.SequenceNode && node.Kind != yaml.MappingNode {
+		return errors.New("enum items should be either list or mapping")
 	}
 
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return nil, err
-	}
-
-	array := make(Items, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
-		name := Name{key}
-		err := name.Check(SnakeCase)
-		if err != nil {
-			return nil, err
-		}
-		array[index] = NamedEnumItem{Name: name, EnumItem: data[key]}
-	}
-	return array, nil
-}
-
-func isItemsArray(unmarshal func(interface{}) error) bool {
-	data := make([]string, 0)
-	err := unmarshal(&data)
-	return err == nil
-}
-
-func (value *Items) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	if isItemsArray(unmarshal) {
-		array, err := unmarshalNamesArray(unmarshal)
-		if err != nil {
-			return err
-		}
-		*value = array
-	} else {
-		array, err := unmarshalNamesMap(unmarshal)
-		if err != nil {
-			return err
+	if node.Kind == yaml.SequenceNode {
+		count := len(node.Content)
+		array := make(Items, count)
+		for index := 0; index < count; index++ {
+			itemNode := node.Content[index]
+			name := Name{itemNode.Value}
+			err := name.Check(SnakeCase)
+			if err != nil {
+				return err
+			}
+			array[index] = NamedEnumItem{Name: name, EnumItem: EnumItem{Description: getDescription(itemNode)}}
 		}
 		*value = array
 	}
+
+	if node.Kind == yaml.MappingNode {
+		count := len(node.Content) / 2
+		array := make(Items, count)
+		for index := 0; index < count; index++ {
+			keyNode := node.Content[index*2]
+			valueNode := node.Content[index*2+1]
+			name := Name{keyNode.Value}
+			err := name.Check(SnakeCase)
+			if err != nil {
+				return err
+			}
+			item := EnumItem{}
+			err = valueNode.Decode(&item)
+			if err != nil {
+				return err
+			}
+			array[index] = NamedEnumItem{Name: name, EnumItem: item}
+		}
+		*value = array
+	}
+
 	return nil
 }
 

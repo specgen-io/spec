@@ -1,33 +1,36 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type Fields []NamedField
 
-func (value *Fields) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	data := make(map[string]Field)
-	err := unmarshal(&data)
-	if err != nil {
-		return err
+func (value *Fields) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.MappingNode {
+		return errors.New("fields should be YAML mapping")
 	}
-
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return err
-	}
-
-	array := make([]NamedField, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedField, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(SnakeCase)
 		if err != nil {
 			return err
 		}
-		array[index] = NamedField{Name: name, Field: data[key]}
+		definition := DefinitionDefault{}
+		err = valueNode.Decode(&definition)
+		if err != nil {
+			return err
+		}
+		if definition.Description == nil {
+			definition.Description = getDescription(keyNode)
+		}
+		array[index] = NamedField{Name: name, DefinitionDefault: definition}
 	}
-
 	*value = array
 	return nil
 }
@@ -45,20 +48,21 @@ func NewObject(fields Fields, description *string) *Object {
 	return &Object{object{Fields: fields, Description: description}}
 }
 
-func (value *Object) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	internal := object{}
-
-	fields := Fields{}
-	err := unmarshal(&fields)
-	if err != nil {
-		err := unmarshal(&internal)
+func (value *Object) UnmarshalYAML(node *yaml.Node) error {
+	if getMappingKey(node, "fields") == nil {
+		fields := Fields{}
+		err := node.Decode(&fields)
 		if err != nil {
 			return err
 		}
+		*value = Object{object{Fields: fields}}
 	} else {
-		internal.Fields = fields
+		internal := object{}
+		err := node.Decode(&internal)
+		if err != nil {
+			return err
+		}
+		*value = Object{internal}
 	}
-
-	*value = Object{internal}
 	return nil
 }

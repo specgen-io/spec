@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
@@ -26,7 +26,7 @@ type Meta struct {
 
 func ParseSpec(data []byte) (*Spec, error) {
 	var spec Spec
-	if err := yaml.UnmarshalStrict(data, &spec); err != nil {
+	if err := yaml.Unmarshal(data, &spec); err != nil {
 		return nil, err
 	}
 	return &spec, nil

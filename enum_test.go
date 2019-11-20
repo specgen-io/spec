@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -11,18 +11,21 @@ func Test_Enum_Short_Unmarshal(t *testing.T) {
 	data := `
 description: Enum description
 enum:
-- the_first
-- the_second
-- the_third
+- the_first    # First option
+- the_second   # Second option
+- the_third    # Third option
 `
 	var enum = Enum{}
-	err := yaml.UnmarshalStrict([]byte(data), &enum)
+	err := yaml.Unmarshal([]byte(data), &enum)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, *enum.Description, "Enum description")
+	description1 := "First option"
+	description2 := "Second option"
+	description3 := "Third option"
 	expected := Items{
-		{Name{"the_first"}, EnumItem{Description: nil}},
-		{Name{"the_second"}, EnumItem{Description: nil}},
-		{Name{"the_third"}, EnumItem{Description: nil}},
+		{Name{"the_first"}, EnumItem{Description: &description1}},
+		{Name{"the_second"}, EnumItem{Description: &description2}},
+		{Name{"the_third"}, EnumItem{Description: &description3}},
 	}
 	assert.Equal(t, reflect.DeepEqual(enum.Items, expected), true)
 }
@@ -38,7 +41,7 @@ enum:
     description: Third option
 `
 	var enum = Enum{}
-	err := yaml.UnmarshalStrict([]byte(data), &enum)
+	err := yaml.Unmarshal([]byte(data), &enum)
 	assert.Equal(t, err, nil)
 
 	description1 := "First option"

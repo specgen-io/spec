@@ -2,7 +2,7 @@ package spec
 
 import (
 	assertx "github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.UnmarshalStrict([]byte(data), &operation)
+	err := yaml.Unmarshal([]byte(data), &operation)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, operation.Endpoint, "GET /some/url")
@@ -39,7 +39,7 @@ ping:
 `
 
 	var operations Operations
-	err := yaml.UnmarshalStrict([]byte(data), &operations)
+	err := yaml.Unmarshal([]byte(data), &operations)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)
@@ -48,4 +48,45 @@ ping:
 
 	assert.Equal(t, operation1.Name.Source, "some_url")
 	assert.Equal(t, operation2.Name.Source, "ping")
+}
+
+func Test_Operations_Unmarshal_Description(t *testing.T) {
+	data := `
+some_url:     # some url description
+  endpoint: GET /some/url
+  response:
+    ok: empty
+ping:         # ping description
+  endpoint: GET /ping
+  response:
+    ok: empty
+`
+
+	var operations Operations
+	err := yaml.Unmarshal([]byte(data), &operations)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, len(operations), 2)
+	operation1 := operations[0]
+	operation2 := operations[1]
+
+	assert.Equal(t, operation1.Name.Source, "some_url")
+	assert.Equal(t, *operation1.Description, "some url description")
+	assert.Equal(t, operation2.Name.Source, "ping")
+	assert.Equal(t, *operation2.Description, "ping description")
+}
+
+func Test_Operation_Unmarshal_BodyDescription(t *testing.T) {
+	data := `
+endpoint: GET /some/url
+body: Some  # body description
+response:
+  ok: empty
+`
+
+	var operation Operation
+	err := yaml.Unmarshal([]byte(data), &operation)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, *operation.Body.Description, "body description")
 }

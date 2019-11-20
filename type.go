@@ -1,6 +1,9 @@
 package spec
 
-import "strings"
+import (
+	"gopkg.in/yaml.v3"
+	"strings"
+)
 
 type TypeNode int
 
@@ -59,9 +62,9 @@ func ParseType(value string) Type {
 	}
 }
 
-func (value *Type) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (value *Type) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := unmarshal(&str)
+	err := node.Decode(&str)
 	if err != nil {
 		return err
 	}

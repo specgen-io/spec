@@ -1,40 +1,43 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type UrlParams []NamedParam
 type QueryParams []NamedParam
 type HeaderParams []NamedParam
 
-func unmarshalYAML(unmarshal func(interface{}) error, namesFormat Format) ([]NamedParam, error) {
-	data := make(map[string]Param)
-	err := unmarshal(&data)
-	if err != nil {
-		return nil, err
+func unmarshalYAML(node *yaml.Node, namesFormat Format) ([]NamedParam, error) {
+	if node.Kind != yaml.MappingNode {
+		return nil, errors.New("parameters should be YAML mapping")
 	}
-
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return nil, err
-	}
-
-	array := make([]NamedParam, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedParam, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(namesFormat)
 		if err != nil {
 			return nil, err
 		}
-		array[index] = NamedParam{Name: name, Param: data[key]}
+		definition := DefinitionDefault{}
+		err = valueNode.Decode(&definition)
+		if err != nil {
+			return nil, err
+		}
+		if definition.Description == nil {
+			definition.Description = getDescription(keyNode)
+		}
+		array[index] = NamedParam{Name: name, DefinitionDefault: definition}
 	}
-
 	return array, nil
 }
 
-func (value *QueryParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	array, err := unmarshalYAML(unmarshal, SnakeCase)
+func (value *QueryParams) UnmarshalYAML(node *yaml.Node) error {
+	array, err := unmarshalYAML(node, SnakeCase)
 	if err != nil {
 		return err
 	}
@@ -43,8 +46,8 @@ func (value *QueryParams) UnmarshalYAML(unmarshal func(interface{}) error) error
 	return nil
 }
 
-func (value *HeaderParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	array, err := unmarshalYAML(unmarshal, UpperChainCase)
+func (value *HeaderParams) UnmarshalYAML(node *yaml.Node) error {
+	array, err := unmarshalYAML(node, UpperChainCase)
 	if err != nil {
 		return err
 	}

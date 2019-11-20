@@ -1,6 +1,9 @@
 package spec
 
-import "gopkg.in/yaml.v2"
+import (
+	"errors"
+	"gopkg.in/yaml.v3"
+)
 
 type Model struct {
 	Object *Object
@@ -15,23 +18,26 @@ func (self *Model) IsEnum() bool {
 	return self.Enum != nil && self.Object == nil
 }
 
-func (value *Model) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	internal := Model{}
+func (value *Model) UnmarshalYAML(node *yaml.Node) error {
+	model := Model{}
 
-	enum := Enum{}
-	err := unmarshal(&enum)
-	if err == nil {
-		internal.Enum = &enum
-	} else {
-		object := Object{}
-		err := unmarshal(&object)
+	if getMappingKey(node, "enum") != nil {
+		enum := Enum{}
+		err := node.Decode(&enum)
 		if err != nil {
 			return err
 		}
-		internal.Object = &object
+		model.Enum = &enum
+	} else {
+		object := Object{}
+		err := node.Decode(&object)
+		if err != nil {
+			return err
+		}
+		model.Object = &object
 	}
 
-	*value = internal
+	*value = model
 	return nil
 }
 
@@ -42,31 +48,33 @@ type NamedModel struct {
 
 type Models []NamedModel
 
-func (value *Models) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	data := make(map[string]Model)
-	err := unmarshal(&data)
-	if err != nil {
-		return err
+func (value *Models) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.MappingNode {
+		return errors.New("models should be YAML mapping")
 	}
-
-	names := make(yaml.MapSlice, 0)
-	err = unmarshal(&names)
-	if err != nil {
-		return err
-	}
-
-	array := make([]NamedModel, len(names))
-	for index, item := range names {
-		key := item.Key.(string)
-		name := Name{key}
+	count := len(node.Content) / 2
+	array := make([]NamedModel, count)
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+		name := Name{keyNode.Value}
 		err := name.Check(PascalCase)
 		if err != nil {
 			return err
 		}
-		model := data[key]
+		model := Model{}
+		err = valueNode.Decode(&model)
+		if err != nil {
+			return err
+		}
+		if model.IsEnum() && model.Enum.Description == nil {
+			model.Enum.Description = getDescription(keyNode)
+		}
+		if model.IsObject() && model.Object.Description == nil {
+			model.Object.Description = getDescription(keyNode)
+		}
 		array[index] = NamedModel{Name: name, Model: model}
 	}
-
 	*value = array
 	return nil
 }

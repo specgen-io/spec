@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -9,11 +9,11 @@ import (
 func Test_Models_Unmarshal(t *testing.T) {
 	data := `
 Model1:
-  description: some model
+  description: first model
   fields:
     prop1: string
     prop2: int32
-Model2:
+Model2:      # second model
   prop1: string
   prop2: int32
 Model3:
@@ -23,7 +23,7 @@ Model3:
   - third
 `
 	var models Models
-	err := yaml.UnmarshalStrict([]byte(data), &models)
+	err := yaml.Unmarshal([]byte(data), &models)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(models), 3)
@@ -33,8 +33,10 @@ Model3:
 
 	assert.Equal(t, model1.Name.Source, "Model1")
 	assert.Equal(t, model1.IsObject(), true)
+	assert.Equal(t, *model1.Object.Description, "first model")
 	assert.Equal(t, model2.Name.Source, "Model2")
 	assert.Equal(t, model2.IsObject(), true)
+	assert.Equal(t, *model2.Object.Description, "second model")
 	assert.Equal(t, model3.Name.Source, "Model3")
 	assert.Equal(t, model3.IsEnum(), true)
 }
@@ -48,6 +50,6 @@ model_one:
     prop2: int32
 `
 	var models Models
-	err := yaml.UnmarshalStrict([]byte(data), &models)
+	err := yaml.Unmarshal([]byte(data), &models)
 	assert.ErrorContains(t, err, "model_one")
 }

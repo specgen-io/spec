@@ -13,12 +13,16 @@ type Endpoint struct {
 	UrlParams UrlParams
 }
 
+func NewEndpoint(endpoint string) Endpoint {
+	method, url, params := parseEndpoint(endpoint)
+	return Endpoint{Method: method, Url: url, UrlParams: params}
+}
+
 func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
 		return errors.New("endpoint should be string")
 	}
-	method, url, params := parseEndpoint(node.Value)
-	*value = Endpoint{Method: method, Url: url, UrlParams: params}
+	*value = NewEndpoint(node.Value)
 	return nil
 }
 

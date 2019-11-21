@@ -393,12 +393,6 @@ response:
 
 The `response` field of [operation](#operation) defines all possible responses of HTTP request. The `response` is a dictionary where key is the name of the response and value is the definition of the response. The name of responses should be in a text form according to [RFC 7231](https://tools.ietf.org/html/rfc7231) but in snake_case. So, `OK` will be `ok`, `Unauthorized` - `unauthorized`, `Method Not Allowed` - `method_not_allowed`. 
 
-Here's list of supported responses with corresponding HTTP status codes:
-
-| Spec name   | HTTP status | Description                                          |
-| :---------- | :---------- | :--------------------------------------------------- |
-| ok          | 200         | Success                                              |
-
 Here are fields of response definition:
 
 | Field       | Required | Details                                              |

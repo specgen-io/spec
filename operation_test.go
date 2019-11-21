@@ -1,7 +1,6 @@
 package spec
 
 import (
-	assertx "github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
@@ -20,7 +19,7 @@ response:
 
 	assert.Equal(t, operation.Endpoint.Method, "GET")
 	assert.Equal(t, operation.Endpoint.Url, "/some/url")
-	assertx.Nil(t, operation.Body)
+	assert.Equal(t, operation.Body == nil, true)
 	assert.Equal(t, len(operation.Responses), 1)
 	response := operation.Responses[0]
 	assert.Equal(t, response.Name.Source, "ok")

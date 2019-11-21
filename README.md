@@ -26,9 +26,9 @@ Spec is a API specification format. It currently can define models and HTTP-base
         - [Response](#response)
   - [Code Generation](#code-generation)
     - [OpenAPI](#openapi)
-    - [Scala Jackson Models](#scala-jackson-models)
+    - [Scala Models](#scala-models)
     - [Scala Play Service](#scala-play-service)
-    - [Scala Https Client](#scala-https-client)
+    - [Scala Sttp Client](#scala-sttp-client)
 
 
 ## Spec Format
@@ -71,7 +71,7 @@ Meta information is presented in form for keys at the top level of the YAML file
 Here's the list of supported meta information fields:
 
 | Name         | Description                                                                   |
-| ------------ | ----------------------------------------------------------------------------- |
+| :----------- | :---------------------------------------------------------------------------- |
 | idl_version  | Version of spec format                                                        |
 | service_name | Name of the service, should be in [kebab-case](http://wiki.c2.com/?KebabCase) |
 | version      | Version of the specification                                                  |
@@ -86,20 +86,25 @@ Models section allows to define custom user types, including dictionaries, enums
 
 #### Short form
 
-Most entities are defined in YAML as dictinary. Some entities also support short form definition. Short form allows to define APIs in very compact way. While long form allows to specify all details of the API. Short form is basically a single field from entity full definition hence the dictionary is not needed to define the entity but only one field value is enough. Such short form field is marked accordingly in the documentation below, if it exists.
+Most entities are defined in YAML as dictionary. Some entities also support short form definition. Short form allows to define APIs in very compact way. While long form allows to specify all details of the API entities. Short form is better readable by humans.
 
 Compare long and short forms of defining field as an example:
 ```yaml
-field: string               # <- short form
+# short form
+field: string = the value     # some field
 
-field:                      # <- long form
+# long form
+field:
   type: string
-  description: some field   # allows to specify more information 
+  default: the value
+  description: some field 
 ```
+
+Entities supporting short form are documented accordingly. Descriptions of most entities could be provided in a comment on the same line where key for entity is defined. In the example above `some field` is a description for the `field` specified via comment on the same line as the field key `field`.
 
 ### Types
 
-JSON supports very limited number of types: string, number, boolean, object, array, null. Specifying JSON type is often not enough when it comes HTTP API definition and to what is allowed/prohibited as query/header/body value. For example, if the endpoint expects date and time in ISO 8601 format then in JSON it's just string, though API user supposed to pass a string only in a specific format.
+JSON supports very limited number of types: string, number, boolean, object, array, null. Specifying JSON type is often not enough when it comes HTTP API definition and to what is allowed/prohibited as query/header/body value. For example, if the endpoint expects date and time in ISO 8601 format then in JSON it's just a string, though API user supposed to pass a string only in a specific format.
 
 The null is a problem across all JSON types. All fields can be null in JSON. Though usually API is very sensitive to null values and does not allow nulls everywhere.
 
@@ -108,7 +113,7 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 #### Primitive Types
 
 | Spec type         | JSON type | Notes                                             |
-| ----------------- | --------- | ------------------------------------------------- |
+| :---------------- | :-------- | :------------------------------------------------ |
 | byte              | number    | -128 to 127                                       |
 | short <br> int16  | number    | -32768 to 32767                                   |
 | int <br> int32    | number    | -2147483648 to 2147483647                         |
@@ -123,7 +128,7 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 | date              | string    | ISO 8601 yyyy-mm-dd                               |
 | datetime          | string    | ISO 8601 yyyy-mm-ddThh:mm:ss.ffffff               |
 | time              | string    | ISO 8601 hh:mm:ss.ffffff                          |
-| json              | object    | any JSON                                          |
+| json              | object    | any unstructured JSON                             |
 | empty             | N/A       | represents nothing, similar to unit is some langs |
 
 #### Nullable Types
@@ -135,7 +140,7 @@ By default all types can't have `null` value. The `?` modifier after type define
 Following modifiers allow to specify data structures:
 
 | Modifier   | JSON type | Notes                                       |
-| ---------- | --------- | --------------------------------------------|
+| :--------- | :-------- | :-------------------------------------------|
 | the_type[] | array     | array of items of the_type                  |
 | the_type{} | object    | dictionary with property values of the_type |
 
@@ -155,15 +160,15 @@ Model:
 ```
 Here's information about object model fields:
 
-| Field       | Required | Short form | Details                                          |
-| ----------- | -------- | ---------- | ------------------------------------------------ |
-| description | no       |            | description of the model, used for documentation |
-| fields      | yes      | yes        | dictionary of fields, keys are names of fields   |
+| Field       | Required | Details                                          |
+| :---------- | :------- | :----------------------------------------------- |
+| fields      | yes      | dictionary of fields, keys are names of fields   |
+| description | no       | description of the model, used for documentation |
 
 As table above shows object model could be defined in short form with fields only:
 
 ```yaml
-Model:
+Model:  # the model
   field1: string
   field2: int
 ```
@@ -173,23 +178,23 @@ Model:
 Here's an example of field definition:
 ```yaml
 field1:
-  description: some field
   type: string
   default: some default value
+  description: some field
 ```
 
 Here's information about field definition fields:
 
-| Field       | Required | Short form | Details                                          |
-| ----------- | -------- | ---------- | ------------------------------------------------ |
-| description | no       |            | description of the field, used for documentation |
-| type        | yes      | yes        | type of the field                                |
-| default     | no       | no         | default value for the field                      |
+| Field       | Required | Details                                          |
+| :---------- | :------- | :----------------------------------------------- |
+| type        | yes      | type of the field                                |
+| default     | no       | default value for the field                      |
+| description | no       | description of the field, used for documentation |
 
-When field is defined in a short form with type only, the default value might be defined through `=` separator:
+When field is defined in a short form with type only, the default value might be defined through `=` separator. Here's an example of short form equivalent to long field definition from above
 
 ```yaml
-field1: string = some default value
+field1: string = some default value  # some field
 ```
 
 #### Enum Model
@@ -197,24 +202,6 @@ field1: string = some default value
 Enum is represented in JSON as a string with limited set of possible values.
 
 Here's an example of enum model:
-```yaml
-Model:
-  description: the model
-  enum:
-  - first
-  - second
-  - third
-```
-
-Here's information about enum definition fields:
-
-| Field       | Required | Short form | Details                                                                              |
-| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------ |
-| description | no       |            | description of the model, used for documentation                                     |
-| enum        | yes      |            | either list of strings or dictionary with keys and values with enum item information |
-
-Here's an example of longer version of enum definition model:
-
 ```yaml
 Model:
   description: the model
@@ -227,11 +214,28 @@ Model:
       description: Third option
 ```
 
-Enum item definition supports following fields:
+Here's information about enum definition fields:
 
-| Field       | Required | Short form | Details                                                                              |
-| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------ |
-| description | no       |            | description of the item, used for documentation                                      |
+| Field       | Required | Details                                                                              |
+| :---------- | :------- | :----------------------------------------------------------------------------------- |
+| enum        | yes      | either list of strings or dictionary with keys and values with enum item information |
+| description | no       | description of the model, used for documentation                                     |
+
+Here's an equivalent example for short form of enum definition:
+
+```yaml
+Model:  # the model
+  enum:
+  - first   # First option
+  - second  # Second option
+  - third   # Third option
+```
+
+Enum item definition supports following fields.
+
+| Field       | Required | Details                                                                              |
+| :---------- | :------- | :----------------------------------------------------------------------------------- |
+| description | no       | description of the item, used for documentation                                      |
 
 ### Operation
 
@@ -257,12 +261,12 @@ Here's information about operation definition fields:
 
 | Field       | Required             | Details                                                  |
 | ----------- | -------------------- | -------------------------------------------------------- |
-| description | no                   | description of the field, used for documentation         |
 | endpoint    | yes                  | HTTP endpoint of operation                               |
-| header      | no                   | dictionary of HTTP header parameters and types           |
-| query       | no                   | dictionary of HTTP query parameters and types            |
 | body        | yes for POST and PUT | HTTP body of the request                                 |
 | response    | yes                  | dictionary of supported HTTP responses and response body |
+| header      | no                   | dictionary of HTTP header parameters and types           |
+| query       | no                   | dictionary of HTTP query parameters and types            |
+| description | no                   | description of the field, used for documentation         |
 
 #### Endpoint
 
@@ -275,11 +279,11 @@ GET /sample/{id:uuid}
 
 The `header` field of [operation](#operation) allows to describe HTTP header parameters. The `header` is a dictionary where key is the name of the header parameter and value is the definition of the parameter. Here are fields of parameter definition:
 
-| Field       | Required | Short form | Details                                              |
-| ----------- | -------- | ---------- | ---------------------------------------------------- |
-| description | no       |            | description of the parameter, used for documentation |
-| type        | yes      | yes        | type of the parameter                                |
-| default     | no       | no         | default value for the parameter                      |
+| Field       | Required | Details                                              |
+| :---------- | :------- | :--------------------------------------------------- |
+| type        | yes      | type of the parameter                                |
+| default     | no       | default value for the parameter                      |
+| description | no       | description of the parameter, used for documentation |
 
 Here's an example of two header parameters definition: `Authorization` (`string`) and `X-Request-Id` (`uuid`):
 
@@ -293,21 +297,21 @@ header:
     description: original request id passed
 ```
 
-Header parameters names should be in Pascal-Kebab case.
+Header parameters names should be in Pascal-Kebab case because this is how they should appear in real HTTP request.
 
 Header parameters could be declared in a short form:
 
 ```yaml
 header:
-  Authorization: string
-  X-Request-Id: string
+  Authorization: string  # authorization token
+  X-Request-Id: string   # original request id passed
 ```
 
 When short form is used the default value for parameter could be specified through `=` separator:
 
 ```yaml
 header:
-  X-Request-Id: string = some default id
+  X-Request-Id: string = some default id   # original request id passed
 ```
 
 
@@ -315,11 +319,11 @@ header:
 
 The `query` field of [operation](#operation) allows to describe HTTP query parameters. The `query` is a dictionary where key is the name of the query parameter and value is the definition of the parameter. Here are fields of parameter definition:
 
-| Field       | Required | Short form | Details                                              |
-| ----------- | -------- | ---------- | ---------------------------------------------------- |
-| description | no       |            | description of the parameter, used for documentation |
-| type        | yes      | yes        | type of the parameter                                |
-| default     | no       | no         | default value for the parameter                      |
+| Field       | Required | Details                                              |
+| :---------- | :------- | :--------------------------------------------------- |
+| type        | yes      | type of the parameter                                |
+| default     | no       | default value for the parameter                      |
+| description | no       | description of the parameter, used for documentation |
 
 Here's an example of two query parameters definition: `page_size` and `page_number`, both of them are `int`:
 
@@ -339,50 +343,41 @@ Query parameters could be declared in a short form:
 
 ```yaml
 query:
-  page_size: int
-  page_number: int
+  page_size: int     # size of the page
+  page_number: int   # number of requested page
 ```
 
 When short form is used the default value for parameter could be specified through `=` separator:
 
 ```yaml
 query:
-  page_size: int = 100
-  page_number: int = 0
+  page_size: int = 100   # size of the page
+  page_number: int = 0   # number of requested page
 ```
 
 #### Request Body
 
 The `body` field of [operation](#operation) defines body of HTTP request. Here are fields of body definition:
 
-| Field       | Required | Short form | Details                                              |
-| ----------- | -------- | ---------- | ---------------------------------------------------- |
-| description | no       |            | description of body                                  |
-| type        | yes      | yes        | type that represents body                            |
+| Field       | Required | Details                                              |
+| :---------- | :------- | :--------------------------------------------------- |
+| type        | yes      | type that represents body                            |
+| description | no       | description of body                                  |
 
 Here's an example of body definition represented by custom type `Sample`:
 
 ```yaml
 body:
-  description: sample that will be created
   type: Sample
+  description: sample that will be created
 ```
 
 Body could be declared in a short form:
 ```yaml
-body: Sample
+body: Sample  # sample that will be created
 ```
 
 #### Response
-
-The `response` field of [operation](#operation) defines all possible responses of HTTP request. The `response` is a dictionary where key is the name of the response and value is the definition of the response. The name of responses should be in a text form according to [RFC 7231](https://tools.ietf.org/html/rfc7231) but in snake_case. So, `OK` will be `ok`, `Unauthorized` - `unauthorized`, `Method Not Allowed` - `method_not_allowed`. 
-
-Here are fields of response definition:
-
-| Field       | Required | Short form | Details                                              |
-| ----------- | -------- | ---------- | ---------------------------------------------------- |
-| description | no       |            | description of response                              |
-| type        | yes      | yes        | type that represents response body                   |
 
 Here's an example of response definition with 2 responses: `ok` and `forbidden`, the `ok` response has a body of type `Sample`:
 
@@ -396,12 +391,35 @@ response:
     type: empty
 ```
 
+The `response` field of [operation](#operation) defines all possible responses of HTTP request. The `response` is a dictionary where key is the name of the response and value is the definition of the response. The name of responses should be in a text form according to [RFC 7231](https://tools.ietf.org/html/rfc7231) but in snake_case. So, `OK` will be `ok`, `Unauthorized` - `unauthorized`, `Method Not Allowed` - `method_not_allowed`. 
+
+Here's list of supported responses with corresponding HTTP status codes:
+
+| Spec name   | HTTP status | Description                                          |
+| :---------- | :---------- | :--------------------------------------------------- |
+| ok          | 200         | Success                                              |
+
+Here are fields of response definition:
+
+| Field       | Required | Details                                              |
+| :---------- | :------- | :--------------------------------------------------- |
+| type        | yes      | type that represents response body                   |
+| description | no       | description of response                              |
+
+Response could be declared in a short form, here's short form equivalent of responses above:
+
+```yaml
+response:
+  ok: Sample        # sample is created
+  forbidden: empty  # user is forbidden to create sample
+```
+
 ## Code Generation
 
 ### OpenAPI
 
-### Scala Jackson Models
+### Scala Models
 
 ### Scala Play Service
 
-### Scala Https Client
+### Scala Sttp Client

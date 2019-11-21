@@ -6,15 +6,12 @@ import (
 )
 
 type operation struct {
-	Endpoint     string       `yaml:"endpoint"`
+	Endpoint     Endpoint     `yaml:"endpoint"`
 	Description  *string      `yaml:"description"`
 	Body         *Definition  `yaml:"body"`
 	HeaderParams HeaderParams `yaml:"header"`
 	QueryParams  QueryParams  `yaml:"query"`
 	Responses    Responses    `yaml:"response"`
-	Method       string
-	Url          string
-	UrlParams    UrlParams
 }
 
 type Operation struct {
@@ -31,15 +28,7 @@ func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	if value.Body != nil && value.Body.Description == nil {
 		value.Body.Description = getDescription(getMappingKey(node, "body"))
 	}
-	value.Init()
 	return nil
-}
-
-func (self *Operation) Init() {
-	method, url, params := ParseEndpoint(self.Endpoint)
-	self.Method = method
-	self.Url = url
-	self.UrlParams = params
 }
 
 type NamedOperation struct {

@@ -18,7 +18,8 @@ response:
 	err := yaml.Unmarshal([]byte(data), &operation)
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, operation.Endpoint, "GET /some/url")
+	assert.Equal(t, operation.Endpoint.Method, "GET")
+	assert.Equal(t, operation.Endpoint.Url, "/some/url")
 	assertx.Nil(t, operation.Body)
 	assert.Equal(t, len(operation.Responses), 1)
 	response := operation.Responses[0]

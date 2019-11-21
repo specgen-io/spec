@@ -51,11 +51,11 @@ operations:
 	operation2 := api.Operations[1]
 
 	assert.Equal(t, operation1.Name.Source, "some_url")
-	assert.Equal(t, operation1.Method, "GET")
-	assert.Equal(t, operation1.Url, "/some/url")
+	assert.Equal(t, operation1.Endpoint.Method, "GET")
+	assert.Equal(t, operation1.Endpoint.Url, "/some/url")
 	assert.Equal(t, operation2.Name.Source, "ping")
-	assert.Equal(t, operation2.Method, "GET")
-	assert.Equal(t, operation2.Url, "/ping")
+	assert.Equal(t, operation2.Endpoint.Method, "GET")
+	assert.Equal(t, operation2.Endpoint.Url, "/ping")
 	assert.Equal(t, len(operation2.QueryParams), 1)
 	queryParam := operation2.QueryParams[0]
 	assert.Equal(t, queryParam.Name.Source, "message")

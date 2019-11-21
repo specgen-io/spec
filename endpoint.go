@@ -1,11 +1,28 @@
 package spec
 
 import (
+	"errors"
+	"gopkg.in/yaml.v3"
 	"regexp"
 	"strings"
 )
 
-func ParseEndpoint(endpoint string) (string, string, UrlParams) {
+type Endpoint struct {
+	Method    string
+	Url       string
+	UrlParams UrlParams
+}
+
+func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.ScalarNode {
+		return errors.New("endpoint should be string")
+	}
+	method, url, params := parseEndpoint(node.Value)
+	*value = Endpoint{Method: method, Url: url, UrlParams: params}
+	return nil
+}
+
+func parseEndpoint(endpoint string) (string, string, UrlParams) {
 	endpointParts := strings.SplitN(endpoint, " ", 2)
 	method := endpointParts[0]
 	url := endpointParts[1]

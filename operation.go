@@ -18,6 +18,23 @@ type Operation struct {
 	operation
 }
 
+func NewOperation(
+	endpoint Endpoint,
+	description *string,
+	body *Definition,
+	headerParams HeaderParams,
+	queryParams QueryParams,
+	responses Responses) *Operation {
+	return &Operation{operation{
+		Endpoint:     endpoint,
+		Description:  description,
+		Body:         body,
+		HeaderParams: headerParams,
+		QueryParams:  queryParams,
+		Responses:    responses,
+	}}
+}
+
 func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	internal := operation{}
 	err := node.Decode(&internal)

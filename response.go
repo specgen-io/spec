@@ -10,6 +10,13 @@ type NamedResponse struct {
 	Definition
 }
 
+func NewResponse(name string, typ Type, description *string) *NamedResponse {
+	return &NamedResponse{
+		Name:       Name{name},
+		Definition: Definition{definition{Type: typ, Description: description}},
+	}
+}
+
 type Responses []NamedResponse
 
 func (value *Responses) UnmarshalYAML(node *yaml.Node) error {

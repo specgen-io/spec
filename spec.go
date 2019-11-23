@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"errors"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
@@ -33,7 +34,23 @@ func unmarshalSpec(data []byte) (*Spec, error) {
 }
 
 func ParseSpec(data []byte) (*Spec, error) {
-	return unmarshalSpec(data)
+	spec, err := unmarshalSpec(data)
+	if err != nil {
+		return nil, err
+	}
+	unknownTypes := ResolveTypes(spec)
+	if len(unknownTypes) > 0 {
+		message := "Undefined types: "
+		for i, unknownType := range unknownTypes {
+			if i > 0 {
+				message = message + ", "
+			}
+			message = message + unknownType.TypeName
+		}
+		err := errors.New(message)
+		return nil, err
+	}
+	return spec, nil
 }
 
 func ReadSpec(filepath string) (*Spec, error) {

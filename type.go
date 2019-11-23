@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"strings"
 )
@@ -15,13 +16,14 @@ const (
 )
 
 type Type struct {
-	Node      TypeNode
-	Child     *Type
-	PlainType string
+	Node  TypeNode
+	Child *Type
+	Plain string
+	Info  *TypeInfo
 }
 
 func Plain(typ string) *Type {
-	return &Type{Node: PlainType, PlainType: typ}
+	return &Type{Node: PlainType, Plain: typ}
 }
 
 func Array(typ *Type) *Type {
@@ -33,7 +35,7 @@ func Nullable(typ *Type) *Type {
 }
 
 func (self *Type) IsEmpty() bool {
-	return self.Node == PlainType && self.PlainType == TypeEmpty
+	return self.Node == PlainType && self.Plain == TypeEmpty
 }
 
 func (self *Type) IsNullable() bool {
@@ -58,7 +60,7 @@ func ParseType(value string) Type {
 		child := ParseType(value[:len(value)-2])
 		return Type{Node: MapType, Child: &child}
 	} else {
-		return Type{Node: PlainType, PlainType: value}
+		return Type{Node: PlainType, Plain: value}
 	}
 }
 
@@ -97,29 +99,42 @@ const (
 )
 
 type TypeInfo struct {
-	Name string
+	Name        string
+	Scalar      bool
+	Defaultable bool
+	Model       *NamedModel
 }
 
 var Types = map[string]TypeInfo{
-	TypeByte:     {TypeByte},
-	TypeShort:    {TypeShort},
-	TypeInt16:    {TypeInt16},
-	TypeInt:      {TypeInt},
-	TypeInt32:    {TypeInt32},
-	TypeLong:     {TypeLong},
-	TypeInt64:    {TypeInt64},
-	TypeFloat:    {TypeFloat},
-	TypeDouble:   {TypeDouble},
-	TypeDecimal:  {TypeDecimal},
-	TypeBoolean:  {TypeBoolean},
-	TypeBool:     {TypeBool},
-	TypeChar:     {TypeChar},
-	TypeString:   {TypeString},
-	TypeUuid:     {TypeUuid},
-	TypeStr:      {TypeByte},
-	TypeDate:     {TypeByte},
-	TypeDateTime: {TypeByte},
-	TypeTime:     {TypeByte},
-	TypeJson:     {TypeByte},
-	TypeEmpty:    {TypeEmpty},
+	TypeByte:     {TypeByte, true, true, nil},
+	TypeShort:    {TypeShort, true, true, nil},
+	TypeInt16:    {TypeInt16, true, true, nil},
+	TypeInt:      {TypeInt, true, true, nil},
+	TypeInt32:    {TypeInt32, true, true, nil},
+	TypeLong:     {TypeLong, true, true, nil},
+	TypeInt64:    {TypeInt64, true, true, nil},
+	TypeFloat:    {TypeFloat, true, true, nil},
+	TypeDouble:   {TypeDouble, true, true, nil},
+	TypeDecimal:  {TypeDecimal, true, true, nil},
+	TypeBoolean:  {TypeBoolean, true, true, nil},
+	TypeBool:     {TypeBool, true, true, nil},
+	TypeChar:     {TypeChar, true, true, nil},
+	TypeString:   {TypeString, true, true, nil},
+	TypeUuid:     {TypeUuid, true, true, nil},
+	TypeStr:      {TypeStr, true, true, nil},
+	TypeDate:     {TypeDate, true, true, nil},
+	TypeDateTime: {TypeDateTime, true, true, nil},
+	TypeTime:     {TypeTime, true, true, nil},
+	TypeJson:     {TypeJson, true, false, nil},
+	TypeEmpty:    {TypeEmpty, false, false, nil},
+}
+
+func GetModelTypeInfo(model *NamedModel) TypeInfo {
+	if model.IsObject() {
+		return TypeInfo{model.Name.Source, false, false, model}
+	}
+	if model.IsEnum() {
+		return TypeInfo{model.Name.Source, true, true, model}
+	}
+	panic(fmt.Sprintf("Unknown model kind: %v", model))
 }

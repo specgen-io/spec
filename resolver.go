@@ -82,9 +82,14 @@ func (resolver *Resolver) Type(typ *Type) {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
-			if _, ok := resolver.ModelsMap[typ.PlainType]; !ok {
-				if _, ok := Types[typ.PlainType]; !ok {
-					resolver.AddUnknownType(UnknownType{TypeName: typ.PlainType})
+			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
+				info := GetModelTypeInfo(&model)
+				typ.Info = &info
+			} else {
+				if info, ok := Types[typ.Plain]; ok {
+					typ.Info = &info
+				} else {
+					resolver.AddUnknownType(UnknownType{TypeName: typ.Plain})
 				}
 			}
 		case NullableType:

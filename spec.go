@@ -24,12 +24,16 @@ type Meta struct {
 	Version     string  `yaml:"version"`
 }
 
-func ParseSpec(data []byte) (*Spec, error) {
+func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
 	if err := yaml.Unmarshal(data, &spec); err != nil {
 		return nil, err
 	}
 	return &spec, nil
+}
+
+func ParseSpec(data []byte) (*Spec, error) {
+	return unmarshalSpec(data)
 }
 
 func ReadSpec(filepath string) (*Spec, error) {

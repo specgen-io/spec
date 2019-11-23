@@ -33,7 +33,7 @@ func Nullable(typ *Type) *Type {
 }
 
 func (self *Type) IsEmpty() bool {
-	return self.Node == PlainType && self.PlainType == "empty"
+	return self.Node == PlainType && self.PlainType == TypeEmpty
 }
 
 func (self *Type) IsNullable() bool {
@@ -93,9 +93,33 @@ const (
 	TypeDateTime string = "datetime"
 	TypeTime     string = "time"
 	TypeJson     string = "json"
+	TypeEmpty    string = "empty"
 )
 
-var TypesPrimitive = []string{
-	TypeByte, TypeShort, TypeInt16, TypeInt, TypeInt32, TypeLong, TypeInt64, TypeFloat, TypeDouble, TypeDecimal,
-	TypeBoolean, TypeBool, TypeChar, TypeString, TypeStr, TypeUuid, TypeDate, TypeDateTime, TypeTime,
+type TypeInfo struct {
+	Name string
+}
+
+var Types = map[string]TypeInfo{
+	TypeByte:     {TypeByte},
+	TypeShort:    {TypeShort},
+	TypeInt16:    {TypeInt16},
+	TypeInt:      {TypeInt},
+	TypeInt32:    {TypeInt32},
+	TypeLong:     {TypeLong},
+	TypeInt64:    {TypeInt64},
+	TypeFloat:    {TypeFloat},
+	TypeDouble:   {TypeDouble},
+	TypeDecimal:  {TypeDecimal},
+	TypeBoolean:  {TypeBoolean},
+	TypeBool:     {TypeBool},
+	TypeChar:     {TypeChar},
+	TypeString:   {TypeString},
+	TypeUuid:     {TypeUuid},
+	TypeStr:      {TypeByte},
+	TypeDate:     {TypeByte},
+	TypeDateTime: {TypeByte},
+	TypeTime:     {TypeByte},
+	TypeJson:     {TypeByte},
+	TypeEmpty:    {TypeEmpty},
 }

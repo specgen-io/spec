@@ -6,9 +6,9 @@ import (
 )
 
 type definitionDefault struct {
-	Type        Type    `yaml:"type"`
-	Default     *string `yaml:"default"`
-	Description *string `yaml:"description"`
+	Type        TypeLocated `yaml:"type"`
+	Default     *string     `yaml:"default"`
+	Description *string     `yaml:"description"`
 }
 
 type DefinitionDefault struct {
@@ -28,8 +28,8 @@ func parseDefaultedType(str string) (string, *string) {
 
 func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
-		typ, defaultValue := parseDefaultedType(node.Value)
-		internal := definitionDefault{Type: ParseType(typ), Default: defaultValue}
+		typeStr, defaultValue := parseDefaultedType(node.Value)
+		internal := definitionDefault{Type: NewTypeLocated(typeStr, node), Default: defaultValue}
 		internal.Description = getDescription(node)
 		*value = DefinitionDefault{internal}
 	} else {
@@ -44,12 +44,12 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func NewDefinitionDefault(typ Type, defaultValue *string, description *string) *DefinitionDefault {
-	return &DefinitionDefault{definitionDefault{Type: typ, Default: defaultValue, Description: description}}
+	return &DefinitionDefault{definitionDefault{Type: TypeLocated{Type: typ}, Default: defaultValue, Description: description}}
 }
 
 type definition struct {
-	Type        Type    `yaml:"type"`
-	Description *string `yaml:"description"`
+	Type        TypeLocated `yaml:"type"`
+	Description *string     `yaml:"description"`
 }
 
 type Definition struct {
@@ -58,12 +58,8 @@ type Definition struct {
 
 func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
-		typ := Type{}
-		err := node.Decode(&typ)
-		if err != nil {
-			return err
-		}
-		internal := definition{Type: typ}
+		typeStr := node.Value
+		internal := definition{Type: NewTypeLocated(typeStr, node)}
 		internal.Description = getDescription(node)
 		*value = Definition{internal}
 	} else {
@@ -78,5 +74,5 @@ func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func NewDefinition(typ Type, description *string) *Definition {
-	return &Definition{definition{Type: typ, Description: description}}
+	return &Definition{definition{Type: TypeLocated{Type: typ}, Description: description}}
 }

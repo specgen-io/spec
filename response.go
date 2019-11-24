@@ -13,7 +13,7 @@ type NamedResponse struct {
 func NewResponse(name string, typ Type, description *string) *NamedResponse {
 	return &NamedResponse{
 		Name:       Name{name},
-		Definition: Definition{definition{Type: typ, Description: description}},
+		Definition: Definition{definition{Type: TypeLocated{Type: typ}, Description: description}},
 	}
 }
 

@@ -2,6 +2,7 @@ package spec
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 )
 
 type ModelsMap map[string]NamedModel
@@ -71,14 +72,18 @@ func (resolver *Resolver) Model(model NamedModel) {
 }
 
 func (resolver *Resolver) DefinitionDefault(definition DefinitionDefault) {
-	resolver.Type(&definition.Type)
+	resolver.TypeLocated(&definition.Type)
 }
 
 func (resolver *Resolver) Definition(definition Definition) {
-	resolver.Type(&definition.Type)
+	resolver.TypeLocated(&definition.Type)
 }
 
-func (resolver *Resolver) Type(typ *Type) {
+func (resolver *Resolver) TypeLocated(typ *TypeLocated) {
+	resolver.Type(&typ.Type, typ.Location)
+}
+
+func (resolver *Resolver) Type(typ *Type, location *yaml.Node) {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
@@ -95,7 +100,7 @@ func (resolver *Resolver) Type(typ *Type) {
 		case NullableType:
 		case ArrayType:
 		case MapType:
-			resolver.Type(typ.Child)
+			resolver.Type(typ.Child, location)
 		default:
 			panic(fmt.Sprintf("Unknown type: %v", typ))
 		}

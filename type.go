@@ -68,13 +68,22 @@ func ParseType(value string) Type {
 	}
 }
 
-func (value *Type) UnmarshalYAML(node *yaml.Node) error {
+type TypeLocated struct {
+	Location *yaml.Node
+	Type
+}
+
+func NewTypeLocated(typeStr string, location *yaml.Node) TypeLocated {
+	return TypeLocated{Type: ParseType(typeStr), Location: location}
+}
+
+func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
 	err := node.Decode(&str)
 	if err != nil {
 		return err
 	}
-	*value = ParseType(str)
+	*value = TypeLocated{Location: node, Type: ParseType(str)}
 	return nil
 }
 
@@ -141,4 +150,12 @@ func GetModelTypeInfo(model *NamedModel) TypeInfo {
 		return TypeInfo{model.Name.Source, true, true, model}
 	}
 	panic(fmt.Sprintf("Unknown model kind: %v", model))
+}
+
+type Location struct {
+	Line int
+}
+
+func GetLocation(node yaml.Node) Location {
+	return Location{node.Line}
 }

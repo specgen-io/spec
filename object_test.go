@@ -28,17 +28,17 @@ prop3:         # third field
 	prop3 := fields[2]
 
 	assert.Equal(t, prop1.Name.Source, "prop1")
-	assert.Equal(t, reflect.DeepEqual(prop1.Type, ParseType("string")), true)
+	assert.Equal(t, reflect.DeepEqual(prop1.Type.Type, ParseType("string")), true)
 	assert.Equal(t, *prop1.Default, "the value")
 	assert.Equal(t, *prop1.Description, "some field")
 
 	assert.Equal(t, prop2.Name.Source, "prop2")
-	assert.Equal(t, reflect.DeepEqual(prop2.Type, ParseType("string")), true)
+	assert.Equal(t, reflect.DeepEqual(prop2.Type.Type, ParseType("string")), true)
 	assert.Equal(t, *prop2.Default, "the value")
 	assert.Equal(t, *prop2.Description, "another field")
 
 	assert.Equal(t, prop3.Name.Source, "prop3")
-	assert.Equal(t, reflect.DeepEqual(prop3.Type, ParseType("string")), true)
+	assert.Equal(t, reflect.DeepEqual(prop3.Type.Type, ParseType("string")), true)
 	assert.Equal(t, *prop3.Default, "the value")
 	assert.Equal(t, *prop3.Description, "third field")
 }

@@ -80,7 +80,7 @@ func (resolver *Resolver) Definition(definition Definition) {
 }
 
 func (resolver *Resolver) TypeLocated(typ *TypeLocated) {
-	resolver.Type(&typ.Type, typ.Location)
+	resolver.Type(&typ.Definition, typ.Location)
 }
 
 func (resolver *Resolver) Type(typ *Type, location *yaml.Node) {

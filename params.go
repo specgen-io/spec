@@ -5,53 +5,61 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type UrlParams []NamedParam
-type QueryParams []NamedParam
-type HeaderParams []NamedParam
+type UrlParams Params
+type QueryParams Params
+type HeaderParams Params
 
-func unmarshalYAML(node *yaml.Node, namesFormat Format) ([]NamedParam, error) {
+type Params []NamedParam
+
+func (params *Params) unmarshalYAML(node *yaml.Node, namesFormat Format) error {
 	if node.Kind != yaml.MappingNode {
-		return nil, errors.New("parameters should be YAML mapping")
+		return errors.New("parameters should be YAML mapping")
 	}
 	count := len(node.Content) / 2
 	array := make([]NamedParam, count)
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
-		name := Name{keyNode.Value}
-		err := name.Check(namesFormat)
+		name := Name{}
+		err := keyNode.Decode(&name)
 		if err != nil {
-			return nil, err
+			return err
+		}
+		err = name.Check(namesFormat)
+		if err != nil {
+			return err
 		}
 		definition := DefinitionDefault{}
 		err = valueNode.Decode(&definition)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if definition.Description == nil {
 			definition.Description = getDescription(keyNode)
 		}
 		array[index] = NamedParam{Name: name, DefinitionDefault: definition}
 	}
-	return array, nil
+	*params = array
+	return nil
 }
 
 func (value *QueryParams) UnmarshalYAML(node *yaml.Node) error {
-	array, err := unmarshalYAML(node, SnakeCase)
+	params := &Params{}
+	err := params.unmarshalYAML(node, SnakeCase)
 	if err != nil {
 		return err
 	}
-
-	*value = array
+	*value = []NamedParam(*params)
 	return nil
 }
 
 func (value *HeaderParams) UnmarshalYAML(node *yaml.Node) error {
-	array, err := unmarshalYAML(node, UpperChainCase)
+	params := &Params{}
+	err := params.unmarshalYAML(node, UpperChainCase)
 	if err != nil {
 		return err
 	}
-
-	*value = array
+	*value = []NamedParam(*params)
 	return nil
+
 }

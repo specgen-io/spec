@@ -26,12 +26,16 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 		array := make(Items, count)
 		for index := 0; index < count; index++ {
 			itemNode := node.Content[index]
-			name := Name{itemNode.Value}
-			err := name.Check(SnakeCase)
+			itemName := Name{}
+			err := itemNode.Decode(&itemName)
 			if err != nil {
 				return err
 			}
-			array[index] = NamedEnumItem{Name: name, EnumItem: EnumItem{Description: getDescription(itemNode)}}
+			err = itemName.Check(SnakeCase)
+			if err != nil {
+				return err
+			}
+			array[index] = NamedEnumItem{Name: itemName, EnumItem: EnumItem{Description: getDescription(itemNode)}}
 		}
 		*value = array
 	}
@@ -42,8 +46,12 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 		for index := 0; index < count; index++ {
 			keyNode := node.Content[index*2]
 			valueNode := node.Content[index*2+1]
-			name := Name{keyNode.Value}
-			err := name.Check(SnakeCase)
+			itemName := Name{}
+			err := keyNode.Decode(&itemName)
+			if err != nil {
+				return err
+			}
+			err = itemName.Check(SnakeCase)
 			if err != nil {
 				return err
 			}
@@ -52,7 +60,7 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			array[index] = NamedEnumItem{Name: name, EnumItem: item}
+			array[index] = NamedEnumItem{Name: itemName, EnumItem: item}
 		}
 		*value = array
 	}

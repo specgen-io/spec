@@ -8,6 +8,6 @@ type NamedParam struct {
 func NewParam(name string, typ Type, defaultValue *string, description *string) *NamedParam {
 	return &NamedParam{
 		Name:              Name{name},
-		DefinitionDefault: DefinitionDefault{definitionDefault{Type: TypeLocated{Type: typ}, Default: defaultValue, Description: description}},
+		DefinitionDefault: DefinitionDefault{definitionDefault: definitionDefault{Type: TypeLocated{Definition: typ}, Default: defaultValue, Description: description}, Location: nil},
 	}
 }

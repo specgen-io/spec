@@ -23,7 +23,7 @@ response:
 	assert.Equal(t, len(operation.Responses), 1)
 	response := operation.Responses[0]
 	assert.Equal(t, response.Name.Source, "ok")
-	assert.Equal(t, response.Type.Type, ParseType("empty"))
+	assert.Equal(t, response.Type.Definition, ParseType("empty"))
 }
 
 func Test_Operations_Unmarshal(t *testing.T) {

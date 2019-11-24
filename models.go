@@ -57,8 +57,12 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
-		name := Name{keyNode.Value}
-		err := name.Check(PascalCase)
+		name := Name{}
+		err := keyNode.Decode(&name)
+		if err != nil {
+			return err
+		}
+		err = name.Check(PascalCase)
 		if err != nil {
 			return err
 		}

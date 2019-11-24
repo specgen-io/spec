@@ -24,10 +24,10 @@ bad_request:
 	response1 := responses[0]
 	response2 := responses[1]
 	assert.Equal(t, response1.Name.Source, "ok")
-	assert.Equal(t, reflect.DeepEqual(response1.Type.Type, ParseType("empty")), true)
+	assert.Equal(t, reflect.DeepEqual(response1.Type.Definition, ParseType("empty")), true)
 	assert.Equal(t, *response1.Description, "success")
 	assert.Equal(t, response2.Name.Source, "bad_request")
-	assert.Equal(t, reflect.DeepEqual(response2.Type.Type, ParseType("empty")), true)
+	assert.Equal(t, reflect.DeepEqual(response2.Type.Definition, ParseType("empty")), true)
 	assert.Equal(t, *response2.Description, "invalid request")
 }
 
@@ -44,9 +44,9 @@ bad_request: empty   # invalid request
 	response1 := responses[0]
 	response2 := responses[1]
 	assert.Equal(t, response1.Name.Source, "ok")
-	assert.Equal(t, reflect.DeepEqual(response1.Type.Type, ParseType("empty")), true)
+	assert.Equal(t, reflect.DeepEqual(response1.Type.Definition, ParseType("empty")), true)
 	assert.Equal(t, *response1.Description, "success")
 	assert.Equal(t, response2.Name.Source, "bad_request")
-	assert.Equal(t, reflect.DeepEqual(response2.Type.Type, ParseType("empty")), true)
+	assert.Equal(t, reflect.DeepEqual(response2.Type.Definition, ParseType("empty")), true)
 	assert.Equal(t, *response2.Description, "invalid request")
 }

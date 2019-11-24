@@ -13,6 +13,7 @@ type definitionDefault struct {
 
 type DefinitionDefault struct {
 	definitionDefault
+	Location *yaml.Node
 }
 
 func parseDefaultedType(str string) (string, *string) {
@@ -29,22 +30,22 @@ func parseDefaultedType(str string) (string, *string) {
 func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
 		typeStr, defaultValue := parseDefaultedType(node.Value)
-		internal := definitionDefault{Type: NewTypeLocated(typeStr, node), Default: defaultValue}
+		internal := definitionDefault{Type: TypeLocated{Definition: ParseType(typeStr), Location: node}, Default: defaultValue}
 		internal.Description = getDescription(node)
-		*value = DefinitionDefault{internal}
+		*value = DefinitionDefault{definitionDefault: internal, Location: node}
 	} else {
 		internal := definitionDefault{}
 		err := node.Decode(&internal)
 		if err != nil {
 			return err
 		}
-		*value = DefinitionDefault{internal}
+		*value = DefinitionDefault{definitionDefault: internal, Location: node}
 	}
 	return nil
 }
 
 func NewDefinitionDefault(typ Type, defaultValue *string, description *string) *DefinitionDefault {
-	return &DefinitionDefault{definitionDefault{Type: TypeLocated{Type: typ}, Default: defaultValue, Description: description}}
+	return &DefinitionDefault{definitionDefault: definitionDefault{Type: TypeLocated{Definition: typ}, Default: defaultValue, Description: description}, Location: nil}
 }
 
 type definition struct {
@@ -54,25 +55,26 @@ type definition struct {
 
 type Definition struct {
 	definition
+	Location *yaml.Node
 }
 
 func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
 		typeStr := node.Value
-		internal := definition{Type: NewTypeLocated(typeStr, node)}
+		internal := definition{Type: TypeLocated{Definition: ParseType(typeStr), Location: node}}
 		internal.Description = getDescription(node)
-		*value = Definition{internal}
+		*value = Definition{definition: internal, Location: node}
 	} else {
 		internal := definition{}
 		err := node.Decode(&internal)
 		if err != nil {
 			return err
 		}
-		*value = Definition{internal}
+		*value = Definition{definition: internal, Location: node}
 	}
 	return nil
 }
 
 func NewDefinition(typ Type, description *string) *Definition {
-	return &Definition{definition{Type: TypeLocated{Type: typ}, Description: description}}
+	return &Definition{definition: definition{Type: TypeLocated{Definition: typ}, Description: description}, Location: nil}
 }

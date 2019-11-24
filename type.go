@@ -69,12 +69,8 @@ func ParseType(value string) Type {
 }
 
 type TypeLocated struct {
-	Location *yaml.Node
-	Type
-}
-
-func NewTypeLocated(typeStr string, location *yaml.Node) TypeLocated {
-	return TypeLocated{Type: ParseType(typeStr), Location: location}
+	Location   *yaml.Node
+	Definition Type
 }
 
 func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
@@ -83,7 +79,7 @@ func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return err
 	}
-	*value = TypeLocated{Location: node, Type: ParseType(str)}
+	*value = TypeLocated{Definition: ParseType(str), Location: node}
 	return nil
 }
 

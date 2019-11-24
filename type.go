@@ -30,6 +30,10 @@ func Array(typ *Type) *Type {
 	return &Type{Node: ArrayType, Child: typ}
 }
 
+func Map(typ *Type) *Type {
+	return &Type{Node: MapType, Child: typ}
+}
+
 func Nullable(typ *Type) *Type {
 	return &Type{Node: NullableType, Child: typ}
 }

@@ -6,7 +6,8 @@ import (
 )
 
 type Name struct {
-	Source string
+	Source   string
+	Location *yaml.Node
 }
 
 func (value *Name) UnmarshalYAML(node *yaml.Node) error {
@@ -16,7 +17,7 @@ func (value *Name) UnmarshalYAML(node *yaml.Node) error {
 		return err
 	}
 
-	*value = Name{str}
+	*value = Name{str, node}
 	return nil
 }
 

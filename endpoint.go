@@ -14,7 +14,7 @@ type Endpoint struct {
 }
 
 func ParseEndpoint(endpoint string) Endpoint {
-	method, url, params := parseEndpoint(endpoint)
+	method, url, params := parseEndpoint(endpoint, nil)
 	return Endpoint{Method: method, Url: url, UrlParams: params}
 }
 
@@ -22,11 +22,12 @@ func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
 		return errors.New("endpoint should be string")
 	}
-	*value = ParseEndpoint(node.Value)
+	method, url, params := parseEndpoint(node.Value, node)
+	*value = Endpoint{Method: method, Url: url, UrlParams: params}
 	return nil
 }
 
-func parseEndpoint(endpoint string) (string, string, UrlParams) {
+func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams) {
 	endpointParts := strings.SplitN(endpoint, " ", 2)
 	method := endpointParts[0]
 	url := endpointParts[1]
@@ -46,15 +47,15 @@ func parseEndpoint(endpoint string) (string, string, UrlParams) {
 		paramType := strings.TrimSpace(paramParts[1])
 
 		param := &NamedParam{
-			Name: Name{paramName},
+			Name: Name{Source: paramName, Location: node},
 			DefinitionDefault: DefinitionDefault{
 				definitionDefault: definitionDefault{
 					Type: TypeLocated{
 						Definition: ParseType(paramType),
-						Location:   nil,
+						Location:   node,
 					},
 				},
-				Location: nil,
+				Location: node,
 			},
 		}
 

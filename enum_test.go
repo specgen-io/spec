@@ -3,7 +3,6 @@ package spec
 import (
 	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
-	"reflect"
 	"testing"
 )
 
@@ -19,15 +18,16 @@ enum:
 	err := yaml.Unmarshal([]byte(data), &enum)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, *enum.Description, "Enum description")
-	description1 := "First option"
-	description2 := "Second option"
-	description3 := "Third option"
-	expected := Items{
-		*NewEnumItem("the_first", &description1),
-		*NewEnumItem("the_second", &description2),
-		*NewEnumItem("the_third", &description3),
-	}
-	assert.Equal(t, reflect.DeepEqual(enum.Items, expected), true)
+	assert.Equal(t, len(enum.Items), 3)
+	item1 := enum.Items[0]
+	item2 := enum.Items[1]
+	item3 := enum.Items[2]
+	assert.Equal(t, item1.Name.Source, "the_first")
+	assert.Equal(t, *item1.Description, "First option")
+	assert.Equal(t, item2.Name.Source, "the_second")
+	assert.Equal(t, *item2.Description, "Second option")
+	assert.Equal(t, item3.Name.Source, "the_third")
+	assert.Equal(t, *item3.Description, "Third option")
 }
 
 func Test_Enum_Long_Unmarshal(t *testing.T) {
@@ -44,13 +44,14 @@ enum:
 	err := yaml.Unmarshal([]byte(data), &enum)
 	assert.Equal(t, err, nil)
 
-	description1 := "First option"
-	description2 := "Second option"
-	description3 := "Third option"
-	expected := Items{
-		*NewEnumItem("the_first", &description1),
-		*NewEnumItem("the_second", &description2),
-		*NewEnumItem("the_third", &description3),
-	}
-	assert.Equal(t, reflect.DeepEqual(enum.Items, expected), true)
+	assert.Equal(t, len(enum.Items), 3)
+	item1 := enum.Items[0]
+	item2 := enum.Items[1]
+	item3 := enum.Items[2]
+	assert.Equal(t, item1.Name.Source, "the_first")
+	assert.Equal(t, *item1.Description, "First option")
+	assert.Equal(t, item2.Name.Source, "the_second")
+	assert.Equal(t, *item2.Description, "Second option")
+	assert.Equal(t, item3.Name.Source, "the_third")
+	assert.Equal(t, *item3.Description, "Third option")
 }

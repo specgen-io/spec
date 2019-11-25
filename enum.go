@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"errors"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,7 +17,7 @@ type Items []NamedEnumItem
 
 func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.SequenceNode && node.Kind != yaml.MappingNode {
-		return errors.New("enum items should be either list or mapping")
+		return yamlError(node, "enum items should be either list or mapping")
 	}
 
 	if node.Kind == yaml.SequenceNode {

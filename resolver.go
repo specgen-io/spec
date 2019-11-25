@@ -15,23 +15,19 @@ func buildModelsMap(models Models) ModelsMap {
 	return result
 }
 
-type UnknownType struct {
-	TypeName string
-}
-
-type Resolver struct {
+type resolver struct {
 	Spec      *Spec
 	ModelsMap ModelsMap
-	Issues    []UnknownType
+	Errors    []ValidationError
 }
 
-func (resolver *Resolver) AddUnknownType(issue UnknownType) {
-	resolver.Issues = append(resolver.Issues, issue)
+func (resolver *resolver) AddError(error ValidationError) {
+	resolver.Errors = append(resolver.Errors, error)
 }
 
-func ResolveTypes(spec *Spec) []UnknownType {
+func ResolveTypes(spec *Spec) []ValidationError {
 	modelsMap := buildModelsMap(spec.Models)
-	resolver := &Resolver{Spec: spec, ModelsMap: modelsMap}
+	resolver := &resolver{Spec: spec, ModelsMap: modelsMap}
 	for _, model := range spec.Models {
 		resolver.Model(model)
 	}
@@ -40,10 +36,10 @@ func ResolveTypes(spec *Spec) []UnknownType {
 			resolver.Operation(operation)
 		}
 	}
-	return resolver.Issues
+	return resolver.Errors
 }
 
-func (resolver *Resolver) Operation(operation NamedOperation) {
+func (resolver *resolver) Operation(operation NamedOperation) {
 	resolver.Params(operation.Endpoint.UrlParams)
 	resolver.Params(operation.QueryParams)
 	resolver.Params(operation.HeaderParams)
@@ -57,13 +53,13 @@ func (resolver *Resolver) Operation(operation NamedOperation) {
 	}
 }
 
-func (resolver *Resolver) Params(params []NamedParam) {
+func (resolver *resolver) Params(params []NamedParam) {
 	for _, param := range params {
 		resolver.DefinitionDefault(param.DefinitionDefault)
 	}
 }
 
-func (resolver *Resolver) Model(model NamedModel) {
+func (resolver *resolver) Model(model NamedModel) {
 	if model.IsObject() {
 		for _, field := range model.Object.Fields {
 			resolver.DefinitionDefault(field.DefinitionDefault)
@@ -71,19 +67,19 @@ func (resolver *Resolver) Model(model NamedModel) {
 	}
 }
 
-func (resolver *Resolver) DefinitionDefault(definition DefinitionDefault) {
+func (resolver *resolver) DefinitionDefault(definition DefinitionDefault) {
 	resolver.TypeLocated(&definition.Type)
 }
 
-func (resolver *Resolver) Definition(definition Definition) {
+func (resolver *resolver) Definition(definition Definition) {
 	resolver.TypeLocated(&definition.Type)
 }
 
-func (resolver *Resolver) TypeLocated(typ *TypeLocated) {
+func (resolver *resolver) TypeLocated(typ *TypeLocated) {
 	resolver.Type(&typ.Definition, typ.Location)
 }
 
-func (resolver *Resolver) Type(typ *Type, location *yaml.Node) {
+func (resolver *resolver) Type(typ *Type, location *yaml.Node) {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
@@ -94,7 +90,11 @@ func (resolver *Resolver) Type(typ *Type, location *yaml.Node) {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info
 				} else {
-					resolver.AddUnknownType(UnknownType{TypeName: typ.Plain})
+					error := ValidationError{
+						Message:  fmt.Sprintf("unknown type %s", typ.Plain),
+						Location: location,
+					}
+					resolver.AddError(error)
 				}
 			}
 		case NullableType:

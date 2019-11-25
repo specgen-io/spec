@@ -2,6 +2,7 @@ package spec
 
 import (
 	"gotest.tools/assert"
+	"strings"
 	"testing"
 )
 
@@ -45,9 +46,9 @@ operations:
 	unknownTypes := ResolveTypes(spec)
 
 	assert.Equal(t, len(unknownTypes), 3)
-	assert.Equal(t, unknownTypes[0].TypeName, "nonexisting1")
-	assert.Equal(t, unknownTypes[1].TypeName, "nonexisting2")
-	assert.Equal(t, unknownTypes[2].TypeName, "nonexisting3")
+	assert.Equal(t, strings.Contains(unknownTypes[0].Message, "nonexisting1"), true)
+	assert.Equal(t, strings.Contains(unknownTypes[1].Message, "nonexisting2"), true)
+	assert.Equal(t, strings.Contains(unknownTypes[2].Message, "nonexisting3"), true)
 }
 
 func Test_Resolve_Operations_Pass_CustomType(t *testing.T) {
@@ -106,5 +107,5 @@ models:
 	unknownTypes := ResolveTypes(spec)
 
 	assert.Equal(t, len(unknownTypes), 1)
-	assert.Equal(t, unknownTypes[0].TypeName, "NonExisting")
+	assert.Equal(t, strings.Contains(unknownTypes[0].Message, "NonExisting"), true)
 }

@@ -1,6 +1,8 @@
 package spec
 
 import (
+	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"strings"
 )
@@ -26,4 +28,8 @@ func getDescription(node *yaml.Node) *string {
 		return nil
 	}
 	return &lineComment
+}
+
+func yamlError(node *yaml.Node, message string) error {
+	return errors.New(fmt.Sprintf("yaml: line %d: %s", node.Line, message))
 }

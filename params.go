@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
 )
 
@@ -11,9 +11,9 @@ type HeaderParams Params
 
 type Params []NamedParam
 
-func (params *Params) unmarshalYAML(node *yaml.Node, namesFormat Format) error {
+func (params *Params) unmarshalYAML(node *yaml.Node, paramsName string, namesFormat Format) error {
 	if node.Kind != yaml.MappingNode {
-		return errors.New("parameters should be YAML mapping")
+		return yamlError(node, fmt.Sprintf("%s parameters should be YAML mapping", paramsName))
 	}
 	count := len(node.Content) / 2
 	array := make([]NamedParam, count)
@@ -45,7 +45,7 @@ func (params *Params) unmarshalYAML(node *yaml.Node, namesFormat Format) error {
 
 func (value *QueryParams) UnmarshalYAML(node *yaml.Node) error {
 	params := &Params{}
-	err := params.unmarshalYAML(node, SnakeCase)
+	err := params.unmarshalYAML(node, "query", SnakeCase)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (value *QueryParams) UnmarshalYAML(node *yaml.Node) error {
 
 func (value *HeaderParams) UnmarshalYAML(node *yaml.Node) error {
 	params := &Params{}
-	err := params.unmarshalYAML(node, UpperChainCase)
+	err := params.unmarshalYAML(node, "header", UpperChainCase)
 	if err != nil {
 		return err
 	}

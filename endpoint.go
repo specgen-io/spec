@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"errors"
 	"gopkg.in/yaml.v3"
 	"regexp"
 	"strings"
@@ -20,7 +19,7 @@ func ParseEndpoint(endpoint string) Endpoint {
 
 func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
-		return errors.New("endpoint should be string")
+		return yamlError(node, "operation endpoint should be string")
 	}
 	method, url, params := parseEndpoint(node.Value, node)
 	*value = Endpoint{Method: method, Url: url, UrlParams: params}

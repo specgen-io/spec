@@ -2,6 +2,7 @@ package spec
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
@@ -38,14 +39,11 @@ func ParseSpec(data []byte) (*Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	unknownTypes := ResolveTypes(spec)
-	if len(unknownTypes) > 0 {
-		message := "Undefined types: "
-		for i, unknownType := range unknownTypes {
-			if i > 0 {
-				message = message + ", "
-			}
-			message = message + unknownType.TypeName
+	errs := ResolveTypes(spec)
+	if len(errs) > 0 {
+		message := "spec errors: \n"
+		for _, error := range errs {
+			message = message + fmt.Sprintf("%s\n", error)
 		}
 		err := errors.New(message)
 		return nil, err

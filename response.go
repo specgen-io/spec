@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"errors"
 	"gopkg.in/yaml.v3"
 )
 
@@ -14,7 +13,7 @@ type Responses []NamedResponse
 
 func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
-		return errors.New("response should be YAML mapping")
+		return yamlError(node, "response should be YAML mapping")
 	}
 	count := len(node.Content) / 2
 	array := make([]NamedResponse, count)

@@ -16,6 +16,7 @@ const (
 )
 
 type Type struct {
+	Name  string
 	Node  TypeNode
 	Child *Type
 	Plain string
@@ -23,19 +24,19 @@ type Type struct {
 }
 
 func Plain(typ string) *Type {
-	return &Type{Node: PlainType, Plain: typ}
+	return &Type{Name: typ, Node: PlainType, Plain: typ}
 }
 
 func Array(typ *Type) *Type {
-	return &Type{Node: ArrayType, Child: typ}
+	return &Type{Name: typ.Name + "[]", Node: ArrayType, Child: typ}
 }
 
 func Map(typ *Type) *Type {
-	return &Type{Node: MapType, Child: typ}
+	return &Type{Name: typ.Name + "{}", Node: MapType, Child: typ}
 }
 
 func Nullable(typ *Type) *Type {
-	return &Type{Node: NullableType, Child: typ}
+	return &Type{Name: typ.Name + "?", Node: NullableType, Child: typ}
 }
 
 func (self *Type) IsEmpty() bool {
@@ -56,15 +57,15 @@ func (self *Type) BaseType() *Type {
 func ParseType(value string) Type {
 	if strings.HasSuffix(value, "?") {
 		child := ParseType(value[:len(value)-1])
-		return Type{Node: NullableType, Child: &child}
+		return Type{Name: value, Node: NullableType, Child: &child}
 	} else if strings.HasSuffix(value, "[]") {
 		child := ParseType(value[:len(value)-2])
-		return Type{Node: ArrayType, Child: &child}
+		return Type{Name: value, Node: ArrayType, Child: &child}
 	} else if strings.HasSuffix(value, "{}") {
 		child := ParseType(value[:len(value)-2])
-		return Type{Node: MapType, Child: &child}
+		return Type{Name: value, Node: MapType, Child: &child}
 	} else {
-		return Type{Node: PlainType, Plain: value}
+		return Type{Name: value, Node: PlainType, Plain: value}
 	}
 }
 
@@ -108,44 +109,58 @@ const (
 )
 
 type TypeInfo struct {
-	Name        string
 	Scalar      bool
 	Defaultable bool
 	Model       *NamedModel
 }
 
 var Types = map[string]TypeInfo{
-	TypeByte:     {TypeByte, true, true, nil},
-	TypeShort:    {TypeShort, true, true, nil},
-	TypeInt16:    {TypeInt16, true, true, nil},
-	TypeInt:      {TypeInt, true, true, nil},
-	TypeInt32:    {TypeInt32, true, true, nil},
-	TypeLong:     {TypeLong, true, true, nil},
-	TypeInt64:    {TypeInt64, true, true, nil},
-	TypeFloat:    {TypeFloat, true, true, nil},
-	TypeDouble:   {TypeDouble, true, true, nil},
-	TypeDecimal:  {TypeDecimal, true, true, nil},
-	TypeBoolean:  {TypeBoolean, true, true, nil},
-	TypeBool:     {TypeBool, true, true, nil},
-	TypeChar:     {TypeChar, true, true, nil},
-	TypeString:   {TypeString, true, true, nil},
-	TypeUuid:     {TypeUuid, true, true, nil},
-	TypeStr:      {TypeStr, true, true, nil},
-	TypeDate:     {TypeDate, true, true, nil},
-	TypeDateTime: {TypeDateTime, true, true, nil},
-	TypeTime:     {TypeTime, true, true, nil},
-	TypeJson:     {TypeJson, true, false, nil},
-	TypeEmpty:    {TypeEmpty, false, false, nil},
+	TypeByte:     {true, true, nil},
+	TypeShort:    {true, true, nil},
+	TypeInt16:    {true, true, nil},
+	TypeInt:      {true, true, nil},
+	TypeInt32:    {true, true, nil},
+	TypeLong:     {true, true, nil},
+	TypeInt64:    {true, true, nil},
+	TypeFloat:    {true, true, nil},
+	TypeDouble:   {true, true, nil},
+	TypeDecimal:  {true, true, nil},
+	TypeBoolean:  {true, true, nil},
+	TypeBool:     {true, true, nil},
+	TypeChar:     {true, true, nil},
+	TypeString:   {true, true, nil},
+	TypeUuid:     {true, true, nil},
+	TypeStr:      {true, true, nil},
+	TypeDate:     {true, true, nil},
+	TypeDateTime: {true, true, nil},
+	TypeTime:     {true, true, nil},
+	TypeJson:     {true, false, nil},
+	TypeEmpty:    {false, false, nil},
 }
 
-func GetModelTypeInfo(model *NamedModel) TypeInfo {
+func GetModelTypeInfo(model *NamedModel) *TypeInfo {
 	if model.IsObject() {
-		return TypeInfo{model.Name.Source, false, false, model}
+		return &TypeInfo{false, false, model}
 	}
 	if model.IsEnum() {
-		return TypeInfo{model.Name.Source, true, true, model}
+		return &TypeInfo{true, true, model}
 	}
 	panic(fmt.Sprintf("Unknown model kind: %v", model))
+}
+
+func NullableTypeInfo(childInfo *TypeInfo) *TypeInfo {
+	if childInfo != nil {
+		return &TypeInfo{childInfo.Scalar, false, nil}
+	}
+	return nil
+}
+
+func ArrayTypeInfo() *TypeInfo {
+	return &TypeInfo{false, false, nil}
+}
+
+func MapTypeInfo() *TypeInfo {
+	return &TypeInfo{false, false, nil}
 }
 
 type Location struct {

@@ -2,7 +2,6 @@ package spec
 
 import (
 	"gotest.tools/assert"
-	"reflect"
 	"testing"
 )
 
@@ -59,7 +58,7 @@ operations:
 	assert.Equal(t, len(operation2.QueryParams), 1)
 	queryParam := operation2.QueryParams[0]
 	assert.Equal(t, queryParam.Name.Source, "message")
-	assert.Equal(t, reflect.DeepEqual(queryParam.Type.Definition, ParseType("string?")), true)
+	assert.Equal(t, queryParam.Type.Definition.Name, "string?")
 }
 
 func Test_ParseSpec_Meta(t *testing.T) {

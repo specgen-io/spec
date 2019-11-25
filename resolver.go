@@ -3,6 +3,7 @@ package spec
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
+	"reflect"
 )
 
 type ModelsMap map[string]NamedModel
@@ -28,64 +29,69 @@ func (resolver *resolver) AddError(error ValidationError) {
 func ResolveTypes(spec *Spec) []ValidationError {
 	modelsMap := buildModelsMap(spec.Models)
 	resolver := &resolver{Spec: spec, ModelsMap: modelsMap}
-	for _, model := range spec.Models {
-		resolver.Model(model)
+	for index := range spec.Models {
+		resolver.Model(&spec.Models[index])
 	}
-	for _, api := range spec.Apis {
-		for _, operation := range api.Operations {
-			resolver.Operation(operation)
+	for index := range spec.Apis {
+		for opIndex := range spec.Apis[index].Operations {
+			resolver.Operation(&spec.Apis[index].Operations[opIndex])
 		}
 	}
 	return resolver.Errors
 }
 
-func (resolver *resolver) Operation(operation NamedOperation) {
+func (resolver *resolver) Operation(operation *NamedOperation) {
 	resolver.Params(operation.Endpoint.UrlParams)
 	resolver.Params(operation.QueryParams)
 	resolver.Params(operation.HeaderParams)
 
 	if operation.Body != nil {
-		resolver.Definition(*operation.Body)
+		resolver.Definition(operation.Body)
 	}
 
-	for _, response := range operation.Responses {
-		resolver.Definition(response.Definition)
+	for index := range operation.Responses {
+		resolver.Definition(&operation.Responses[index].Definition)
 	}
 }
 
 func (resolver *resolver) Params(params []NamedParam) {
-	for _, param := range params {
-		resolver.DefinitionDefault(param.DefinitionDefault)
+	paramsType := reflect.TypeOf(params)
+	for index := range params {
+		resolver.DefinitionDefault(&params[index].DefinitionDefault)
 	}
+	println(paramsType)
 }
 
-func (resolver *resolver) Model(model NamedModel) {
+func (resolver *resolver) Model(model *NamedModel) {
 	if model.IsObject() {
-		for _, field := range model.Object.Fields {
-			resolver.DefinitionDefault(field.DefinitionDefault)
+		for index := range model.Object.Fields {
+			resolver.DefinitionDefault(&model.Object.Fields[index].DefinitionDefault)
 		}
 	}
 }
 
-func (resolver *resolver) DefinitionDefault(definition DefinitionDefault) {
-	resolver.TypeLocated(&definition.Type)
+func (resolver *resolver) DefinitionDefault(definition *DefinitionDefault) {
+	if definition != nil {
+		resolver.TypeLocated(&definition.Type)
+	}
 }
 
-func (resolver *resolver) Definition(definition Definition) {
-	resolver.TypeLocated(&definition.Type)
+func (resolver *resolver) Definition(definition *Definition) {
+	if definition != nil {
+		resolver.TypeLocated(&definition.Type)
+	}
 }
 
 func (resolver *resolver) TypeLocated(typ *TypeLocated) {
 	resolver.Type(&typ.Definition, typ.Location)
 }
 
-func (resolver *resolver) Type(typ *Type, location *yaml.Node) {
+func (resolver *resolver) Type(typ *Type, location *yaml.Node) *TypeInfo {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
 			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
-				info := GetModelTypeInfo(&model)
-				typ.Info = &info
+				typ.Info = GetModelTypeInfo(&model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info
@@ -98,11 +104,18 @@ func (resolver *resolver) Type(typ *Type, location *yaml.Node) {
 				}
 			}
 		case NullableType:
+			childInfo := resolver.Type(typ.Child, location)
+			typ.Info = NullableTypeInfo(childInfo)
 		case ArrayType:
+			resolver.Type(typ.Child, location)
+			typ.Info = ArrayTypeInfo()
 		case MapType:
 			resolver.Type(typ.Child, location)
+			typ.Info = MapTypeInfo()
 		default:
 			panic(fmt.Sprintf("Unknown type: %v", typ))
 		}
+		return typ.Info
 	}
+	return nil
 }

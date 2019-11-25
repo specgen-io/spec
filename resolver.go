@@ -3,7 +3,6 @@ package spec
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"reflect"
 )
 
 type ModelsMap map[string]NamedModel
@@ -55,11 +54,9 @@ func (resolver *resolver) Operation(operation *NamedOperation) {
 }
 
 func (resolver *resolver) Params(params []NamedParam) {
-	paramsType := reflect.TypeOf(params)
 	for index := range params {
 		resolver.DefinitionDefault(&params[index].DefinitionDefault)
 	}
-	println(paramsType)
 }
 
 func (resolver *resolver) Model(model *NamedModel) {

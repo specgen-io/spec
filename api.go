@@ -5,19 +5,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type NamedResponse struct {
-	Name Name
-	Definition
+type Api struct {
+	Name       Name
+	Operations Operations
 }
 
-type Responses []NamedResponse
+type Apis []Api
 
-func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
+func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
-		return errors.New("response should be YAML mapping")
+		return errors.New("apis should be YAML mapping")
 	}
 	count := len(node.Content) / 2
-	array := make([]NamedResponse, count)
+	array := make([]Api, count)
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
@@ -30,12 +30,12 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 		if err != nil {
 			return err
 		}
-		definition := Definition{}
-		err = valueNode.Decode(&definition)
+		operations := Operations{}
+		err = valueNode.Decode(&operations)
 		if err != nil {
 			return err
 		}
-		array[index] = NamedResponse{Name: name, Definition: definition}
+		array[index] = Api{Name: name, Operations: operations}
 	}
 	*value = array
 	return nil

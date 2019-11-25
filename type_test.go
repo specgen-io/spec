@@ -7,37 +7,27 @@ import (
 )
 
 func Test_ParseType_Plain(t *testing.T) {
-	expected := Type{Node: PlainType, Plain: "string"}
+	expected := Plain("string")
 	actual := ParseType("string")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
+	assert.Equal(t, reflect.DeepEqual(actual, *expected), true)
 }
 
 func Test_ParseType_Nullable(t *testing.T) {
-	expected := Type{Node: NullableType, Child: &Type{Node: PlainType, Plain: "string"}}
+	expected := Nullable(Plain("string"))
 	actual := ParseType("string?")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
+	assert.Equal(t, reflect.DeepEqual(actual, *expected), true)
 }
 
 func Test_ParseType_Array_Short(t *testing.T) {
-	expected := Type{Node: ArrayType, Child: &Type{Node: PlainType, Plain: "string"}}
+	expected := Array(Plain("string"))
 	actual := ParseType("string[]")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
+	assert.Equal(t, reflect.DeepEqual(actual, *expected), true)
 }
 
 func Test_ParseType_Nested(t *testing.T) {
-	expected :=
-		Type{
-			Node: NullableType,
-			Child: &Type{
-				Node: ArrayType,
-				Child: &Type{
-					Node:  PlainType,
-					Plain: "string",
-				},
-			},
-		}
+	expected := Nullable(Array(Plain("string")))
 	actual := ParseType("string[]?")
-	assert.Equal(t, reflect.DeepEqual(actual, expected), true)
+	assert.Equal(t, reflect.DeepEqual(actual, *expected), true)
 }
 
 func Test_ParseType_IsEmpty(t *testing.T) {

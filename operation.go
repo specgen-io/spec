@@ -18,23 +18,6 @@ type Operation struct {
 	operation
 }
 
-func NewOperation(
-	endpoint Endpoint,
-	description *string,
-	body *Definition,
-	headerParams HeaderParams,
-	queryParams QueryParams,
-	responses Responses) *Operation {
-	return &Operation{operation{
-		Endpoint:     endpoint,
-		Description:  description,
-		Body:         body,
-		HeaderParams: headerParams,
-		QueryParams:  queryParams,
-		Responses:    responses,
-	}}
-}
-
 func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	internal := operation{}
 	err := node.Decode(&internal)
@@ -82,42 +65,6 @@ func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 			operation.Description = getDescription(keyNode)
 		}
 		array[index] = NamedOperation{Name: name, Operation: operation}
-	}
-	*value = array
-	return nil
-}
-
-type Api struct {
-	Name       Name
-	Operations Operations
-}
-
-type Apis []Api
-
-func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
-	if node.Kind != yaml.MappingNode {
-		return errors.New("apis should be YAML mapping")
-	}
-	count := len(node.Content) / 2
-	array := make([]Api, count)
-	for index := 0; index < count; index++ {
-		keyNode := node.Content[index*2]
-		valueNode := node.Content[index*2+1]
-		name := Name{}
-		err := keyNode.Decode(&name)
-		if err != nil {
-			return err
-		}
-		err = name.Check(SnakeCase)
-		if err != nil {
-			return err
-		}
-		operations := Operations{}
-		err = valueNode.Decode(&operations)
-		if err != nil {
-			return err
-		}
-		array[index] = Api{Name: name, Operations: operations}
 	}
 	*value = array
 	return nil

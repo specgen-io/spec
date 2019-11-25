@@ -44,10 +44,6 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-func NewDefinitionDefault(typ Type, defaultValue *string, description *string) *DefinitionDefault {
-	return &DefinitionDefault{definitionDefault: definitionDefault{Type: TypeLocated{Definition: typ}, Default: defaultValue, Description: description}, Location: nil}
-}
-
 type definition struct {
 	Type        TypeLocated `yaml:"type"`
 	Description *string     `yaml:"description"`
@@ -73,8 +69,4 @@ func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 		*value = Definition{definition: internal, Location: node}
 	}
 	return nil
-}
-
-func NewDefinition(typ Type, description *string) *Definition {
-	return &Definition{definition: definition{Type: TypeLocated{Definition: typ}, Description: description}, Location: nil}
 }

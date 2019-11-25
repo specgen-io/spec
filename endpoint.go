@@ -13,7 +13,7 @@ type Endpoint struct {
 	UrlParams UrlParams
 }
 
-func NewEndpoint(endpoint string) Endpoint {
+func ParseEndpoint(endpoint string) Endpoint {
 	method, url, params := parseEndpoint(endpoint)
 	return Endpoint{Method: method, Url: url, UrlParams: params}
 }
@@ -22,7 +22,7 @@ func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
 		return errors.New("endpoint should be string")
 	}
-	*value = NewEndpoint(node.Value)
+	*value = ParseEndpoint(node.Value)
 	return nil
 }
 
@@ -44,7 +44,20 @@ func parseEndpoint(endpoint string) (string, string, UrlParams) {
 		paramParts := strings.Split(paramStr, ":")
 		paramName := strings.TrimSpace(paramParts[0])
 		paramType := strings.TrimSpace(paramParts[1])
-		param := NewParam(paramName, ParseType(paramType), nil, nil)
+
+		param := &NamedParam{
+			Name: Name{paramName},
+			DefinitionDefault: DefinitionDefault{
+				definitionDefault: definitionDefault{
+					Type: TypeLocated{
+						Definition: ParseType(paramType),
+						Location:   nil,
+					},
+				},
+				Location: nil,
+			},
+		}
+
 		params = append(params, *param)
 
 		cleanUrl = strings.Replace(cleanUrl, originalParamStr, UrlParamStr(paramName), 1)

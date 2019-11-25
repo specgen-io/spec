@@ -23,9 +23,9 @@ enum:
 	description2 := "Second option"
 	description3 := "Third option"
 	expected := Items{
-		{Name{"the_first"}, EnumItem{Description: &description1}},
-		{Name{"the_second"}, EnumItem{Description: &description2}},
-		{Name{"the_third"}, EnumItem{Description: &description3}},
+		*NewEnumItem("the_first", &description1),
+		*NewEnumItem("the_second", &description2),
+		*NewEnumItem("the_third", &description3),
 	}
 	assert.Equal(t, reflect.DeepEqual(enum.Items, expected), true)
 }
@@ -48,9 +48,9 @@ enum:
 	description2 := "Second option"
 	description3 := "Third option"
 	expected := Items{
-		{Name{"the_first"}, EnumItem{Description: &description1}},
-		{Name{"the_second"}, EnumItem{Description: &description2}},
-		{Name{"the_third"}, EnumItem{Description: &description3}},
+		*NewEnumItem("the_first", &description1),
+		*NewEnumItem("the_second", &description2),
+		*NewEnumItem("the_third", &description3),
 	}
 	assert.Equal(t, reflect.DeepEqual(enum.Items, expected), true)
 }

@@ -48,10 +48,6 @@ type Object struct {
 	object
 }
 
-func NewObject(fields Fields, description *string) *Object {
-	return &Object{object{Fields: fields, Description: description}}
-}
-
 func (value *Object) UnmarshalYAML(node *yaml.Node) error {
 	if getMappingKey(node, "fields") == nil {
 		fields := Fields{}

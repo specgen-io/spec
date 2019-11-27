@@ -65,7 +65,7 @@ func ParseType(value string) Type {
 		child := ParseType(value[:len(value)-2])
 		return Type{Name: value, Node: MapType, Child: &child}
 	} else {
-		return Type{Name: value, Node: PlainType, Plain: value}
+		return Type{Name: value, Node: PlainType, Plain: mapTypeAlias(value)}
 	}
 }
 
@@ -86,21 +86,16 @@ func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
 
 const (
 	TypeByte     string = "byte"
-	TypeShort    string = "short"
 	TypeInt16    string = "int16"
-	TypeInt      string = "int"
 	TypeInt32    string = "int32"
-	TypeLong     string = "long"
 	TypeInt64    string = "int64"
 	TypeFloat    string = "float"
 	TypeDouble   string = "double"
 	TypeDecimal  string = "decimal"
 	TypeBoolean  string = "boolean"
-	TypeBool     string = "bool"
 	TypeChar     string = "char"
 	TypeString   string = "string"
 	TypeUuid     string = "uuid"
-	TypeStr      string = "str"
 	TypeDate     string = "date"
 	TypeDateTime string = "datetime"
 	TypeTime     string = "time"
@@ -108,59 +103,78 @@ const (
 	TypeEmpty    string = "empty"
 )
 
+var TypesAliases = map[string]string{
+	"short": TypeInt16,
+	"int":   TypeInt32,
+	"long":  TypeInt64,
+	"bool":  TypeBoolean,
+	"str":   TypeString,
+}
+
+func mapTypeAlias(value string) string {
+	if mapped, ok := TypesAliases[value]; ok {
+		return mapped
+	}
+	return value
+}
+
+type TypeStructure int
+
+const (
+	StructureNone   TypeStructure = 0
+	StructureScalar TypeStructure = 1
+	StructureArray  TypeStructure = 2
+	StructureObject TypeStructure = 3
+)
+
 type TypeInfo struct {
-	Scalar      bool
+	Structure   TypeStructure
 	Defaultable bool
 	Model       *NamedModel
 }
 
 var Types = map[string]TypeInfo{
-	TypeByte:     {true, true, nil},
-	TypeShort:    {true, true, nil},
-	TypeInt16:    {true, true, nil},
-	TypeInt:      {true, true, nil},
-	TypeInt32:    {true, true, nil},
-	TypeLong:     {true, true, nil},
-	TypeInt64:    {true, true, nil},
-	TypeFloat:    {true, true, nil},
-	TypeDouble:   {true, true, nil},
-	TypeDecimal:  {true, true, nil},
-	TypeBoolean:  {true, true, nil},
-	TypeBool:     {true, true, nil},
-	TypeChar:     {true, true, nil},
-	TypeString:   {true, true, nil},
-	TypeUuid:     {true, true, nil},
-	TypeStr:      {true, true, nil},
-	TypeDate:     {true, true, nil},
-	TypeDateTime: {true, true, nil},
-	TypeTime:     {true, true, nil},
-	TypeJson:     {true, false, nil},
-	TypeEmpty:    {false, false, nil},
+	TypeByte:     {StructureScalar, true, nil},
+	TypeInt16:    {StructureScalar, true, nil},
+	TypeInt32:    {StructureScalar, true, nil},
+	TypeInt64:    {StructureScalar, true, nil},
+	TypeFloat:    {StructureScalar, true, nil},
+	TypeDouble:   {StructureScalar, true, nil},
+	TypeDecimal:  {StructureScalar, true, nil},
+	TypeBoolean:  {StructureScalar, true, nil},
+	TypeChar:     {StructureScalar, true, nil},
+	TypeString:   {StructureScalar, true, nil},
+	TypeUuid:     {StructureScalar, true, nil},
+	TypeDate:     {StructureScalar, true, nil},
+	TypeDateTime: {StructureScalar, true, nil},
+	TypeTime:     {StructureScalar, true, nil},
+	TypeJson:     {StructureObject, false, nil},
+	TypeEmpty:    {StructureNone, false, nil},
 }
 
 func GetModelTypeInfo(model *NamedModel) *TypeInfo {
 	if model.IsObject() {
-		return &TypeInfo{false, false, model}
+		return &TypeInfo{StructureObject, false, model}
 	}
 	if model.IsEnum() {
-		return &TypeInfo{true, true, model}
+		return &TypeInfo{StructureScalar, true, model}
 	}
 	panic(fmt.Sprintf("Unknown model kind: %v", model))
 }
 
 func NullableTypeInfo(childInfo *TypeInfo) *TypeInfo {
 	if childInfo != nil {
-		return &TypeInfo{childInfo.Scalar, false, nil}
+		return &TypeInfo{childInfo.Structure, false, nil}
 	}
 	return nil
 }
 
 func ArrayTypeInfo() *TypeInfo {
-	return &TypeInfo{false, false, nil}
+	return &TypeInfo{StructureArray, false, nil}
 }
 
 func MapTypeInfo() *TypeInfo {
-	return &TypeInfo{false, false, nil}
+	return &TypeInfo{StructureObject, false, nil}
 }
 
 type Location struct {

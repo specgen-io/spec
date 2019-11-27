@@ -16,7 +16,6 @@ func buildModelsMap(models Models) ModelsMap {
 }
 
 type resolver struct {
-	Spec      *Spec
 	ModelsMap ModelsMap
 	Errors    []ValidationError
 }
@@ -27,7 +26,12 @@ func (resolver *resolver) AddError(error ValidationError) {
 
 func ResolveTypes(spec *Spec) []ValidationError {
 	modelsMap := buildModelsMap(spec.Models)
-	resolver := &resolver{Spec: spec, ModelsMap: modelsMap}
+	resolver := &resolver{ModelsMap: modelsMap}
+	resolver.Spec(spec)
+	return resolver.Errors
+}
+
+func (resolver *resolver) Spec(spec *Spec) {
 	for index := range spec.Models {
 		resolver.Model(&spec.Models[index])
 	}
@@ -36,7 +40,6 @@ func ResolveTypes(spec *Spec) []ValidationError {
 			resolver.Operation(&spec.Apis[index].Operations[opIndex])
 		}
 	}
-	return resolver.Errors
 }
 
 func (resolver *resolver) Operation(operation *NamedOperation) {

@@ -34,20 +34,33 @@ func unmarshalSpec(data []byte) (*Spec, error) {
 	return &spec, nil
 }
 
+func specError(errs []ValidationError) error {
+	if len(errs) > 0 {
+		message := ""
+		for _, error := range errs {
+			message = message + fmt.Sprintf("%s\n", error)
+		}
+		return errors.New("spec errors: \n" + message)
+	}
+	return nil
+}
+
 func ParseSpec(data []byte) (*Spec, error) {
 	spec, err := unmarshalSpec(data)
 	if err != nil {
 		return nil, err
 	}
-	errs := ResolveTypes(spec)
-	if len(errs) > 0 {
-		message := "spec errors: \n"
-		for _, error := range errs {
-			message = message + fmt.Sprintf("%s\n", error)
-		}
-		err := errors.New(message)
+
+	err = specError(ResolveTypes(spec))
+	if err != nil {
 		return nil, err
 	}
+
+	err = specError(Validate(spec))
+	if err != nil {
+		return nil, err
+	}
+
 	return spec, nil
 }
 

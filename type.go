@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"strings"
@@ -54,18 +55,33 @@ func (self *Type) BaseType() *Type {
 	return self
 }
 
-func ParseType(value string) Type {
+var plainTypeFormat = FormatOr(PascalCase, LowerCase)
+
+func parseType(value string) (*Type, error) {
 	if strings.HasSuffix(value, "?") {
-		child := ParseType(value[:len(value)-1])
-		return Type{Name: value, Node: NullableType, Child: &child}
+		child, err := parseType(value[:len(value)-1])
+		if err != nil {
+			return nil, err
+		}
+		return &Type{Name: value, Node: NullableType, Child: child}, nil
 	} else if strings.HasSuffix(value, "[]") {
-		child := ParseType(value[:len(value)-2])
-		return Type{Name: value, Node: ArrayType, Child: &child}
+		child, err := parseType(value[:len(value)-2])
+		if err != nil {
+			return nil, err
+		}
+		return &Type{Name: value, Node: ArrayType, Child: child}, nil
 	} else if strings.HasSuffix(value, "{}") {
-		child := ParseType(value[:len(value)-2])
-		return Type{Name: value, Node: MapType, Child: &child}
+		child, err := parseType(value[:len(value)-2])
+		if err != nil {
+			return nil, err
+		}
+		return &Type{Name: value, Node: MapType, Child: child}, nil
 	} else {
-		return Type{Name: value, Node: PlainType, Plain: mapTypeAlias(value)}
+		err := plainTypeFormat.Check(value)
+		if err != nil {
+			return nil, errors.New("type " + err.Error())
+		}
+		return &Type{Name: value, Node: PlainType, Plain: mapTypeAlias(value)}, nil
 	}
 }
 
@@ -80,7 +96,11 @@ func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return err
 	}
-	*value = TypeLocated{Definition: ParseType(str), Location: node}
+	typ, err := parseType(str)
+	if err != nil {
+		return yamlError(node, err.Error())
+	}
+	*value = TypeLocated{Definition: *typ, Location: node}
 	return nil
 }
 

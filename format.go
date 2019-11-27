@@ -17,7 +17,7 @@ type FormatError struct {
 }
 
 func (err *FormatError) Error() string {
-	message := fmt.Sprintf("Format error: %s is in wrong format, should be %s. Example: %s.", err.Value, err.Format.Name, err.Format.Example)
+	message := fmt.Sprintf("format error: '%s' is in wrong format, should be %s; example: %s", err.Value, err.Format.Name, err.Format.Example)
 	return message
 }
 
@@ -40,4 +40,12 @@ var CamelCase = Format{Name: "camel case", Regex: "^[a-z][a-z0-9]*([A-Z][a-z0-9]
 
 var SnakeCase = Format{Name: "snake case", Regex: "^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)*$", Example: "this_is_snake_case"}
 
-var ScalaPackage = Format{Name: "scala package", Regex: "^[a-z][a-z0-9]*(.[a-z][a-z0-9]*)*$", Example: "com.moda.package"}
+var LowerCase = Format{Name: "lower case", Regex: "^[a-z][a-z]*[0-9]*$", Example: "thisislowercase"}
+
+func FormatOr(f1 Format, f2 Format) Format {
+	return Format{
+		Name:    fmt.Sprintf("%s or %s", f1.Name, f2.Name),
+		Regex:   fmt.Sprintf("%s|%s", f1.Regex, f2.Regex),
+		Example: fmt.Sprintf("%s or %s", f1.Example, f2.Example),
+	}
+}

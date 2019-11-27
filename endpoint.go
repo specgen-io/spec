@@ -12,21 +12,19 @@ type Endpoint struct {
 	UrlParams UrlParams
 }
 
-func ParseEndpoint(endpoint string) Endpoint {
-	method, url, params := parseEndpoint(endpoint, nil)
-	return Endpoint{Method: method, Url: url, UrlParams: params}
-}
-
 func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
 		return yamlError(node, "operation endpoint should be string")
 	}
-	method, url, params := parseEndpoint(node.Value, node)
+	method, url, params, err := parseEndpoint(node.Value, node)
+	if err != nil {
+		return yamlError(node, err.Error())
+	}
 	*value = Endpoint{Method: method, Url: url, UrlParams: params}
 	return nil
 }
 
-func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams) {
+func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams, error) {
 	endpointParts := strings.SplitN(endpoint, " ", 2)
 	method := endpointParts[0]
 	url := endpointParts[1]
@@ -45,12 +43,17 @@ func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams)
 		paramName := strings.TrimSpace(paramParts[0])
 		paramType := strings.TrimSpace(paramParts[1])
 
+		typ, err := parseType(paramType)
+		if err != nil {
+			return "", "", nil, err
+		}
+
 		param := &NamedParam{
 			Name: Name{Source: paramName, Location: node},
 			DefinitionDefault: DefinitionDefault{
 				definitionDefault: definitionDefault{
 					Type: TypeLocated{
-						Definition: ParseType(paramType),
+						Definition: *typ,
 						Location:   node,
 					},
 				},
@@ -62,7 +65,7 @@ func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams)
 
 		cleanUrl = strings.Replace(cleanUrl, originalParamStr, UrlParamStr(paramName), 1)
 	}
-	return method, cleanUrl, params
+	return method, cleanUrl, params, nil
 }
 
 func UrlParamStr(paramName string) string {

@@ -57,3 +57,19 @@ func NewOperation(
 func NewEnumItem(name string, description *string) *NamedEnumItem {
 	return &NamedEnumItem{NewName(name), EnumItem{Description: description}}
 }
+
+func ParseEndpoint(endpoint string) Endpoint {
+	method, url, params, err := parseEndpoint(endpoint, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	return Endpoint{Method: method, Url: url, UrlParams: params}
+}
+
+func ParseType(value string) Type {
+	typ, err := parseType(value)
+	if err != nil {
+		panic(err.Error())
+	}
+	return *typ
+}

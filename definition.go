@@ -30,7 +30,11 @@ func parseDefaultedType(str string) (string, *string) {
 func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
 		typeStr, defaultValue := parseDefaultedType(node.Value)
-		internal := definitionDefault{Type: TypeLocated{Definition: ParseType(typeStr), Location: node}, Default: defaultValue}
+		typ, err := parseType(typeStr)
+		if err != nil {
+			return yamlError(node, err.Error())
+		}
+		internal := definitionDefault{Type: TypeLocated{Definition: *typ, Location: node}, Default: defaultValue}
 		internal.Description = getDescription(node)
 		*value = DefinitionDefault{definitionDefault: internal, Location: node}
 	} else {
@@ -56,8 +60,11 @@ type Definition struct {
 
 func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
-		typeStr := node.Value
-		internal := definition{Type: TypeLocated{Definition: ParseType(typeStr), Location: node}}
+		typ, err := parseType(node.Value)
+		if err != nil {
+			return yamlError(node, err.Error())
+		}
+		internal := definition{Type: TypeLocated{Definition: *typ, Location: node}}
 		internal.Description = getDescription(node)
 		*value = Definition{definition: internal, Location: node}
 	} else {

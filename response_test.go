@@ -4,6 +4,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"gotest.tools/assert"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -49,4 +50,12 @@ bad_request: empty   # invalid request
 	assert.Equal(t, response2.Name.Source, "bad_request")
 	assert.Equal(t, reflect.DeepEqual(response2.Type.Definition, ParseType("empty")), true)
 	assert.Equal(t, *response2.Description, "invalid request")
+}
+
+func Test_Response_WrongName_Error(t *testing.T) {
+	data := `bla: empty`
+	var responses Responses
+	err := yaml.Unmarshal([]byte(data), &responses)
+	assert.Equal(t, err != nil, true)
+	assert.Equal(t, strings.Contains(err.Error(), "bla"), true)
 }

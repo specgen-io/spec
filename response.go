@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 )
 
@@ -28,6 +29,9 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 		err = name.Check(SnakeCase)
 		if err != nil {
 			return err
+		}
+		if _, ok := httpStatusCode[name.Source]; !ok {
+			return yamlError(keyNode, fmt.Sprintf("unknown response name %s", name.Source))
 		}
 		definition := Definition{}
 		err = valueNode.Decode(&definition)

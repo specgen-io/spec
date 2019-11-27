@@ -52,8 +52,12 @@ func (resolver *resolver) Operation(operation *NamedOperation) {
 	}
 
 	for index := range operation.Responses {
-		resolver.Definition(&operation.Responses[index].Definition)
+		resolver.Response(&operation.Responses[index])
 	}
+}
+
+func (resolver *resolver) Response(response *NamedResponse) {
+	resolver.Definition(&response.Definition)
 }
 
 func (resolver *resolver) Params(params []NamedParam) {

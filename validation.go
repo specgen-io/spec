@@ -75,17 +75,21 @@ func (validator *validator) Operation(operation *NamedOperation) {
 	}
 
 	for index := range operation.Responses {
-		responseName := operation.Responses[index].Name
-		responseType := operation.Responses[index].Type
-		if !responseType.Definition.IsEmpty() && responseType.Definition.Info.Structure != StructureObject && responseType.Definition.Info.Structure != StructureArray {
-			error := ValidationError{
-				Message:  fmt.Sprintf("response %s should be either empty or some type with structure of an object or array, found %s", responseName.Source, responseType.Definition.Name),
-				Location: responseType.Location,
-			}
-			validator.AddError(error)
-		}
-		validator.Definition(&operation.Responses[index].Definition)
+		validator.Response(&operation.Responses[index])
 	}
+}
+
+func (validator *validator) Response(response *NamedResponse) {
+	responseName := response.Name
+	responseType := response.Type
+	if !responseType.Definition.IsEmpty() && responseType.Definition.Info.Structure != StructureObject && responseType.Definition.Info.Structure != StructureArray {
+		error := ValidationError{
+			Message:  fmt.Sprintf("response %s should be either empty or some type with structure of an object or array, found %s", responseName.Source, responseType.Definition.Name),
+			Location: responseType.Location,
+		}
+		validator.AddError(error)
+	}
+	validator.Definition(&response.Definition)
 }
 
 func (validator *validator) Params(params []NamedParam) {

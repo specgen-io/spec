@@ -118,7 +118,7 @@ func (validator *validator) DefinitionDefault(definition *DefinitionDefault) {
 	}
 }
 
-func (validator *validator) DefaultValue(typ Type, value string, location *yaml.Node) {
+func (validator *validator) DefaultValue(typ TypeDef, value string, location *yaml.Node) {
 	switch typ.Node {
 	case PlainType:
 		switch typ.Plain {

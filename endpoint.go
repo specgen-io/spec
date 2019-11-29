@@ -51,10 +51,7 @@ func parseEndpoint(endpoint string, node *yaml.Node) (*Endpoint, error) {
 		param := &NamedParam{
 			Name: Name{Source: paramName, Location: node},
 			DefinitionDefault: DefinitionDefault{
-				Type: TypeLocated{
-					Definition: *typ,
-					Location:   node,
-				},
+				Type:     Type{*typ, node},
 				Location: node,
 			},
 		}

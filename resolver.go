@@ -76,21 +76,21 @@ func (resolver *resolver) Model(model *NamedModel) {
 
 func (resolver *resolver) DefinitionDefault(definition *DefinitionDefault) {
 	if definition != nil {
-		resolver.TypeLocated(&definition.Type)
+		resolver.Type(&definition.Type)
 	}
 }
 
 func (resolver *resolver) Definition(definition *Definition) {
 	if definition != nil {
-		resolver.TypeLocated(&definition.Type)
+		resolver.Type(&definition.Type)
 	}
 }
 
-func (resolver *resolver) TypeLocated(typ *TypeLocated) {
-	resolver.Type(&typ.Definition, typ.Location)
+func (resolver *resolver) Type(typ *Type) {
+	resolver.TypeDef(&typ.Definition, typ.Location)
 }
 
-func (resolver *resolver) Type(typ *Type, location *yaml.Node) *TypeInfo {
+func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
@@ -108,13 +108,13 @@ func (resolver *resolver) Type(typ *Type, location *yaml.Node) *TypeInfo {
 				}
 			}
 		case NullableType:
-			childInfo := resolver.Type(typ.Child, location)
+			childInfo := resolver.TypeDef(typ.Child, location)
 			typ.Info = NullableTypeInfo(childInfo)
 		case ArrayType:
-			resolver.Type(typ.Child, location)
+			resolver.TypeDef(typ.Child, location)
 			typ.Info = ArrayTypeInfo()
 		case MapType:
-			resolver.Type(typ.Child, location)
+			resolver.TypeDef(typ.Child, location)
 			typ.Info = MapTypeInfo()
 		default:
 			panic(fmt.Sprintf("Unknown type: %v", typ))

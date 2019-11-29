@@ -6,9 +6,9 @@ import (
 )
 
 type definitionDefault struct {
-	Type        TypeLocated `yaml:"type"`
-	Default     *string     `yaml:"default"`
-	Description *string     `yaml:"description"`
+	Type        Type    `yaml:"type"`
+	Default     *string `yaml:"default"`
+	Description *string `yaml:"description"`
 	Location    *yaml.Node
 }
 
@@ -33,8 +33,8 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 			return yamlError(node, err.Error())
 		}
 		internal := DefinitionDefault{
-			Type: TypeLocated{Definition: *typ, Location: node},
-			Default: defaultValue,
+			Type:        Type{*typ, node},
+			Default:     defaultValue,
 			Description: getDescription(node),
 		}
 		*value = internal
@@ -52,8 +52,8 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type definition struct {
-	Type        TypeLocated `yaml:"type"`
-	Description *string     `yaml:"description"`
+	Type        Type    `yaml:"type"`
+	Description *string `yaml:"description"`
 	Location    *yaml.Node
 }
 
@@ -66,9 +66,9 @@ func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 			return yamlError(node, err.Error())
 		}
 		parsed := Definition{
-			Type: TypeLocated{Definition: *typ, Location: node},
+			Type:        Type{*typ, node},
 			Description: getDescription(node),
-			Location: node,
+			Location:    node,
 		}
 		*value = parsed
 	} else {

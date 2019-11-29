@@ -16,39 +16,39 @@ const (
 	MapType      TypeNode = 3
 )
 
-type Type struct {
+type TypeDef struct {
 	Name  string
 	Node  TypeNode
-	Child *Type
+	Child *TypeDef
 	Plain string
 	Info  *TypeInfo
 }
 
-func Plain(typ string) *Type {
-	return &Type{Name: typ, Node: PlainType, Plain: typ}
+func Plain(typ string) *TypeDef {
+	return &TypeDef{Name: typ, Node: PlainType, Plain: typ}
 }
 
-func Array(typ *Type) *Type {
-	return &Type{Name: typ.Name + "[]", Node: ArrayType, Child: typ}
+func Array(typ *TypeDef) *TypeDef {
+	return &TypeDef{Name: typ.Name + "[]", Node: ArrayType, Child: typ}
 }
 
-func Map(typ *Type) *Type {
-	return &Type{Name: typ.Name + "{}", Node: MapType, Child: typ}
+func Map(typ *TypeDef) *TypeDef {
+	return &TypeDef{Name: typ.Name + "{}", Node: MapType, Child: typ}
 }
 
-func Nullable(typ *Type) *Type {
-	return &Type{Name: typ.Name + "?", Node: NullableType, Child: typ}
+func Nullable(typ *TypeDef) *TypeDef {
+	return &TypeDef{Name: typ.Name + "?", Node: NullableType, Child: typ}
 }
 
-func (self *Type) IsEmpty() bool {
+func (self *TypeDef) IsEmpty() bool {
 	return self.Node == PlainType && self.Plain == TypeEmpty
 }
 
-func (self *Type) IsNullable() bool {
+func (self *TypeDef) IsNullable() bool {
 	return self.Node == NullableType
 }
 
-func (self *Type) BaseType() *Type {
+func (self *TypeDef) BaseType() *TypeDef {
 	if self.IsNullable() {
 		return self.Child
 	}
@@ -57,40 +57,40 @@ func (self *Type) BaseType() *Type {
 
 var plainTypeFormat = FormatOr(PascalCase, LowerCase)
 
-func parseType(value string) (*Type, error) {
+func parseType(value string) (*TypeDef, error) {
 	if strings.HasSuffix(value, "?") {
 		child, err := parseType(value[:len(value)-1])
 		if err != nil {
 			return nil, err
 		}
-		return &Type{Name: value, Node: NullableType, Child: child}, nil
+		return &TypeDef{Name: value, Node: NullableType, Child: child}, nil
 	} else if strings.HasSuffix(value, "[]") {
 		child, err := parseType(value[:len(value)-2])
 		if err != nil {
 			return nil, err
 		}
-		return &Type{Name: value, Node: ArrayType, Child: child}, nil
+		return &TypeDef{Name: value, Node: ArrayType, Child: child}, nil
 	} else if strings.HasSuffix(value, "{}") {
 		child, err := parseType(value[:len(value)-2])
 		if err != nil {
 			return nil, err
 		}
-		return &Type{Name: value, Node: MapType, Child: child}, nil
+		return &TypeDef{Name: value, Node: MapType, Child: child}, nil
 	} else {
 		err := plainTypeFormat.Check(value)
 		if err != nil {
 			return nil, errors.New("type " + err.Error())
 		}
-		return &Type{Name: value, Node: PlainType, Plain: mapTypeAlias(value)}, nil
+		return &TypeDef{Name: value, Node: PlainType, Plain: mapTypeAlias(value)}, nil
 	}
 }
 
-type TypeLocated struct {
+type Type struct {
+	Definition TypeDef
 	Location   *yaml.Node
-	Definition Type
 }
 
-func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
+func (value *Type) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
 	err := node.Decode(&str)
 	if err != nil {
@@ -100,7 +100,7 @@ func (value *TypeLocated) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return yamlError(node, err.Error())
 	}
-	*value = TypeLocated{Definition: *typ, Location: node}
+	*value = Type{*typ, node}
 	return nil
 }
 
@@ -205,7 +205,7 @@ func GetLocation(node yaml.Node) Location {
 	return Location{node.Line}
 }
 
-func ParseType(value string) Type {
+func ParseType(value string) TypeDef {
 	typ, err := parseType(value)
 	if err != nil {
 		panic(err.Error())

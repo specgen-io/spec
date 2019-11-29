@@ -149,6 +149,8 @@ models:
     datetime: datetime = 2019-08-07T10:20:30
     time: time = 10:20:30
     the_enum: Enum = second
+    the_array: string[] = []
+    the_map: string{} = {}
   Enum:
     enum:
       - first
@@ -184,6 +186,8 @@ models:
     datetime: datetime = 2019/08/07 10:20:30
     time: time = 10:20am
     the_enum: Enum = nonexisting
+    the_array: string[] = the default
+    the_map: string{} = the default
   Enum:
     enum:
       - first
@@ -197,5 +201,5 @@ models:
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
-	assert.Equal(t, len(errors), 14)
+	assert.Equal(t, len(errors), 16)
 }

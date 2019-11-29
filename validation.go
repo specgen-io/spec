@@ -120,6 +120,14 @@ func (validator *validator) DefinitionDefault(definition *DefinitionDefault) {
 
 func (validator *validator) DefaultValue(typ TypeDef, value string, location *yaml.Node) {
 	switch typ.Node {
+	case ArrayType:
+		if value != "[]" {
+			validator.AddError(location, fmt.Sprintf("default value for array type %s can be only empty list: [], found '%s'", typ.Name, value))
+		}
+	case MapType:
+		if value != "{}" {
+			validator.AddError(location, fmt.Sprintf("default value for map type %s can be only empty map: {}, found '%s'", typ.Name, value))
+		}
 	case PlainType:
 		switch typ.Plain {
 		case TypeByte,

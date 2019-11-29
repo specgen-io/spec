@@ -190,11 +190,11 @@ func NullableTypeInfo(childInfo *TypeInfo) *TypeInfo {
 }
 
 func ArrayTypeInfo() *TypeInfo {
-	return &TypeInfo{StructureArray, false, nil}
+	return &TypeInfo{StructureArray, true, nil}
 }
 
 func MapTypeInfo() *TypeInfo {
-	return &TypeInfo{StructureObject, false, nil}
+	return &TypeInfo{StructureObject, true, nil}
 }
 
 type Location struct {

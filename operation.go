@@ -13,9 +13,7 @@ type operation struct {
 	Responses    Responses    `yaml:"response"`
 }
 
-type Operation struct {
-	operation
-}
+type Operation operation
 
 func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	internal := operation{}
@@ -23,10 +21,11 @@ func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return err
 	}
-	*value = Operation{internal}
-	if value.Body != nil && value.Body.Description == nil {
-		value.Body.Description = getDescription(getMappingKey(node, "body"))
+	operation := Operation(internal)
+	if operation.Body != nil && operation.Body.Description == nil {
+		operation.Body.Description = getDescription(getMappingKey(node, "body"))
 	}
+	*value = operation
 	return nil
 }
 

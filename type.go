@@ -204,3 +204,11 @@ type Location struct {
 func GetLocation(node yaml.Node) Location {
 	return Location{node.Line}
 }
+
+func ParseType(value string) Type {
+	typ, err := parseType(value)
+	if err != nil {
+		panic(err.Error())
+	}
+	return *typ
+}

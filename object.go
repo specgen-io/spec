@@ -43,9 +43,7 @@ type object struct {
 	Description *string `yaml:"description"`
 }
 
-type Object struct {
-	object
-}
+type Object object
 
 func (value *Object) UnmarshalYAML(node *yaml.Node) error {
 	if getMappingKey(node, "fields") == nil {
@@ -54,14 +52,14 @@ func (value *Object) UnmarshalYAML(node *yaml.Node) error {
 		if err != nil {
 			return err
 		}
-		*value = Object{object{Fields: fields}}
+		*value = Object{Fields: fields}
 	} else {
 		internal := object{}
 		err := node.Decode(&internal)
 		if err != nil {
 			return err
 		}
-		*value = Object{internal}
+		*value = Object(internal)
 	}
 	return nil
 }

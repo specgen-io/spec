@@ -16,15 +16,15 @@ func (value *Endpoint) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.ScalarNode {
 		return yamlError(node, "operation endpoint should be string")
 	}
-	method, url, params, err := parseEndpoint(node.Value, node)
+	endpoint, err := parseEndpoint(node.Value, node)
 	if err != nil {
 		return yamlError(node, err.Error())
 	}
-	*value = Endpoint{Method: method, Url: url, UrlParams: params}
+	*value = *endpoint
 	return nil
 }
 
-func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams, error) {
+func parseEndpoint(endpoint string, node *yaml.Node) (*Endpoint, error) {
 	endpointParts := strings.SplitN(endpoint, " ", 2)
 	method := endpointParts[0]
 	url := endpointParts[1]
@@ -45,17 +45,15 @@ func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams,
 
 		typ, err := parseType(paramType)
 		if err != nil {
-			return "", "", nil, err
+			return nil, err
 		}
 
 		param := &NamedParam{
 			Name: Name{Source: paramName, Location: node},
 			DefinitionDefault: DefinitionDefault{
-				definitionDefault: definitionDefault{
-					Type: TypeLocated{
-						Definition: *typ,
-						Location:   node,
-					},
+				Type: TypeLocated{
+					Definition: *typ,
+					Location:   node,
 				},
 				Location: node,
 			},
@@ -65,7 +63,7 @@ func parseEndpoint(endpoint string, node *yaml.Node) (string, string, UrlParams,
 
 		cleanUrl = strings.Replace(cleanUrl, originalParamStr, UrlParamStr(paramName), 1)
 	}
-	return method, cleanUrl, params, nil
+	return &Endpoint{Method: method, Url: cleanUrl, UrlParams: params}, nil
 }
 
 func UrlParamStr(paramName string) string {

@@ -212,3 +212,11 @@ func ParseType(value string) Type {
 	}
 	return *typ
 }
+
+func ParseEndpoint(endpointStr string) *Endpoint {
+	endpoint, err := parseEndpoint(endpointStr, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	return endpoint
+}

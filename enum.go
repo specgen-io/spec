@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type EnumItem struct {
@@ -26,7 +26,7 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 		for index := 0; index < count; index++ {
 			itemNode := node.Content[index]
 			itemName := Name{}
-			err := itemNode.Decode(&itemName)
+			err := itemNode.DecodeWithConfig(&itemName, yamlDecodeConfig)
 			if err != nil {
 				return err
 			}
@@ -46,7 +46,7 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 			keyNode := node.Content[index*2]
 			valueNode := node.Content[index*2+1]
 			itemName := Name{}
-			err := keyNode.Decode(&itemName)
+			err := keyNode.DecodeWithConfig(&itemName, yamlDecodeConfig)
 			if err != nil {
 				return err
 			}
@@ -55,7 +55,7 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 			item := EnumItem{}
-			err = valueNode.Decode(&item)
+			err = valueNode.DecodeWithConfig(&item, yaml.NewDecodeConfig().KnownFields(true))
 			if err != nil {
 				return err
 			}

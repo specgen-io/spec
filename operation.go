@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type operation struct {
@@ -17,7 +17,7 @@ type Operation operation
 
 func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	internal := operation{}
-	err := node.Decode(&internal)
+	err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.Decode(&name)
+		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operation := Operation{}
-		err = valueNode.Decode(&operation)
+		err = valueNode.DecodeWithConfig(&operation, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}

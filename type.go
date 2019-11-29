@@ -3,7 +3,7 @@ package spec
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"strings"
 )
 
@@ -92,7 +92,7 @@ type Type struct {
 
 func (value *Type) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := node.Decode(&str)
+	err := node.DecodeWithConfig(&str, yamlDecodeConfig)
 	if err != nil {
 		return err
 	}

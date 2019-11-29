@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type Model struct {
@@ -22,14 +22,14 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 
 	if getMappingKey(node, "enum") != nil {
 		enum := Enum{}
-		err := node.Decode(&enum)
+		err := node.DecodeWithConfig(&enum, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}
 		model.Enum = &enum
 	} else {
 		object := Object{}
-		err := node.Decode(&object)
+		err := node.DecodeWithConfig(&object, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.Decode(&name)
+		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		model := Model{}
-		err = valueNode.Decode(&model)
+		err = valueNode.DecodeWithConfig(&model, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}

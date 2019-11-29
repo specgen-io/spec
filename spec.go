@@ -3,7 +3,7 @@ package spec
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"io/ioutil"
 )
 
@@ -28,7 +28,7 @@ type Meta struct {
 
 func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
-	if err := yaml.Unmarshal(data, &spec); err != nil {
+	if err := yaml.UnmarshalWithConfig(data, &spec, yamlDecodeConfig); err != nil {
 		return nil, err
 	}
 	return &spec, nil
@@ -81,7 +81,7 @@ func ReadSpec(filepath string) (*Spec, error) {
 
 func ParseMeta(data []byte) (*Meta, error) {
 	var meta Meta
-	if err := yaml.Unmarshal(data, &meta); err != nil {
+	if err := yaml.UnmarshalWithConfig(data, &meta, yamlDecodeConfig); err != nil {
 		return nil, err
 	}
 	return &meta, nil

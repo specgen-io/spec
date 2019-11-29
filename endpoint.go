@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"regexp"
 	"strings"
 )

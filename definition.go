@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"strings"
 )
 
@@ -40,7 +40,7 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 		*value = internal
 	} else {
 		internal := definitionDefault{}
-		err := node.Decode(&internal)
+		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 		*value = parsed
 	} else {
 		internal := definition{}
-		err := node.Decode(&internal)
+		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}

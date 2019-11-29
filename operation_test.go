@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -14,7 +14,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.Unmarshal([]byte(data), &operation)
+	err := yaml.UnmarshalWithConfig([]byte(data), &operation, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, operation.Endpoint.Method, "GET")
@@ -39,7 +39,7 @@ ping:
 `
 
 	var operations Operations
-	err := yaml.Unmarshal([]byte(data), &operations)
+	err := yaml.UnmarshalWithConfig([]byte(data), &operations, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)
@@ -63,7 +63,7 @@ ping:         # ping description
 `
 
 	var operations Operations
-	err := yaml.Unmarshal([]byte(data), &operations)
+	err := yaml.UnmarshalWithConfig([]byte(data), &operations, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)
@@ -85,7 +85,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.Unmarshal([]byte(data), &operation)
+	err := yaml.UnmarshalWithConfig([]byte(data), &operation, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, *operation.Body.Description, "body description")

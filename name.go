@@ -2,7 +2,7 @@ package spec
 
 import (
 	"github.com/vsapronov/casee"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type Name struct {
@@ -12,7 +12,7 @@ type Name struct {
 
 func (value *Name) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := node.Decode(&str)
+	err := node.DecodeWithConfig(&str, yamlDecodeConfig)
 	if err != nil {
 		return err
 	}

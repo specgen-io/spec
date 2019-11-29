@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type ValidationError struct {

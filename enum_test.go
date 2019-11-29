@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ enum:
 - the_third    # Third option
 `
 	var enum = Enum{}
-	err := yaml.Unmarshal([]byte(data), &enum)
+	err := yaml.UnmarshalWithConfig([]byte(data), &enum, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, *enum.Description, "Enum description")
 	assert.Equal(t, len(enum.Items), 3)
@@ -41,7 +41,7 @@ enum:
     description: Third option
 `
 	var enum = Enum{}
-	err := yaml.Unmarshal([]byte(data), &enum)
+	err := yaml.UnmarshalWithConfig([]byte(data), &enum, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(enum.Items), 3)

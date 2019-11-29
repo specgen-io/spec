@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -10,7 +10,7 @@ import (
 func Test_DefinitionDefault_Unmarshal_Short(t *testing.T) {
 	data := "string = the value  # something here"
 	var definition DefinitionDefault
-	err := yaml.Unmarshal([]byte(data), &definition)
+	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("string")), true)
 	assert.Equal(t, definition.Default != nil, true)
@@ -26,7 +26,7 @@ default: the value
 description: something here
 `
 	var definition DefinitionDefault
-	err := yaml.Unmarshal([]byte(data), &definition)
+	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("string")), true)
 	assert.Equal(t, definition.Default != nil, true)
@@ -38,7 +38,7 @@ description: something here
 func Test_Definition_Unmarshal_Short(t *testing.T) {
 	data := "MyType    # some description"
 	var definition Definition
-	err := yaml.Unmarshal([]byte(data), &definition)
+	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("MyType")), true)
 	assert.Equal(t, *definition.Description, "some description")
@@ -50,7 +50,7 @@ type: MyType
 description: some description
 `
 	var definition Definition
-	err := yaml.Unmarshal([]byte(data), &definition)
+	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("MyType")), true)
 	assert.Equal(t, *definition.Description, "some description")

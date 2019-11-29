@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type UrlParams Params
@@ -21,7 +21,7 @@ func (params *Params) unmarshalYAML(node *yaml.Node, paramsName string, namesFor
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.Decode(&name)
+		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func (params *Params) unmarshalYAML(node *yaml.Node, paramsName string, namesFor
 			return err
 		}
 		definition := DefinitionDefault{}
-		err = valueNode.Decode(&definition)
+		err = valueNode.DecodeWithConfig(&definition, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}

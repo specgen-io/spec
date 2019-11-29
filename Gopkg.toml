@@ -29,6 +29,10 @@
   name = "github.com/vsapronov/casee"
 
 [[constraint]]
+  branch = "v3"
+  name = "github.com/vsapronov/yaml"
+
+[[constraint]]
   name = "gotest.tools"
   version = "2.3.0"
 

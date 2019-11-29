@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type Api struct {
@@ -21,7 +21,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.Decode(&name)
+		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operations := Operations{}
-		err = valueNode.Decode(&operations)
+		err = valueNode.DecodeWithConfig(&operations, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}

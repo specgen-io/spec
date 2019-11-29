@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 )
 
 type NamedResponse struct {
@@ -22,7 +22,7 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.Decode(&name)
+		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 			return yamlError(keyNode, fmt.Sprintf("unknown response name %s", name.Source))
 		}
 		definition := Definition{}
-		err = valueNode.Decode(&definition)
+		err = valueNode.DecodeWithConfig(&definition, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}

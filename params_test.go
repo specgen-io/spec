@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -17,7 +17,7 @@ param3:         # some param
   type: string
 `
 	var params QueryParams
-	err := yaml.Unmarshal([]byte(data), &params)
+	err := yaml.UnmarshalWithConfig([]byte(data), &params, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 3)
@@ -47,7 +47,7 @@ Some-Header:           # some param
   type: string
 `
 	var params HeaderParams
-	err := yaml.Unmarshal([]byte(data), &params)
+	err := yaml.UnmarshalWithConfig([]byte(data), &params, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 3)

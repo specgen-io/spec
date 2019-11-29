@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"gopkg.in/yaml.v3"
+	"github.com/vsapronov/yaml"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -23,7 +23,7 @@ Model3:
   - third
 `
 	var models Models
-	err := yaml.Unmarshal([]byte(data), &models)
+	err := yaml.UnmarshalWithConfig([]byte(data), &models, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(models), 3)
@@ -50,6 +50,6 @@ model_one:
     prop2: int32
 `
 	var models Models
-	err := yaml.Unmarshal([]byte(data), &models)
+	err := yaml.UnmarshalWithConfig([]byte(data), &models, yamlDecodeConfig)
 	assert.ErrorContains(t, err, "model_one")
 }

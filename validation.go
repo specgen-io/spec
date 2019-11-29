@@ -3,6 +3,7 @@ package spec
 import (
 	"fmt"
 	"github.com/vsapronov/yaml"
+	"strconv"
 )
 
 type ValidationError struct {
@@ -13,7 +14,7 @@ type ValidationError struct {
 func (self ValidationError) String() string {
 	lineStr := "unknown"
 	if self.Location != nil {
-		lineStr = string(self.Location.Line)
+		lineStr = strconv.Itoa(self.Location.Line)
 	}
 	return fmt.Sprintf("line %s: %s", lineStr, self.Message)
 }

@@ -42,6 +42,8 @@ var SnakeCase = Format{Name: "snake case", Regex: "^[a-z][a-z0-9]*(_[a-z][a-z0-9
 
 var LowerCase = Format{Name: "lower case", Regex: "^[a-z][a-z]*[0-9]*$", Example: "thisislowercase"}
 
+var HttpMethod = Format{Name: "HTTP method", Regex: "^GET|POST|PUT|DELETE$", Example: "GET, POST, PUT, DELETE"}
+
 var Integer = Format{Name: "integer", Regex: "^[-+]?\\d+$", Example: "123"}
 
 var Float = Format{Name: "float", Regex: "^[-+]?\\d+\\.?\\d*$", Example: "123.4"}

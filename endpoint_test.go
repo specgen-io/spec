@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"strings"
 	"gotest.tools/assert"
 	"reflect"
 	"testing"
@@ -37,4 +38,16 @@ func Test_ParseEndpoint_MultipleParams(t *testing.T) {
 	assert.Equal(t, idParam.Type.Definition, ParseType("str"))
 	assert.Equal(t, nameParam.Name.Source, "name")
 	assert.Equal(t, nameParam.Type.Definition, ParseType("str"))
+}
+
+func Test_ParseEndpoint_ToManyParts(t *testing.T) {
+	_, err := parseEndpoint("GET /some/ url/", nil)
+	assert.Equal(t, err != nil, true)
+	assert.Equal(t, strings.Contains(err.Error(), "endpoint"), true)
+}
+
+func Test_ParseEndpoint_WrongMethod(t *testing.T) {
+	_, err := parseEndpoint("METHOD /some/url/", nil)
+	assert.Equal(t, err != nil, true)
+	assert.Equal(t, strings.Contains(err.Error(), "METHOD"), true)
 }

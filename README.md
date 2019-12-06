@@ -445,10 +445,7 @@ enablePlugins(SpecPlay)
 ```
 Following dependencies are defined in `SpecPlay` and should be added into `libraryDependencies`:
 ```
-libraryDependencies ++= Seq(
-  specPlay,
-  swaggerUI
-)
+libraryDependencies ++= specPlayDependencies
 ```
 
 Here are `SpecPlay` settings that allow customization of code generation:
@@ -475,9 +472,7 @@ enablePlugins(SpecSttp)
 ```
 Following dependencies are defined in `SpecSttp` and should be added into `libraryDependencies`:
 ```
-libraryDependencies ++= Seq(
-  specSttp
-)
+libraryDependencies ++= specSttpDependencies
 ```
 
 Here are `SpecSttp` settings that allow customization of code generation:
@@ -497,9 +492,7 @@ enablePlugins(SpecModels)
 ```
 Following dependencies are defined in `SpecModels` and should be added into `libraryDependencies`:
 ```
-libraryDependencies ++= Seq(
-  specCirce
-)
+libraryDependencies ++= specModelDependencies
 ```
 
 Here are `SpecModels` settings that allow customization of code generation:

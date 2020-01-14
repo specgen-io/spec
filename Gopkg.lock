@@ -32,11 +32,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0f0ce19b33c5b3d7aabb00eddad36f4b54cf6b322361af172eb1f1b774360db8"
+  digest = "1:97ce0806c13c89499c5f7c2880b006e6c117d799c738b5b7b3fdd601614c529c"
   name = "github.com/vsapronov/casee"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d0fd05854322120f0e4147a1f0a6f14156e72986"
+  revision = "9efa1dde4657d0fc3b40c2ad45bf110318ed518a"
 
 [[projects]]
   branch = "v3"

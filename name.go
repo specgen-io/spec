@@ -37,6 +37,10 @@ func (self Name) SnakeCase() string {
 	return casee.ToSnakeCase(self.Source)
 }
 
+func (self Name) UpperCase() string {
+	return casee.ToUpperCase(self.Source)
+}
+
 func (self Name) Check(format Format) error {
 	return format.Check(self.Source)
 }

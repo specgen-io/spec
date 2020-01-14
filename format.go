@@ -40,6 +40,8 @@ var CamelCase = Format{Name: "camel case", Regex: "^[a-z][a-z0-9]*([A-Z][a-z0-9]
 
 var SnakeCase = Format{Name: "snake case", Regex: "^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)*$", Example: "this_is_snake_case"}
 
+var KebabCase = Format{Name: "kebab case", Regex: "^[a-z][a-z0-9]*(-[a-z][a-z0-9]*)*$", Example: "this-is-kebab-case"}
+
 var LowerCase = Format{Name: "lower case", Regex: "^[a-z][a-z]*[0-9]*$", Example: "thisislowercase"}
 
 var HttpMethod = Format{Name: "HTTP method", Regex: "^GET|POST|PUT|DELETE$", Example: "GET, POST, PUT, DELETE"}

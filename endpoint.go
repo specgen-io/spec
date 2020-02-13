@@ -35,7 +35,7 @@ func parseEndpoint(endpoint string, node *yaml.Node) (*Endpoint, error) {
 	err := HttpMethod.Check(method)
 	if err != nil { return nil, err }
 	url := endpointParts[1]
-	re := regexp.MustCompile(`\{[a-z][a-z0-9]*([a-z][a-z0-9]*)*:[a-z0-9_<>\\?]*\}`)
+	re := regexp.MustCompile(`\{[a-z][a-z0-9_]*:[a-z0-9_<>\\?]*\}`)
 	matches := re.FindAllStringIndex(url, -1)
 	params := UrlParams{}
 	cleanUrl := url

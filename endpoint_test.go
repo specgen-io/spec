@@ -27,16 +27,16 @@ func Test_ParseEndpoint_Param(t *testing.T) {
 }
 
 func Test_ParseEndpoint_MultipleParams(t *testing.T) {
-	endpoint, err := parseEndpoint("GET /some/url/{id:str}/{name:str}", nil)
+	endpoint, err := parseEndpoint("GET /some/url/{some_id:str}/{the_name:str}", nil)
 	assert.Equal(t, err == nil, true)
 	assert.Equal(t, endpoint.Method, "GET")
-	assert.Equal(t, endpoint.Url, "/some/url/{id}/{name}")
+	assert.Equal(t, endpoint.Url, "/some/url/{some_id}/{the_name}")
 	assert.Equal(t, len(endpoint.UrlParams), 2)
 	idParam := endpoint.UrlParams[0]
 	nameParam := endpoint.UrlParams[1]
-	assert.Equal(t, idParam.Name.Source, "id")
+	assert.Equal(t, idParam.Name.Source, "some_id")
 	assert.Equal(t, idParam.Type.Definition, ParseType("str"))
-	assert.Equal(t, nameParam.Name.Source, "name")
+	assert.Equal(t, nameParam.Name.Source, "the_name")
 	assert.Equal(t, nameParam.Type.Definition, ParseType("str"))
 }
 

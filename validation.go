@@ -103,7 +103,7 @@ func (validator *validator) Params(params []NamedParam) {
 func (validator *validator) Model(model *NamedModel) {
 	if model.IsObject() {
 		for index := range model.Object.Fields {
-			validator.DefinitionDefault(&model.Object.Fields[index].DefinitionDefault)
+			validator.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
 }

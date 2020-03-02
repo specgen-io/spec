@@ -178,7 +178,6 @@ Here's an example of field definition:
 ```yaml
 field1:
   type: string
-  default: some default value
   description: some field
 ```
 
@@ -187,13 +186,12 @@ Here's information about field definition fields:
 | Field       | Required | Details                                          |
 | :---------- | :------- | :----------------------------------------------- |
 | type        | yes      | type of the field                                |
-| default     | no       | default value for the field                      |
 | description | no       | description of the field, used for documentation |
 
-When field is defined in a short form with type only, the default value might be defined through `=` separator. Here's an example of short form equivalent to long field definition from above
+Here's an example of short form equivalent to long field definition from above:
 
 ```yaml
-field1: string = some default value  # some field
+field1: string # some field
 ```
 
 #### Enum Model

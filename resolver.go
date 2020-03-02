@@ -69,7 +69,7 @@ func (resolver *resolver) Params(params []NamedParam) {
 func (resolver *resolver) Model(model *NamedModel) {
 	if model.IsObject() {
 		for index := range model.Object.Fields {
-			resolver.DefinitionDefault(&model.Object.Fields[index].DefinitionDefault)
+			resolver.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
 }

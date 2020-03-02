@@ -24,7 +24,7 @@ func (value *Fields) UnmarshalYAML(node *yaml.Node) error {
 		if err != nil {
 			return err
 		}
-		definition := DefinitionDefault{}
+		definition := Definition{}
 		err = valueNode.DecodeWithConfig(&definition, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
@@ -32,7 +32,7 @@ func (value *Fields) UnmarshalYAML(node *yaml.Node) error {
 		if definition.Description == nil {
 			definition.Description = getDescription(keyNode)
 		}
-		array[index] = NamedField{Name: name, DefinitionDefault: definition}
+		array[index] = NamedField{Name: name, Definition: definition}
 	}
 	*value = array
 	return nil

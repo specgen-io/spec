@@ -109,3 +109,62 @@ models:
 	assert.Equal(t, len(unknownTypes), 1)
 	assert.Equal(t, strings.Contains(unknownTypes[0].Message, "NonExisting"), true)
 }
+
+func Test_Resolve_Models_Normal_Order(t *testing.T) {
+	data := `
+models:
+  Model1:
+    field: string
+  Model2:
+    field: string
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	ResolveTypes(spec)
+
+	assert.Equal(t, len(spec.ResolvedModels), 2)
+	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model1")
+	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
+}
+
+func Test_Resolve_Models_Reversed_Order(t *testing.T) {
+	data := `
+models:
+  Model1:
+    field: Model2
+  Model2:
+    field: string
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	ResolveTypes(spec)
+
+	assert.Equal(t, len(spec.ResolvedModels), 2)
+	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model2")
+	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model1")
+}
+
+func Test_Resolve_Models_Reversed_Order_With_Enum(t *testing.T) {
+	data := `
+models:
+  Model1:
+    field1: Model3
+    field2: Model2
+  Model2:
+    field: string
+  Model3:
+    enum:
+      - some_item
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	ResolveTypes(spec)
+
+	assert.Equal(t, len(spec.ResolvedModels), 3)
+	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model3")
+	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
+	assert.Equal(t, spec.ResolvedModels[2].Name.Source, "Model1")
+}

@@ -16,8 +16,9 @@ func buildModelsMap(models Models) ModelsMap {
 }
 
 type resolver struct {
-	ModelsMap ModelsMap
-	Errors    []ValidationError
+	ModelsMap      ModelsMap
+	Errors         []ValidationError
+	ResolvedModels Models
 }
 
 func (resolver *resolver) AddError(error ValidationError) {
@@ -28,6 +29,7 @@ func ResolveTypes(spec *Spec) []ValidationError {
 	modelsMap := buildModelsMap(spec.Models)
 	resolver := &resolver{ModelsMap: modelsMap}
 	resolver.Spec(spec)
+	spec.ResolvedModels = resolver.ResolvedModels
 	return resolver.Errors
 }
 
@@ -72,6 +74,7 @@ func (resolver *resolver) Model(model *NamedModel) {
 			resolver.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
+	resolver.Resolved(model)
 }
 
 func (resolver *resolver) DefinitionDefault(definition *DefinitionDefault) {
@@ -90,12 +93,22 @@ func (resolver *resolver) Type(typ *Type) {
 	resolver.TypeDef(&typ.Definition, typ.Location)
 }
 
+func (resolver *resolver) Resolved(model *NamedModel) {
+	for index := range resolver.ResolvedModels {
+		if resolver.ResolvedModels[index].Name.Source == model.Name.Source {
+			return
+		}
+	}
+	resolver.ResolvedModels = append(resolver.ResolvedModels, *model)
+}
+
 func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
 			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
 				typ.Info = GetModelTypeInfo(&model)
+				resolver.Resolved(&model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info

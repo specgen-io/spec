@@ -16,6 +16,7 @@ type Spec struct {
 
 	Apis   Apis   `yaml:"operations"`
 	Models Models `yaml:"models"`
+	ResolvedModels Models
 }
 
 type Meta struct {

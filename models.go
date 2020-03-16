@@ -7,14 +7,19 @@ import (
 type Model struct {
 	Object *Object
 	Enum   *Enum
+	Union  *Union
 }
 
 func (self *Model) IsObject() bool {
-	return self.Object != nil && self.Enum == nil
+	return self.Object != nil && self.Enum == nil && self.Union == nil
 }
 
 func (self *Model) IsEnum() bool {
-	return self.Enum != nil && self.Object == nil
+	return self.Object == nil && self.Enum != nil && self.Union == nil
+}
+
+func (self *Model) IsUnion() bool {
+	return self.Object == nil && self.Enum == nil && self.Union != nil
 }
 
 func (value *Model) UnmarshalYAML(node *yaml.Node) error {
@@ -27,6 +32,13 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		model.Enum = &enum
+	} else if getMappingKey(node, "union") != nil {
+		union := Union{}
+		err := node.DecodeWithConfig(&union, yaml.NewDecodeConfig().KnownFields(true))
+		if err != nil {
+			return err
+		}
+		model.Union = &union
 	} else {
 		object := Object{}
 		err := node.DecodeWithConfig(&object, yaml.NewDecodeConfig().KnownFields(true))

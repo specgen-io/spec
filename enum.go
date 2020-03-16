@@ -13,16 +13,16 @@ type NamedEnumItem struct {
 	EnumItem
 }
 
-type Items []NamedEnumItem
+type EnumItems []NamedEnumItem
 
-func (value *Items) UnmarshalYAML(node *yaml.Node) error {
+func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.SequenceNode && node.Kind != yaml.MappingNode {
 		return yamlError(node, "enum items should be either list or mapping")
 	}
 
 	if node.Kind == yaml.SequenceNode {
 		count := len(node.Content)
-		array := make(Items, count)
+		array := make(EnumItems, count)
 		for index := 0; index < count; index++ {
 			itemNode := node.Content[index]
 			itemName := Name{}
@@ -41,7 +41,7 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 
 	if node.Kind == yaml.MappingNode {
 		count := len(node.Content) / 2
-		array := make(Items, count)
+		array := make(EnumItems, count)
 		for index := 0; index < count; index++ {
 			keyNode := node.Content[index*2]
 			valueNode := node.Content[index*2+1]
@@ -68,6 +68,6 @@ func (value *Items) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type Enum struct {
-	Items       Items   `yaml:"enum"`
-	Description *string `yaml:"description"`
+	Items       EnumItems `yaml:"enum"`
+	Description *string   `yaml:"description"`
 }

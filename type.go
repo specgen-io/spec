@@ -173,7 +173,7 @@ var Types = map[string]TypeInfo{
 }
 
 func GetModelTypeInfo(model *NamedModel) *TypeInfo {
-	if model.IsObject() {
+	if model.IsObject() || model.IsUnion() {
 		return &TypeInfo{StructureObject, false, model}
 	}
 	if model.IsEnum() {

@@ -74,7 +74,25 @@ func (resolver *resolver) Model(model *NamedModel) {
 			resolver.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
+	if model.IsUnion() {
+		for index := range model.Union.Items {
+			resolver.UnionItemType(&model.Union.Items[index])
+		}
+	}
 	resolver.Resolved(model)
+}
+
+func (resolver *resolver) UnionItemType(typ *Type) {
+	resolver.Type(typ)
+	if typ.Definition.Info != nil {
+		if typ.Definition.Info.Model == nil || !typ.Definition.Info.Model.IsObject() {
+			error := ValidationError{
+				Message:  fmt.Sprintf("union supports only object for items, found: %s", typ.Definition.Name),
+				Location: typ.Location,
+			}
+			resolver.AddError(error)
+		}
+	}
 }
 
 func (resolver *resolver) DefinitionDefault(definition *DefinitionDefault) {
@@ -114,7 +132,7 @@ func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 					typ.Info = &info
 				} else {
 					error := ValidationError{
-						Message:  fmt.Sprintf("unknown type %s", typ.Plain),
+						Message:  fmt.Sprintf("unknown type: %s", typ.Plain),
 						Location: location,
 					}
 					resolver.AddError(error)

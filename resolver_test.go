@@ -22,9 +22,9 @@ operations:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	unknownTypes := ResolveTypes(spec)
+	errors := ResolveTypes(spec)
 
-	assert.Equal(t, len(unknownTypes), 0)
+	assert.Equal(t, len(errors), 0)
 }
 
 func Test_Resolve_Operations_Fail_UnknownType(t *testing.T) {
@@ -43,12 +43,12 @@ operations:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	unknownTypes := ResolveTypes(spec)
+	errors := ResolveTypes(spec)
 
-	assert.Equal(t, len(unknownTypes), 3)
-	assert.Equal(t, strings.Contains(unknownTypes[0].Message, "nonexisting1"), true)
-	assert.Equal(t, strings.Contains(unknownTypes[1].Message, "nonexisting2"), true)
-	assert.Equal(t, strings.Contains(unknownTypes[2].Message, "nonexisting3"), true)
+	assert.Equal(t, len(errors), 3)
+	assert.Equal(t, strings.Contains(errors[0].Message, "nonexisting1"), true)
+	assert.Equal(t, strings.Contains(errors[1].Message, "nonexisting2"), true)
+	assert.Equal(t, strings.Contains(errors[2].Message, "nonexisting3"), true)
 }
 
 func Test_Resolve_Operations_Pass_CustomType(t *testing.T) {
@@ -69,12 +69,12 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	unknownTypes := ResolveTypes(spec)
+	errors := ResolveTypes(spec)
 
-	assert.Equal(t, len(unknownTypes), 0)
+	assert.Equal(t, len(errors), 0)
 }
 
-func Test_Resolve_Models_Pass(t *testing.T) {
+func Test_ResolveTypes_ObjectField_Pass(t *testing.T) {
 	data := `
 models:
   Custom1:
@@ -90,12 +90,12 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	unknownTypes := ResolveTypes(spec)
+	errors := ResolveTypes(spec)
 
-	assert.Equal(t, len(unknownTypes), 0)
+	assert.Equal(t, len(errors), 0)
 }
 
-func Test_Resolve_Models_Fail(t *testing.T) {
+func Test_ResolveTypes_ObjectField_Fail(t *testing.T) {
 	data := `
 models:
   Custom:
@@ -104,10 +104,74 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	unknownTypes := ResolveTypes(spec)
+	errors := ResolveTypes(spec)
 
-	assert.Equal(t, len(unknownTypes), 1)
-	assert.Equal(t, strings.Contains(unknownTypes[0].Message, "NonExisting"), true)
+	assert.Equal(t, len(errors), 1)
+	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
+}
+
+func Test_ResolveTypes_UnionItem_Pass(t *testing.T) {
+	data := `
+models:
+  Custom1:
+    field1: string
+    field2: Custom2
+  Custom2:
+    union:
+      - Custom1
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+
+	assert.Equal(t, len(errors), 0)
+}
+
+func Test_ResolveTypes_UnionItem_Fail(t *testing.T) {
+	data := `
+models:
+  Custom:
+    union:
+      - NonExisting
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+
+	assert.Equal(t, len(errors), 1)
+	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
+}
+
+func Test_ResolveTypes_UnionItem_Unsupported(t *testing.T) {
+	data := `
+models:
+  Custom1:
+    enum:
+    - first
+    - second
+  Custom2:
+    enum:
+    - first
+    - second
+  Custom3:
+    union:
+      - Custom1
+      - Custom2[]
+      - Custom2?
+      - int
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+
+	assert.Equal(t, len(errors), 4)
+	assert.Equal(t, strings.Contains(errors[0].Message, "Custom1"), true)
+	assert.Equal(t, strings.Contains(errors[1].Message, "Custom2[]"), true)
+	assert.Equal(t, strings.Contains(errors[2].Message, "Custom2?"), true)
+	assert.Equal(t, strings.Contains(errors[3].Message, "int"), true)
 }
 
 func Test_Resolve_Models_Normal_Order(t *testing.T) {

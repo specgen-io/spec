@@ -5,15 +5,15 @@ import (
 )
 
 type union struct {
-	Items       Fields   `yaml:"union"`
-	Description *string  `yaml:"description"`
+	Items       NamedDefinitions `yaml:"union"`
+	Description *string          `yaml:"description"`
 }
 
 type Union union
 
 func (value *Union) UnmarshalYAML(node *yaml.Node) error {
 	if getMappingKey(node, "union") == nil {
-		items := Fields{}
+		items := NamedDefinitions{}
 		err := node.DecodeWithConfig(&items, yamlDecodeConfig)
 		if err != nil {
 			return err

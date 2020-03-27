@@ -118,7 +118,10 @@ models:
     field2: Custom2
   Custom2:
     union:
-      - Custom1
+      one: Custom1
+      two: Custom2[]
+      three: Custom2?
+      four: int
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -133,7 +136,7 @@ func Test_ResolveTypes_UnionItem_Fail(t *testing.T) {
 models:
   Custom:
     union:
-      - NonExisting
+      nope: NonExisting
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -142,36 +145,6 @@ models:
 
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
-}
-
-func Test_ResolveTypes_UnionItem_Unsupported(t *testing.T) {
-	data := `
-models:
-  Custom1:
-    enum:
-    - first
-    - second
-  Custom2:
-    enum:
-    - first
-    - second
-  Custom3:
-    union:
-      - Custom1
-      - Custom2[]
-      - Custom2?
-      - int
-`
-	spec, err := unmarshalSpec([]byte(data))
-	assert.Equal(t, err, nil)
-
-	errors := ResolveTypes(spec)
-
-	assert.Equal(t, len(errors), 4)
-	assert.Equal(t, strings.Contains(errors[0].Message, "Custom1"), true)
-	assert.Equal(t, strings.Contains(errors[1].Message, "Custom2[]"), true)
-	assert.Equal(t, strings.Contains(errors[2].Message, "Custom2?"), true)
-	assert.Equal(t, strings.Contains(errors[3].Message, "int"), true)
 }
 
 func Test_Resolve_Models_Normal_Order(t *testing.T) {

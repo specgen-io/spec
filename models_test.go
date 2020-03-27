@@ -23,8 +23,8 @@ Model3:
   - third
 Model4:
   union:
-  - Model1
-  - Model2
+    one: Model1
+    two: Model2
 `
 	var models Models
 	err := yaml.UnmarshalWithConfig([]byte(data), &models, yamlDecodeConfig)

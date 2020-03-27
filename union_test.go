@@ -10,9 +10,9 @@ func Test_Union_Unmarshal(t *testing.T) {
 	data := `
 description: Union description
 union:
-- TheFirst
-- TheSecond
-- TheThird
+  first: TheFirst
+  second: TheSecond
+  third: TheThird
 `
 	var union = Union{}
 	err := yaml.UnmarshalWithConfig([]byte(data), &union, yamlDecodeConfig)
@@ -22,8 +22,11 @@ union:
 	item1 := union.Items[0]
 	item2 := union.Items[1]
 	item3 := union.Items[2]
-	assert.Equal(t, item1.Definition.Name, "TheFirst")
-	assert.Equal(t, item2.Definition.Name, "TheSecond")
-	assert.Equal(t, item3.Definition.Name, "TheThird")
+	assert.Equal(t, item1.Name.Source, "first")
+	assert.Equal(t, item1.Type.Definition, ParseType("TheFirst"))
+	assert.Equal(t, item2.Name.Source, "second")
+	assert.Equal(t, item2.Type.Definition, ParseType("TheSecond"))
+	assert.Equal(t, item3.Name.Source, "third")
+	assert.Equal(t, item3.Type.Definition, ParseType("TheThird"))
 }
 

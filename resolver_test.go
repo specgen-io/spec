@@ -117,7 +117,7 @@ models:
     field1: string
     field2: Custom2
   Custom2:
-    union:
+    oneOf:
       one: Custom1
       two: Custom2[]
       three: Custom2?
@@ -135,7 +135,7 @@ func Test_ResolveTypes_UnionItem_Fail(t *testing.T) {
 	data := `
 models:
   Custom:
-    union:
+    oneOf:
       nope: NonExisting
 `
 	spec, err := unmarshalSpec([]byte(data))

@@ -74,9 +74,9 @@ func (resolver *resolver) Model(model *NamedModel) {
 			resolver.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
-	if model.IsUnion() {
-		for index := range model.Union.Items {
-			resolver.Definition(&model.Union.Items[index].Definition)
+	if model.IsOneOf() {
+		for index := range model.OneOf.Items {
+			resolver.Definition(&model.OneOf.Items[index].Definition)
 		}
 	}
 	resolver.Resolved(model)

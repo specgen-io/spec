@@ -8,20 +8,20 @@ import (
 
 func Test_Union_Unmarshal(t *testing.T) {
 	data := `
-description: Union description
-union:
+description: OneOf description
+oneOf:
   first: TheFirst
   second: TheSecond
   third: TheThird
 `
-	var union = Union{}
-	err := yaml.UnmarshalWithConfig([]byte(data), &union, yamlDecodeConfig)
+	var oneOf = OneOf{}
+	err := yaml.UnmarshalWithConfig([]byte(data), &oneOf, yamlDecodeConfig)
 	assert.Equal(t, err, nil)
-	assert.Equal(t, *union.Description, "Union description")
-	assert.Equal(t, len(union.Items), 3)
-	item1 := union.Items[0]
-	item2 := union.Items[1]
-	item3 := union.Items[2]
+	assert.Equal(t, *oneOf.Description, "OneOf description")
+	assert.Equal(t, len(oneOf.Items), 3)
+	item1 := oneOf.Items[0]
+	item2 := oneOf.Items[1]
+	item3 := oneOf.Items[2]
 	assert.Equal(t, item1.Name.Source, "first")
 	assert.Equal(t, item1.Type.Definition, ParseType("TheFirst"))
 	assert.Equal(t, item2.Name.Source, "second")

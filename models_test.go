@@ -22,7 +22,7 @@ Model3:
   - second
   - third
 Model4:
-  union:
+  oneOf:
     one: Model1
     two: Model2
 `
@@ -45,7 +45,7 @@ Model4:
 	assert.Equal(t, model3.Name.Source, "Model3")
 	assert.Equal(t, model3.IsEnum(), true)
 	assert.Equal(t, model4.Name.Source, "Model4")
-	assert.Equal(t, model4.IsUnion(), true)
+	assert.Equal(t, model4.IsOneOf(), true)
 }
 
 func Test_Models_Unmarshal_WrongNameFormat(t *testing.T) {

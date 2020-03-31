@@ -4,28 +4,28 @@ import (
 	"github.com/vsapronov/yaml"
 )
 
-type union struct {
-	Items       NamedDefinitions `yaml:"union"`
+type oneOf struct {
+	Items       NamedDefinitions `yaml:"oneOf"`
 	Description *string          `yaml:"description"`
 }
 
-type Union union
+type OneOf oneOf
 
-func (value *Union) UnmarshalYAML(node *yaml.Node) error {
-	if getMappingKey(node, "union") == nil {
+func (value *OneOf) UnmarshalYAML(node *yaml.Node) error {
+	if getMappingKey(node, "oneOf") == nil {
 		items := NamedDefinitions{}
 		err := node.DecodeWithConfig(&items, yamlDecodeConfig)
 		if err != nil {
 			return err
 		}
-		*value = Union{Items: items}
+		*value = OneOf{Items: items}
 	} else {
-		internal := union{}
+		internal := oneOf{}
 		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
 		if err != nil {
 			return err
 		}
-		*value = Union(internal)
+		*value = OneOf(internal)
 	}
 	return nil
 }

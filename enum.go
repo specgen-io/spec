@@ -5,6 +5,7 @@ import (
 )
 
 type EnumItem struct {
+	Value string `yaml:"value"`
 	Description *string `yaml:"description"`
 }
 
@@ -34,7 +35,7 @@ func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			array[index] = NamedEnumItem{Name: itemName, EnumItem: EnumItem{Description: getDescription(itemNode)}}
+			array[index] = NamedEnumItem{Name: itemName, EnumItem: EnumItem{Value: itemName.Source, Description: getDescription(itemNode)}}
 		}
 		*value = array
 	}
@@ -54,12 +55,20 @@ func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			item := EnumItem{}
-			err = valueNode.DecodeWithConfig(&item, yaml.NewDecodeConfig().KnownFields(true))
-			if err != nil {
-				return err
+			item := &EnumItem{}
+			if valueNode.Kind == yaml.ScalarNode {
+				item.Value = valueNode.Value
+				item.Description = getDescription(valueNode)
+			} else {
+				err = valueNode.DecodeWithConfig(item, yaml.NewDecodeConfig().KnownFields(true))
+				if err != nil {
+					return err
+				}
 			}
-			array[index] = NamedEnumItem{Name: itemName, EnumItem: item}
+			if item.Value == "" {
+				item.Value = itemName.Source
+			}
+			array[index] = NamedEnumItem{Name: itemName, EnumItem: *item}
 		}
 		*value = array
 	}

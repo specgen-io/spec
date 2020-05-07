@@ -204,10 +204,13 @@ Model:
   description: the model
   enum:
     first:
+      value: FIRST
       description: First option
     second:
+      value: SECOND
       description: Second option
     third:
+      value: THIRD
       description: Third option
 ```
 
@@ -219,7 +222,6 @@ Here's information about enum definition fields:
 | description | no       | description of the model, used for documentation                                     |
 
 Here's an equivalent example for short form of enum definition:
-
 ```yaml
 Model:  # the model
   enum:
@@ -228,11 +230,47 @@ Model:  # the model
   - third   # Third option
 ```
 
-Enum item definition supports following fields.
+Enum item definition supports following fields:
 
-| Field       | Required | Details                                                                              |
-| :---------- | :------- | :----------------------------------------------------------------------------------- |
-| description | no       | description of the item, used for documentation                                      |
+| Field       | Required | Details                                                                                |
+| :---------- | :------- | :------------------------------------------------------------------------------------- |
+| value       | no       | value of the enum item that should be used in json, if not specified item name is used |
+| description | no       | description of the item, used for documentation                                        |
+
+There are 3 ways to express enum items.
+
+Shortest form:
+```yaml
+Model:  # the model
+  enum:
+  - first   # First option
+  - second  # Second option
+  - third   # Third option
+```
+
+Short form with customized value:
+```yaml
+Model:  # the model
+  enum:
+    first:  FIRST   # First option
+    second: SECOND  # Second option
+    third:  THIRD   # Third option
+```
+
+Long form with all fields explicit:
+```yaml
+Model:
+  enum:
+    first:
+      value: FIRST
+      description: First option
+    second:
+      value: SECOND
+      description: Second option
+    third:
+      value: THIRD
+      description: Third option
+```
 
 ### Operation
 

@@ -10,7 +10,7 @@ import (
 func Test_DefinitionDefault_Unmarshal_Short(t *testing.T) {
 	data := "string = the value  # something here"
 	var definition DefinitionDefault
-	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &definition)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("string")), true)
 	assert.Equal(t, definition.Default != nil, true)
@@ -26,7 +26,7 @@ default: the value
 description: something here
 `
 	var definition DefinitionDefault
-	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &definition)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("string")), true)
 	assert.Equal(t, definition.Default != nil, true)
@@ -38,7 +38,7 @@ description: something here
 func Test_Definition_Unmarshal_Short(t *testing.T) {
 	data := "MyType    # some description"
 	var definition Definition
-	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &definition)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("MyType")), true)
 	assert.Equal(t, *definition.Description, "some description")
@@ -50,7 +50,7 @@ type: MyType
 description: some description
 `
 	var definition Definition
-	err := yaml.UnmarshalWithConfig([]byte(data), &definition, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &definition)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, reflect.DeepEqual(definition.Type.Definition, ParseType("MyType")), true)
 	assert.Equal(t, *definition.Description, "some description")

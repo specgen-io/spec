@@ -21,7 +21,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
+		err := keyNode.DecodeWith(decodeOptions, &name)
 		if err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operations := Operations{}
-		err = valueNode.DecodeWithConfig(&operations, yamlDecodeConfig)
+		err = valueNode.DecodeWith(decodeOptions, &operations)
 		if err != nil {
 			return err
 		}

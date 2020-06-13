@@ -15,7 +15,7 @@ enum:
 - the_third  # Third option
 `
 	var enum = Enum{}
-	err := yaml.UnmarshalWithConfig([]byte(data), &enum, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &enum)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, *enum.Description, "Enum description")
 	assert.Equal(t, len(enum.Items), 3)
@@ -41,7 +41,7 @@ enum:
   the_third: THE_THIRD    # Third option
 `
 	var enum = Enum{}
-	err := yaml.UnmarshalWithConfig([]byte(data), &enum, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &enum)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(enum.Items), 3)
@@ -70,7 +70,7 @@ enum:
     description: Third option
 `
 	var enum = Enum{}
-	err := yaml.UnmarshalWithConfig([]byte(data), &enum, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &enum)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(enum.Items), 3)

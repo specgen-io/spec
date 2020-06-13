@@ -14,14 +14,14 @@ type Object object
 func (value *Object) UnmarshalYAML(node *yaml.Node) error {
 	if getMappingKey(node, "fields") == nil {
 		fields := NamedDefinitions{}
-		err := node.DecodeWithConfig(&fields, yamlDecodeConfig)
+		err := node.DecodeWith(decodeOptions, &fields)
 		if err != nil {
 			return err
 		}
 		*value = Object{Fields: fields}
 	} else {
 		internal := object{}
-		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &internal)
 		if err != nil {
 			return err
 		}

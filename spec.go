@@ -29,7 +29,7 @@ type Meta struct {
 
 func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
-	if err := yaml.UnmarshalWithConfig(data, &spec, yamlDecodeConfig); err != nil {
+	if err := yaml.UnmarshalWith(decodeOptions, data, &spec); err != nil {
 		return nil, err
 	}
 	return &spec, nil
@@ -82,7 +82,7 @@ func ReadSpec(filepath string) (*Spec, error) {
 
 func ParseMeta(data []byte) (*Meta, error) {
 	var meta Meta
-	if err := yaml.UnmarshalWithConfig(data, &meta, yamlDecodeConfig); err != nil {
+	if err := yaml.UnmarshalWith(decodeOptions, data, &meta); err != nil {
 		return nil, err
 	}
 	return &meta, nil

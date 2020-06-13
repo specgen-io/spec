@@ -34,4 +34,4 @@ func yamlError(node *yaml.Node, message string) error {
 	return errors.New(fmt.Sprintf("yaml: line %d: %s", node.Line, message))
 }
 
-var yamlDecodeConfig = yaml.NewDecodeConfig().KnownFields(true)
+var decodeOptions = yaml.NewDecodeOptions().KnownFields(true)

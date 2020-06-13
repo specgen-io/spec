@@ -22,7 +22,7 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
+		err := keyNode.DecodeWith(decodeOptions, &name)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (value *Responses) UnmarshalYAML(node *yaml.Node) error {
 			return yamlError(keyNode, fmt.Sprintf("unknown response name %s", name.Source))
 		}
 		definition := Definition{}
-		err = valueNode.DecodeWithConfig(&definition, yaml.NewDecodeConfig().KnownFields(true))
+		err = valueNode.DecodeWith(decodeOptions, &definition)
 		if err != nil {
 			return err
 		}

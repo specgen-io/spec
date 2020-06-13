@@ -27,21 +27,21 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 
 	if getMappingKey(node, "enum") != nil {
 		enum := Enum{}
-		err := node.DecodeWithConfig(&enum, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &enum)
 		if err != nil {
 			return err
 		}
 		model.Enum = &enum
 	} else if getMappingKey(node, "oneOf") != nil {
 		oneOf := OneOf{}
-		err := node.DecodeWithConfig(&oneOf, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &oneOf)
 		if err != nil {
 			return err
 		}
 		model.OneOf = &oneOf
 	} else {
 		object := Object{}
-		err := node.DecodeWithConfig(&object, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &object)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
+		err := keyNode.DecodeWith(decodeOptions, &name)
 		if err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		model := Model{}
-		err = valueNode.DecodeWithConfig(&model, yaml.NewDecodeConfig().KnownFields(true))
+		err = valueNode.DecodeWith(decodeOptions, &model)
 		if err != nil {
 			return err
 		}

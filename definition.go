@@ -40,7 +40,7 @@ func (value *DefinitionDefault) UnmarshalYAML(node *yaml.Node) error {
 		*value = internal
 	} else {
 		internal := definitionDefault{}
-		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &internal)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (value *Definition) UnmarshalYAML(node *yaml.Node) error {
 		*value = parsed
 	} else {
 		internal := definition{}
-		err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
+		err := node.DecodeWith(decodeOptions, &internal)
 		if err != nil {
 			return err
 		}

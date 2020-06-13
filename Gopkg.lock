@@ -40,11 +40,11 @@
 
 [[projects]]
   branch = "v3"
-  digest = "1:c2b0d84b07f399ccb5a1e88a32bbe23d0a6c4f82dbc1f6e5984f2b5dbc22f013"
+  digest = "1:fdf8804c446b4369045965d8af38935a8cffc4cdbb209c2f2ee46bbe2f790fe4"
   name = "github.com/vsapronov/yaml"
   packages = ["."]
   pruneopts = "UT"
-  revision = "84e45af4937baff96b228b1402480c44f02b34c8"
+  revision = "8436b0197393d641b1601efef7fb017cef94f5b7"
 
 [[projects]]
   digest = "1:a5cc901b8e54c4b73a62f97dc7c8f6c46e347c148a7a38e09b2e942c2587ba03"

@@ -15,7 +15,7 @@ prop2:
   description: another field
 `
 	var definitions NamedDefinitions
-	err := yaml.UnmarshalWithConfig([]byte(data), &definitions, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &definitions)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(definitions), 2)
@@ -33,6 +33,6 @@ prop2:
 
 func Test_NamedDefinitions_Unmarshal_WrongNameFormat(t *testing.T) {
 	var definitions NamedDefinitions
-	err := yaml.UnmarshalWithConfig([]byte("PROP1: string"), &definitions, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte("PROP1: string"), &definitions)
 	assert.ErrorContains(t, err, "PROP1")
 }

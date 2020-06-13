@@ -27,7 +27,7 @@ func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 		for index := 0; index < count; index++ {
 			itemNode := node.Content[index]
 			itemName := Name{}
-			err := itemNode.DecodeWithConfig(&itemName, yamlDecodeConfig)
+			err := itemNode.DecodeWith(decodeOptions, &itemName)
 			if err != nil {
 				return err
 			}
@@ -47,7 +47,7 @@ func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 			keyNode := node.Content[index*2]
 			valueNode := node.Content[index*2+1]
 			itemName := Name{}
-			err := keyNode.DecodeWithConfig(&itemName, yamlDecodeConfig)
+			err := keyNode.DecodeWith(decodeOptions, &itemName)
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func (value *EnumItems) UnmarshalYAML(node *yaml.Node) error {
 				item.Value = valueNode.Value
 				item.Description = getDescription(valueNode)
 			} else {
-				err = valueNode.DecodeWithConfig(item, yaml.NewDecodeConfig().KnownFields(true))
+				err = valueNode.DecodeWith(decodeOptions, item)
 				if err != nil {
 					return err
 				}

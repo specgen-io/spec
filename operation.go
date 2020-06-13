@@ -17,7 +17,7 @@ type Operation operation
 
 func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 	internal := operation{}
-	err := node.DecodeWithConfig(&internal, yaml.NewDecodeConfig().KnownFields(true))
+	err := node.DecodeWith(decodeOptions, &internal)
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWithConfig(&name, yamlDecodeConfig)
+		err := keyNode.DecodeWith(decodeOptions, &name)
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func (value *Operations) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operation := Operation{}
-		err = valueNode.DecodeWithConfig(&operation, yaml.NewDecodeConfig().KnownFields(true))
+		err = valueNode.DecodeWith(decodeOptions, &operation)
 		if err != nil {
 			return err
 		}

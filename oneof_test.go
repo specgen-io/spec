@@ -15,7 +15,7 @@ oneOf:
   third: TheThird
 `
 	var oneOf = OneOf{}
-	err := yaml.UnmarshalWithConfig([]byte(data), &oneOf, yamlDecodeConfig)
+	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &oneOf)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, *oneOf.Description, "OneOf description")
 	assert.Equal(t, len(oneOf.Items), 3)

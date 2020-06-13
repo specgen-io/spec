@@ -92,7 +92,7 @@ type Type struct {
 
 func (value *Type) UnmarshalYAML(node *yaml.Node) error {
 	str := ""
-	err := node.DecodeWithConfig(&str, yamlDecodeConfig)
+	err := node.DecodeWith(decodeOptions, &str)
 	if err != nil {
 		return err
 	}

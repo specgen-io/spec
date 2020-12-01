@@ -62,9 +62,9 @@ func (validator *validator) Operation(operation *NamedOperation) {
 	validator.ParamsNames(paramsMap, operation.QueryParams)
 	validator.ParamsNames(paramsMap, operation.HeaderParams)
 
-	validator.Params(operation.Endpoint.UrlParams)
-	validator.Params(operation.QueryParams)
-	validator.Params(operation.HeaderParams)
+	validator.Params(operation.Endpoint.UrlParams, false)
+	validator.Params(operation.QueryParams, true)
+	validator.Params(operation.HeaderParams, false)
 
 	if operation.Body != nil && !operation.Body.Type.Definition.IsEmpty() {
 		if operation.Body.Type.Definition.Info.Structure != StructureObject && operation.Body.Type.Definition.Info.Structure != StructureArray {
@@ -89,12 +89,14 @@ func (validator *validator) Response(response *NamedResponse) {
 	validator.Definition(&response.Definition)
 }
 
-func (validator *validator) Params(params []NamedParam) {
+func (validator *validator) Params(params []NamedParam, allowNonScalarTypes bool) {
 	for index := range params {
-		paramName := params[index].Name
-		paramType := params[index].DefinitionDefault.Type
-		if paramType.Definition.Info.Structure != StructureScalar {
-			validator.AddError(paramType.Location, fmt.Sprintf("parameter %s should be of scalar type, found %s", paramName.Source, paramType.Definition.Name))
+		if !allowNonScalarTypes {
+			paramName := params[index].Name
+			paramType := params[index].DefinitionDefault.Type
+			if paramType.Definition.Info.Structure != StructureScalar {
+				validator.AddError(paramType.Location, fmt.Sprintf("parameter %s should be of scalar type, found %s", paramName.Source, paramType.Definition.Name))
+			}
 		}
 		validator.DefinitionDefault(&params[index].DefinitionDefault)
 	}

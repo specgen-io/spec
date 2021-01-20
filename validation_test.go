@@ -49,31 +49,56 @@ operations:
 	assert.Equal(t, strings.Contains(errors[0].Message, "response"), true)
 }
 
-//func Test_Query_Param_NonScalar_Error(t *testing.T) {
-//	data := `
-//operations:
-//  test:
-//    some_url:
-//      endpoint: GET /some/url
-//      query:
-//        param1: TheModel
-//      response:
-//        ok: empty
-//models:
-//  TheModel:
-//    field: string
-//`
-//
-//	spec, err := unmarshalSpec([]byte(data))
-//	assert.Equal(t, err, nil)
-//
-//	errors := ResolveTypes(spec)
-//	assert.Equal(t, len(errors), 0)
-//
-//	errors = Validate(spec)
-//	assert.Equal(t, len(errors), 1)
-//	assert.Equal(t, strings.Contains(errors[0].Message, "param1"), true)
-//}
+func Test_Query_Param_NonScalar_Allowed(t *testing.T) {
+	data := `
+operations:
+ test:
+   some_url:
+     endpoint: GET /some/url
+     query:
+       param1: int[]
+     response:
+       ok: empty
+`
+
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+	assert.Equal(t, len(errors), 0)
+
+	errors = Validate(spec)
+	assert.Equal(t, len(errors), 0)
+}
+
+func Test_Query_Param_NonScalar_Errors(t *testing.T) {
+	data := `
+operations:
+ test:
+   some_url:
+     endpoint: GET /some/url
+     query:
+       param1: int[]?
+       param2: TheModel
+     response:
+       ok: empty
+models:
+ TheModel:
+   field: string
+`
+
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+	assert.Equal(t, len(errors), 0)
+
+	errors = Validate(spec)
+	assert.Equal(t, len(errors), 2)
+	assert.Equal(t, strings.Contains(errors[0].Message, "param1"), true)
+	assert.Equal(t, strings.Contains(errors[1].Message, "param2"), true)
+}
+
 
 func Test_Params_SameName_Error(t *testing.T) {
 	data := `

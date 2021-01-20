@@ -89,12 +89,18 @@ func (validator *validator) Response(response *NamedResponse) {
 	validator.Definition(&response.Definition)
 }
 
-func (validator *validator) Params(params []NamedParam, allowNonScalarTypes bool) {
+func (validator *validator) Params(params []NamedParam, allowArrayTypes bool) {
 	for index := range params {
-		if !allowNonScalarTypes {
-			paramName := params[index].Name
-			paramType := params[index].DefinitionDefault.Type
-			if paramType.Definition.Info.Structure != StructureScalar {
+		paramName := params[index].Name
+		paramType := params[index].DefinitionDefault.Type
+		scalar := paramType.Definition.Info.Structure == StructureScalar
+		arrayNotNullable := paramType.Definition.Info.Structure == StructureArray && !paramType.Definition.IsNullable()
+		if allowArrayTypes {
+			if !scalar && !arrayNotNullable {
+				validator.AddError(paramType.Location, fmt.Sprintf("parameter %s should be of scalar type or array of scalar type, found %s", paramName.Source, paramType.Definition.Name))
+			}
+		} else {
+			if !scalar {
 				validator.AddError(paramType.Location, fmt.Sprintf("parameter %s should be of scalar type, found %s", paramName.Source, paramType.Definition.Name))
 			}
 		}

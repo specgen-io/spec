@@ -139,9 +139,7 @@ func (validator *validator) DefaultValue(typ TypeDef, value string, location *ya
 		}
 	case PlainType:
 		switch typ.Plain {
-		case TypeByte,
-			TypeInt16,
-			TypeInt32,
+		case TypeInt32,
 			TypeInt64:
 			err := Integer.Check(value)
 			if err != nil {
@@ -159,11 +157,6 @@ func (validator *validator) DefaultValue(typ TypeDef, value string, location *ya
 			if err != nil {
 				validator.AddError(location, "default value "+err.Error())
 			}
-		case TypeChar:
-			err := Char.Check(value)
-			if err != nil {
-				validator.AddError(location, "default value "+err.Error())
-			}
 		case TypeUuid:
 			err := UUID.Check(value)
 			if err != nil {
@@ -176,11 +169,6 @@ func (validator *validator) DefaultValue(typ TypeDef, value string, location *ya
 			}
 		case TypeDateTime:
 			err := DateTime.Check(value)
-			if err != nil {
-				validator.AddError(location, "default value "+err.Error())
-			}
-		case TypeTime:
-			err := Time.Check(value)
 			if err != nil {
 				validator.AddError(location, "default value "+err.Error())
 			}

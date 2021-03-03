@@ -105,26 +105,21 @@ func (value *Type) UnmarshalYAML(node *yaml.Node) error {
 }
 
 const (
-	TypeByte     string = "byte"
-	TypeInt16    string = "int16"
 	TypeInt32    string = "int32"
 	TypeInt64    string = "int64"
 	TypeFloat    string = "float"
 	TypeDouble   string = "double"
 	TypeDecimal  string = "decimal"
 	TypeBoolean  string = "boolean"
-	TypeChar     string = "char"
 	TypeString   string = "string"
 	TypeUuid     string = "uuid"
 	TypeDate     string = "date"
 	TypeDateTime string = "datetime"
-	TypeTime     string = "time"
 	TypeJson     string = "json"
 	TypeEmpty    string = "empty"
 )
 
 var TypesAliases = map[string]string{
-	"short": TypeInt16,
 	"int":   TypeInt32,
 	"long":  TypeInt64,
 	"bool":  TypeBoolean,
@@ -154,20 +149,16 @@ type TypeInfo struct {
 }
 
 var Types = map[string]TypeInfo{
-	TypeByte:     {StructureScalar, true, nil},
-	TypeInt16:    {StructureScalar, true, nil},
 	TypeInt32:    {StructureScalar, true, nil},
 	TypeInt64:    {StructureScalar, true, nil},
 	TypeFloat:    {StructureScalar, true, nil},
 	TypeDouble:   {StructureScalar, true, nil},
 	TypeDecimal:  {StructureScalar, true, nil},
 	TypeBoolean:  {StructureScalar, true, nil},
-	TypeChar:     {StructureScalar, true, nil},
 	TypeString:   {StructureScalar, true, nil},
 	TypeUuid:     {StructureScalar, true, nil},
 	TypeDate:     {StructureScalar, true, nil},
 	TypeDateTime: {StructureScalar, true, nil},
-	TypeTime:     {StructureScalar, true, nil},
 	TypeJson:     {StructureObject, false, nil},
 	TypeEmpty:    {StructureNone, false, nil},
 }

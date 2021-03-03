@@ -52,11 +52,7 @@ var Float = Format{Name: "float", Regex: "^[-+]?\\d+\\.?\\d*$", Example: "123.4"
 
 var Boolean = Format{Name: "boolean", Regex: "^true$|^false$", Example: "true or false"}
 
-var Char = Format{Name: "char", Regex: "^.$", Example: "a, B, 5, &"}
-
 var UUID = Format{Name: "uuid", Regex: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$", Example: "fbd3036f-0f1c-4e98-b71c-d4cd61213f90"}
-
-var Time = Format{Name: "time", Regex: "^\\d{2}:\\d{2}:\\d{2}$", Example: "15:53:45"}
 
 var Date = Format{Name: "date", Regex: "^\\d{4}-\\d{2}-\\d{2}$", Example: "2019-12-31"}
 

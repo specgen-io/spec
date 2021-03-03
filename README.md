@@ -113,20 +113,16 @@ Spec has it's own list of supported types to close gaps mentioned above and to p
 
 | Spec type         | JSON type | Notes                                             |
 | :---------------- | :-------- | :------------------------------------------------ |
-| byte              | number    | -128 to 127                                       |
-| short <br> int16  | number    | -32768 to 32767                                   |
 | int <br> int32    | number    | -2147483648 to 2147483647                         |
 | long <br> int64   | number    | -9223372036854775808 to 9223372036854775807       |
 | float             | number    | 32 bit IEEE 754 single-precision float            |
 | double            | number    | 64 bit IEEE 754 double-precision float            |
 | decimal           | number    | arbitrary-precision signed decimal                |
 | bool <br> boolean | boolean   |                                                   |
-| char              | string    | single symbol string                              |
 | string <br> str   | string    |                                                   |
 | uuid              | string    | lower case hex symbols with hyphens as 8-4-4-4-12 |
 | date              | string    | ISO 8601 yyyy-mm-dd                               |
 | datetime          | string    | ISO 8601 yyyy-mm-ddThh:mm:ss.ffffff               |
-| time              | string    | ISO 8601 hh:mm:ss.ffffff                          |
 | json              | object    | any unstructured JSON                             |
 | empty             | N/A       | represents nothing, similar to unit is some langs |
 

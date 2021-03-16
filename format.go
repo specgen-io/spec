@@ -58,6 +58,8 @@ var Date = Format{Name: "date", Regex: "^\\d{4}-\\d{2}-\\d{2}$", Example: "2019-
 
 var DateTime = Format{Name: "datetime", Regex: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$", Example: "2019-12-31T15:53:45"}
 
+var Version = Format{Name: "version", Regex: "^v\\d+$", Example: "v1"}
+
 func FormatOr(f1 Format, f2 Format) Format {
 	return Format{
 		Name:    fmt.Sprintf("%s or %s", f1.Name, f2.Name),

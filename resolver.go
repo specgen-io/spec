@@ -10,7 +10,7 @@ type ModelsMap map[string]NamedModel
 func buildModelsMap(models Models) ModelsMap {
 	result := make(map[string]NamedModel)
 	for _, model := range models {
-		result[model.Name.Source] = model
+		result[model.Name.String()] = model
 	}
 	return result
 }
@@ -100,7 +100,7 @@ func (resolver *resolver) Type(typ *Type) {
 
 func (resolver *resolver) Resolved(model *NamedModel) {
 	for index := range resolver.ResolvedModels {
-		if resolver.ResolvedModels[index].Name.Source == model.Name.Source {
+		if resolver.ResolvedModels[index].Name.String() == model.Name.String() {
 			return
 		}
 	}

@@ -161,8 +161,8 @@ models:
 	ResolveTypes(spec)
 
 	assert.Equal(t, len(spec.ResolvedModels), 2)
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model1")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
+	assert.Equal(t, spec.ResolvedModels[0].Name.String(), "Model1")
+	assert.Equal(t, spec.ResolvedModels[1].Name.String(), "Model2")
 }
 
 func Test_Resolve_Models_Reversed_Order(t *testing.T) {
@@ -179,8 +179,8 @@ models:
 	ResolveTypes(spec)
 
 	assert.Equal(t, len(spec.ResolvedModels), 2)
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model2")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model1")
+	assert.Equal(t, spec.ResolvedModels[0].Name.String(), "Model2")
+	assert.Equal(t, spec.ResolvedModels[1].Name.String(), "Model1")
 }
 
 func Test_Resolve_Models_Reversed_Order_With_Enum(t *testing.T) {
@@ -201,7 +201,7 @@ models:
 	ResolveTypes(spec)
 
 	assert.Equal(t, len(spec.ResolvedModels), 3)
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model3")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
-	assert.Equal(t, spec.ResolvedModels[2].Name.Source, "Model1")
+	assert.Equal(t, spec.ResolvedModels[0].Name.String(), "Model3")
+	assert.Equal(t, spec.ResolvedModels[1].Name.String(), "Model2")
+	assert.Equal(t, spec.ResolvedModels[2].Name.String(), "Model1")
 }

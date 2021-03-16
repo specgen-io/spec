@@ -20,8 +20,8 @@ models:
 	assert.Equal(t, len(spec.Models), 2)
 	model1 := spec.Models[0]
 	model2 := spec.Models[1]
-	assert.Equal(t, model1.Name.Source, "Model1")
-	assert.Equal(t, model2.Name.Source, "Model2")
+	assert.Equal(t, model1.Name.String(), "Model1")
+	assert.Equal(t, model2.Name.String(), "Model2")
 }
 
 func Test_ParseSpec_Operations(t *testing.T) {

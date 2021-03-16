@@ -27,7 +27,7 @@ Model4:
     two: Model2
 `
 	var models Models
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &models)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(models), 4)
@@ -57,6 +57,6 @@ model_one:
     prop2: int32
 `
 	var models Models
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &models)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.ErrorContains(t, err, "model_one")
 }

@@ -41,8 +41,8 @@ In many aspects spec format resembles to [OpenAPI](https://github.com/OAI/OpenAP
 
 Here's an example of simplest spec:
 ```yaml
-idl_version: 0               # meta information
-service_name: example
+idl_version: 1               # meta information
+name: example
 version: '1'
 
 operations:                  # HTTP operations
@@ -65,15 +65,15 @@ Spec YAML file consists of following sections:
 
 #### Meta Information
 
-Meta information is presented in form for keys at the top level of the YAML file. In the example above `idl_version` and `service_name` are meta information fields.
+Meta information is presented in form for keys at the top level of the YAML file. In the example above `idl_version` and `name` are meta information fields.
 
 Here's the list of supported meta information fields:
 
-| Name         | Description                                                                   |
-| :----------- | :---------------------------------------------------------------------------- |
-| idl_version  | Version of spec format                                                        |
-| service_name | Name of the service, should be in [kebab-case](http://wiki.c2.com/?KebabCase) |
-| version      | Version of the specification                                                  |
+| Name         | Description                                                                         |
+| :----------- | :---------------------------------------------------------------------------------- |
+| idl_version  | Version of spec format                                                              |
+| name         | Name of the specification, should be in [kebab-case](http://wiki.c2.com/?KebabCase) |
+| version      | Version of the specification                                                        |
 
 #### Operations
 

@@ -7,6 +7,9 @@ import (
 
 func Test_ParseSpec_Models(t *testing.T) {
 	data := `
+idl_version: 1
+name: bla-api
+
 models:
   Model1:
     prop1: string
@@ -26,6 +29,9 @@ models:
 
 func Test_ParseSpec_Operations(t *testing.T) {
 	data := `
+idl_version: 1
+name: bla-api
+
 operations:
   test:
     some_url:
@@ -63,8 +69,8 @@ operations:
 
 func Test_ParseSpec_Meta(t *testing.T) {
 	data := `
-idl_version: 0
-service_name: bla-api
+idl_version: 1
+name: bla-api
 title: Bla API
 description: Some Bla API service
 version: 0
@@ -72,8 +78,8 @@ version: 0
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, *spec.IdlVersion, "0")
-	assert.Equal(t, spec.ServiceName.Source, "bla-api")
+	assert.Equal(t, spec.IdlVersion, "1")
+	assert.Equal(t, spec.Name.Source, "bla-api")
 	assert.Equal(t, *spec.Title, "Bla API")
 	assert.Equal(t, *spec.Description, "Some Bla API service")
 	assert.Equal(t, spec.Version, "0")
@@ -81,8 +87,8 @@ version: 0
 
 func Test_ParseMeta(t *testing.T) {
 	data := `
-idl_version: 0
-service_name: bla-api
+idl_version: 1
+name: bla-api
 title: Bla API
 description: Some Bla API service
 version: 0
@@ -90,8 +96,8 @@ version: 0
 	meta, err := ParseMeta([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, *meta.IdlVersion, "0")
-	assert.Equal(t, meta.ServiceName.Source, "bla-api")
+	assert.Equal(t, meta.IdlVersion, "1")
+	assert.Equal(t, meta.Name.Source, "bla-api")
 	assert.Equal(t, *meta.Title, "Bla API")
 	assert.Equal(t, *meta.Description, "Some Bla API service")
 	assert.Equal(t, meta.Version, "0")

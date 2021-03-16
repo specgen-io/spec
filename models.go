@@ -27,21 +27,21 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 
 	if getMappingKey(node, "enum") != nil {
 		enum := Enum{}
-		err := node.DecodeWith(decodeOptions, &enum)
+		err := node.DecodeWith(decodeStrict, &enum)
 		if err != nil {
 			return err
 		}
 		model.Enum = &enum
 	} else if getMappingKey(node, "oneOf") != nil {
 		oneOf := OneOf{}
-		err := node.DecodeWith(decodeOptions, &oneOf)
+		err := node.DecodeWith(decodeStrict, &oneOf)
 		if err != nil {
 			return err
 		}
 		model.OneOf = &oneOf
 	} else {
 		object := Object{}
-		err := node.DecodeWith(decodeOptions, &object)
+		err := node.DecodeWith(decodeStrict, &object)
 		if err != nil {
 			return err
 		}
@@ -65,7 +65,7 @@ func isVersionNode(node *yaml.Node) bool {
 
 func unmarshalModel(version Name, keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, error) {
 	name := Name{}
-	err := keyNode.DecodeWith(decodeOptions, &name)
+	err := keyNode.DecodeWith(decodeStrict, &name)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func unmarshalModel(version Name, keyNode *yaml.Node, valueNode *yaml.Node) (*Na
 		return nil, err
 	}
 	model := Model{}
-	err = valueNode.DecodeWith(decodeOptions, &model)
+	err = valueNode.DecodeWith(decodeStrict, &model)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 
 		if isVersionNode(keyNode) {
 			version := Name{}
-			err := keyNode.DecodeWith(decodeOptions, &version)
+			err := keyNode.DecodeWith(decodeStrict, &version)
 			if err != nil {
 				return err
 			}

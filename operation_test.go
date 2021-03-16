@@ -14,7 +14,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &operation)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operation)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, operation.Endpoint.Method, "GET")
@@ -39,7 +39,7 @@ ping:
 `
 
 	var operations Operations
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &operations)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operations)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)
@@ -63,7 +63,7 @@ ping:         # ping description
 `
 
 	var operations Operations
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &operations)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operations)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(operations), 2)
@@ -85,7 +85,7 @@ response:
 `
 
 	var operation Operation
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &operation)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operation)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, *operation.Body.Description, "body description")

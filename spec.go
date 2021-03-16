@@ -7,9 +7,11 @@ import (
 	"io/ioutil"
 )
 
+var IdlVersion = "1"
+
 type Spec struct {
-	IdlVersion  *string `yaml:"idl_version"`
-	ServiceName Name    `yaml:"service_name"`
+	IdlVersion  string  `yaml:"idl_version"`
+	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
@@ -20,16 +22,21 @@ type Spec struct {
 }
 
 type Meta struct {
-	IdlVersion  *string `yaml:"idl_version"`
-	ServiceName Name    `yaml:"service_name"`
+	IdlVersion  string `yaml:"idl_version"`
+	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
 }
 
+type MetaIdlVersion struct {
+	IdlVersion  string `yaml:"idl_version"`
+}
+
+
 func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
-	if err := yaml.UnmarshalWith(decodeOptions, data, &spec); err != nil {
+	if err := yaml.UnmarshalWith(decodeStrict, data, &spec); err != nil {
 		return nil, err
 	}
 	return &spec, nil
@@ -47,6 +54,10 @@ func specError(errs []ValidationError) error {
 }
 
 func ParseSpec(data []byte) (*Spec, error) {
+	if err := checkIdlVersion(data); err != nil {
+		return nil, err
+	}
+
 	spec, err := unmarshalSpec(data)
 	if err != nil {
 		return nil, err
@@ -81,8 +92,11 @@ func ReadSpec(filepath string) (*Spec, error) {
 }
 
 func ParseMeta(data []byte) (*Meta, error) {
+	if err := checkIdlVersion(data); err != nil {
+		return nil, err
+	}
 	var meta Meta
-	if err := yaml.UnmarshalWith(decodeOptions, data, &meta); err != nil {
+	if err := yaml.UnmarshalWith(decodeLooze, data, &meta); err != nil {
 		return nil, err
 	}
 	return &meta, nil
@@ -101,4 +115,21 @@ func ReadMeta(filepath string) (*Meta, error) {
 	}
 
 	return meta, nil
+}
+
+func ParseMetaIdlVersion(data []byte) (*MetaIdlVersion, error) {
+	var meta MetaIdlVersion
+	if err := yaml.UnmarshalWith(decodeLooze, data, &meta); err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+func checkIdlVersion(data []byte) error {
+	meta, err := ParseMetaIdlVersion(data)
+	if err != nil { return err }
+	if meta.IdlVersion != IdlVersion {
+		return fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, meta.IdlVersion)
+	}
+	return nil
 }

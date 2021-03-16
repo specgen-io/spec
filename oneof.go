@@ -14,14 +14,14 @@ type OneOf oneOf
 func (value *OneOf) UnmarshalYAML(node *yaml.Node) error {
 	if getMappingKey(node, "oneOf") == nil {
 		items := NamedDefinitions{}
-		err := node.DecodeWith(decodeOptions, &items)
+		err := node.DecodeWith(decodeStrict, &items)
 		if err != nil {
 			return err
 		}
 		*value = OneOf{Items: items}
 	} else {
 		internal := oneOf{}
-		err := node.DecodeWith(decodeOptions, &internal)
+		err := node.DecodeWith(decodeStrict, &internal)
 		if err != nil {
 			return err
 		}

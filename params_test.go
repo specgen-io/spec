@@ -17,7 +17,7 @@ param3:         # some param
   type: string
 `
 	var params QueryParams
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &params)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &params)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 3)
@@ -47,7 +47,7 @@ Some-Header:           # some param
   type: string
 `
 	var params HeaderParams
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &params)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &params)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(params), 3)

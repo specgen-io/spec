@@ -26,6 +26,43 @@ response:
 	assert.Equal(t, response.Type.Definition, ParseType("empty"))
 }
 
+func Test_Operation_Unmarshal_QueryParams(t *testing.T) {
+	data := `
+endpoint: GET /ping
+query:
+  message: string?
+response:
+  ok: empty
+`
+
+	var operation Operation
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operation)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, operation.Endpoint.Method, "GET")
+	assert.Equal(t, operation.Endpoint.Url, "/ping")
+	assert.Equal(t, len(operation.QueryParams), 1)
+	queryParam := operation.QueryParams[0]
+	assert.Equal(t, queryParam.Name.Source, "message")
+	assert.Equal(t, queryParam.Type.Definition.Name, "string?")
+}
+
+
+func Test_Operation_Unmarshal_BodyDescription(t *testing.T) {
+	data := `
+endpoint: GET /some/url
+body: Some  # body description
+response:
+  ok: empty
+`
+
+	var operation Operation
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operation)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, *operation.Body.Description, "body description")
+}
+
 func Test_Operations_Unmarshal(t *testing.T) {
 	data := `
 some_url:
@@ -74,19 +111,4 @@ ping:         # ping description
 	assert.Equal(t, *operation1.Description, "some url description")
 	assert.Equal(t, operation2.Name.Source, "ping")
 	assert.Equal(t, *operation2.Description, "ping description")
-}
-
-func Test_Operation_Unmarshal_BodyDescription(t *testing.T) {
-	data := `
-endpoint: GET /some/url
-body: Some  # body description
-response:
-  ok: empty
-`
-
-	var operation Operation
-	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &operation)
-	assert.Equal(t, err, nil)
-
-	assert.Equal(t, *operation.Body.Description, "body description")
 }

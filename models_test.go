@@ -60,3 +60,25 @@ model_one:
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.ErrorContains(t, err, "model_one")
 }
+
+func Test_Models_Unmarshal_Versioned(t *testing.T) {
+	data := `
+v2:
+  TheModel:
+    prop1: string
+    prop2: int32
+TheModel:
+  prop1: string
+  prop2: int32
+`
+	var models Models
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, len(models), 2)
+	model1 := models[0]
+	model2 := models[1]
+
+	assert.Equal(t, model1.Name.String(), "v2.TheModel")
+	assert.Equal(t, model2.Name.String(), "TheModel")
+}

@@ -11,6 +11,11 @@ type Api struct {
 
 type Apis []Api
 
+type ApiGroup struct {
+	Endpoint *string  `yaml:"endpoint"`
+	Apis     Apis     `yaml:"apis"`
+}
+
 func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "spec apis should be YAML mapping")

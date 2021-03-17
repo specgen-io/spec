@@ -16,13 +16,13 @@ type Spec struct {
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
 
-	Apis   Apis   `yaml:"operations"`
+	Http   Http   `yaml:"http"`
 	Models Models `yaml:"models"`
 	ResolvedModels Models
 }
 
 type Meta struct {
-	IdlVersion  string `yaml:"idl_version"`
+	IdlVersion  string  `yaml:"idl_version"`
 	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`

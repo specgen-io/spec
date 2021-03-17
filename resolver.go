@@ -37,9 +37,11 @@ func (resolver *resolver) Spec(spec *Spec) {
 	for index := range spec.Models {
 		resolver.Model(&spec.Models[index])
 	}
-	for index := range spec.Apis {
-		for opIndex := range spec.Apis[index].Operations {
-			resolver.Operation(&spec.Apis[index].Operations[opIndex])
+	for grIndex := range spec.Http.Groups {
+		for apiIndex := range spec.Http.Groups[grIndex].Apis {
+			for opIndex := range spec.Http.Groups[grIndex].Apis[apiIndex].Operations {
+				resolver.Operation(&spec.Http.Groups[grIndex].Apis[apiIndex].Operations[opIndex])
+			}
 		}
 	}
 }

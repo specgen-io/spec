@@ -9,14 +9,14 @@ type Api struct {
 	Operations Operations
 }
 
-type Apis []Api
+type ApiArray []Api
 
 type ApiGroup struct {
 	Endpoint *string  `yaml:"endpoint"`
-	Apis     Apis     `yaml:"apis"`
+	Apis     ApiArray `yaml:"apis"`
 }
 
-func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
+func (value *ApiArray) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "spec apis should be YAML mapping")
 	}

@@ -16,9 +16,9 @@ type Spec struct {
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
 
-	Http   Http   `yaml:"http"`
-	Models Models `yaml:"models"`
-	ResolvedModels Models
+	Http           Http            `yaml:"http"`
+	Models         VersionedModels `yaml:"models"`
+	ResolvedModels VersionedModels
 }
 
 type Meta struct {

@@ -26,7 +26,7 @@ Model4:
     one: Model1
     two: Model2
 `
-	var models Models
+	var models ModelArray
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.Equal(t, err, nil)
 
@@ -36,15 +36,15 @@ Model4:
 	model3 := models[2]
 	model4 := models[3]
 
-	assert.Equal(t, model1.Name.String(), "Model1")
+	assert.Equal(t, model1.Name.Source, "Model1")
 	assert.Equal(t, model1.IsObject(), true)
 	assert.Equal(t, *model1.Object.Description, "first model")
-	assert.Equal(t, model2.Name.String(), "Model2")
+	assert.Equal(t, model2.Name.Source, "Model2")
 	assert.Equal(t, model2.IsObject(), true)
 	assert.Equal(t, *model2.Object.Description, "second model")
-	assert.Equal(t, model3.Name.String(), "Model3")
+	assert.Equal(t, model3.Name.Source, "Model3")
 	assert.Equal(t, model3.IsEnum(), true)
-	assert.Equal(t, model4.Name.String(), "Model4")
+	assert.Equal(t, model4.Name.Source, "Model4")
 	assert.Equal(t, model4.IsOneOf(), true)
 }
 
@@ -56,7 +56,7 @@ model_one:
     prop1: string
     prop2: int32
 `
-	var models Models
+	var models ModelArray
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.ErrorContains(t, err, "model_one")
 }
@@ -71,14 +71,15 @@ TheModel:
   prop1: string
   prop2: int32
 `
-	var models Models
+	var models VersionedModels
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(models), 2)
-	model1 := models[0]
-	model2 := models[1]
 
-	assert.Equal(t, model1.Name.String(), "v2.TheModel")
-	assert.Equal(t, model2.Name.String(), "TheModel")
+	assert.Equal(t, models[0].Version.Source, "v2")
+	assert.Equal(t, models[0].Models[0].Name.Source, "TheModel")
+
+	assert.Equal(t, models[1].Version.Source, "")
+	assert.Equal(t, models[1].Models[0].Name.Source, "TheModel")
 }

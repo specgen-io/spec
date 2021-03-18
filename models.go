@@ -10,6 +10,20 @@ type Model struct {
 	OneOf  *OneOf
 }
 
+type NamedModel struct {
+	Name Name
+	Model
+}
+
+type ModelArray []NamedModel
+
+type Models struct {
+	Version Name
+	Models  ModelArray
+}
+
+type VersionedModels []Models
+
 func (self *Model) IsObject() bool {
 	return self.Object != nil && self.Enum == nil && self.OneOf == nil
 }
@@ -52,18 +66,11 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
-type NamedModel struct {
-	Name FullName
-	Model
-}
-
-type Models []NamedModel
-
 func isVersionNode(node *yaml.Node) bool {
 	return Version.Check(node.Value) == nil
 }
 
-func unmarshalModel(version Name, keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, error) {
+func unmarshalModel(keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, error) {
 	name := Name{}
 	err := keyNode.DecodeWith(decodeStrict, &name)
 	if err != nil {
@@ -84,35 +91,36 @@ func unmarshalModel(version Name, keyNode *yaml.Node, valueNode *yaml.Node) (*Na
 	if model.IsObject() && model.Object.Description == nil {
 		model.Object.Description = getDescription(keyNode)
 	}
-	return &NamedModel{FullName{name, version}, model}, nil
+	return &NamedModel{name, model}, nil
 }
 
-
-func unmarshalModels(version Name, node *yaml.Node) (Models, error) {
-	if node.Kind != yaml.MappingNode {
-		return nil, yamlError(node, "models should be YAML mapping")
-	}
-	count := len(node.Content) / 2
-	array := make([]NamedModel, count)
-	for index := 0; index < count; index++ {
-		keyNode := node.Content[index*2]
-		valueNode := node.Content[index*2+1]
-		model, err := unmarshalModel(version, keyNode, valueNode)
-		if err != nil {
-			return nil, err
-		}
-		array[index] = *model
-	}
-	return array, nil
-}
-
-func (value *Models) UnmarshalYAML(node *yaml.Node) error {
+func (value *ModelArray) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "models should be YAML mapping")
 	}
 	count := len(node.Content) / 2
-	root := Name{}
-	array := Models{}
+	array := ModelArray{}
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		if !isVersionNode(keyNode) {
+			valueNode := node.Content[index*2+1]
+			model, err := unmarshalModel(keyNode, valueNode)
+			if err != nil {
+				return err
+			}
+			array = append(array, *model)
+		}
+	}
+	*value = array
+	return nil
+}
+
+func (value *VersionedModels) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.MappingNode {
+		return yamlError(node, "models should be YAML mapping")
+	}
+	count := len(node.Content) / 2
+	array := VersionedModels{}
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
@@ -123,19 +131,20 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			versionModels, err := unmarshalModels(version, valueNode)
+			models := ModelArray{}
+			err = valueNode.DecodeWith(decodeStrict, &models)
 			if err != nil {
 				return err
 			}
-			array = append(array, versionModels...)
-		} else {
-			model, err := unmarshalModel(root, keyNode, valueNode)
-			if err != nil {
-				return err
-			}
-			array = append(array, *model)
+			array = append(array, Models{version, models})
 		}
 	}
+	models := ModelArray{}
+	err := node.DecodeWith(decodeStrict, &models)
+	if err != nil {
+		return err
+	}
+	array = append(array, Models{Name{}, models})
 	*value = array
 	return nil
 }

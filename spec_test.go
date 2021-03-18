@@ -20,9 +20,10 @@ models:
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, len(spec.Models), 2)
-	assert.Equal(t, spec.Models[0].Name.String(), "Model1")
-	assert.Equal(t, spec.Models[1].Name.String(), "Model2")
+	assert.Equal(t, len(spec.Models), 1)
+	assert.Equal(t, len(spec.Models[0].Models), 2)
+	assert.Equal(t, spec.Models[0].Models[0].Name.Source, "Model1")
+	assert.Equal(t, spec.Models[0].Models[1].Name.Source, "Model2")
 }
 
 func Test_ParseSpec_Operations(t *testing.T) {

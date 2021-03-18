@@ -47,6 +47,10 @@ func specError(errs []ValidationError) error {
 }
 
 func ParseSpec(data []byte) (*Spec, error) {
+	if err := checkIdlVersion(data); err != nil {
+		return nil, err
+	}
+
 	spec, err := unmarshalSpec(data)
 	if err != nil {
 		return nil, err
@@ -81,6 +85,9 @@ func ReadSpec(filepath string) (*Spec, error) {
 }
 
 func ParseMeta(data []byte) (*Meta, error) {
+	if err := checkIdlVersion(data); err != nil {
+		return nil, err
+	}
 	var meta Meta
 	if err := yaml.UnmarshalWith(decodeOptions, data, &meta); err != nil {
 		return nil, err

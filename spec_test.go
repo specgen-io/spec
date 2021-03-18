@@ -7,6 +7,8 @@ import (
 
 func Test_ParseSpec_Models(t *testing.T) {
 	data := `
+idl_version: 0
+
 models:
   Model1:
     prop1: string
@@ -26,6 +28,8 @@ models:
 
 func Test_ParseSpec_Operations(t *testing.T) {
 	data := `
+idl_version: 0
+
 operations:
   test:
     some_url:

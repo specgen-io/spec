@@ -35,3 +35,5 @@ func yamlError(node *yaml.Node, message string) error {
 }
 
 var decodeOptions = yaml.NewDecodeOptions().KnownFields(true)
+
+var decodeLooze = yaml.NewDecodeOptions().KnownFields(false)

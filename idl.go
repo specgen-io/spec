@@ -5,8 +5,6 @@ import (
 	"github.com/vsapronov/yaml"
 )
 
-var IdlVersion = "0"
-
 type MetaIdlVersion struct {
 	IdlVersion  string `yaml:"idl_version"`
 }
@@ -26,8 +24,8 @@ func checkIdlVersion(data []byte) error {
 	if foundIdlVersion == "" {
 		foundIdlVersion = "none"
 	}
-	if foundIdlVersion != IdlVersion {
-		return fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, foundIdlVersion)
+	if foundIdlVersion != "0" && foundIdlVersion != "1" {
+		return fmt.Errorf("unexpected IDL version, expected: 0 or 1, found: %s", foundIdlVersion)
 	}
 	return nil
 }

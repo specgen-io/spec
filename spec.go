@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 )
 
-var IdlVersion = "1"
-
 type Spec struct {
 	IdlVersion  string  `yaml:"idl_version"`
 	Name        Name    `yaml:"name"`
@@ -28,11 +26,6 @@ type Meta struct {
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
 }
-
-type MetaIdlVersion struct {
-	IdlVersion  string `yaml:"idl_version"`
-}
-
 
 func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
@@ -115,21 +108,4 @@ func ReadMeta(filepath string) (*Meta, error) {
 	}
 
 	return meta, nil
-}
-
-func ParseMetaIdlVersion(data []byte) (*MetaIdlVersion, error) {
-	var meta MetaIdlVersion
-	if err := yaml.UnmarshalWith(decodeLooze, data, &meta); err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-func checkIdlVersion(data []byte) error {
-	meta, err := ParseMetaIdlVersion(data)
-	if err != nil { return err }
-	if meta.IdlVersion != IdlVersion {
-		return fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, meta.IdlVersion)
-	}
-	return nil
 }

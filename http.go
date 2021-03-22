@@ -52,7 +52,7 @@ func (value *Http) UnmarshalYAML(node *yaml.Node) error {
 		}
 	}
 	apiGroup := ApiGroup{}
-	err := node.DecodeWith(decodeStrict, &apiGroup)
+	err := node.DecodeWith(decodeLooze, &apiGroup)
 	if err != nil {
 		return err
 	}

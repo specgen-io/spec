@@ -35,7 +35,7 @@ func (value *ApiArray) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operations := Operations{}
-		err = valueNode.DecodeWith(decodeStrict, &operations)
+		err = valueNode.DecodeWith(decodeLooze, &operations)
 		if err != nil {
 			return err
 		}

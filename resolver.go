@@ -43,7 +43,7 @@ func (self *resolver) findModel(version string, name string) (*NamedModel, bool)
 
 func (resolver *resolver) AddResolvedVersion(version Name) *Models {
 	for verIndex := range resolver.ResolvedModels {
-		if resolver.ResolvedModels[verIndex].Version == version {
+		if resolver.ResolvedModels[verIndex].Version.Source == version.Source {
 			return &resolver.ResolvedModels[verIndex]
 		}
 	}
@@ -144,9 +144,9 @@ func (resolver *resolver) TypeDef(version Name, typ *TypeDef, location *yaml.Nod
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
-			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
-				typ.Info = GetModelTypeInfo(&model)
-				resolver.AddResolvedModel(version, &model)
+			if model, ok := resolver.findModel(version.Source, typ.Plain); ok {
+				typ.Info = GetModelTypeInfo(model)
+				resolver.AddResolvedModel(version, model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info

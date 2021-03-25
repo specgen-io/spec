@@ -26,7 +26,7 @@ models:
 	assert.Equal(t, spec.Models[0].Models[1].Name.Source, "Model2")
 }
 
-func Test_ParseSpec_Operations(t *testing.T) {
+func Test_ParseSpec_Http(t *testing.T) {
 	data := `
 idl_version: 2
 name: bla-api

@@ -25,4 +25,3 @@ func checkIdlVersion(data []byte) error {
 	}
 	return nil
 }
-

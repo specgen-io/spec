@@ -113,7 +113,7 @@ func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 		case PlainType:
 			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
 				typ.Info = GetModelTypeInfo(&model)
-				resolver.Resolved(&model)
+				resolver.Model(&model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info

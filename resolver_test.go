@@ -171,6 +171,8 @@ models:
   Model1:
     field: Model2
   Model2:
+    field: Model3
+  Model3:
     field: string
 `
 	spec, err := unmarshalSpec([]byte(data))
@@ -178,7 +180,8 @@ models:
 
 	ResolveTypes(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 2)
+	assert.Equal(t, len(spec.ResolvedModels), 3)
+	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model3")
 	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model2")
 	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model1")
 }

@@ -118,10 +118,9 @@ models:
     field2: Custom2
   Custom2:
     oneOf:
-      one: Custom1
-      two: Custom2[]
-      three: Custom2?
-      four: int
+      one: string
+      two: boolean[]
+      three: int?
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -182,8 +181,8 @@ models:
 
 	assert.Equal(t, len(spec.ResolvedModels), 3)
 	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model3")
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model2")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model1")
+	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
+	assert.Equal(t, spec.ResolvedModels[2].Name.Source, "Model1")
 }
 
 func Test_Resolve_Models_Reversed_Order_With_Enum(t *testing.T) {

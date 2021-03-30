@@ -144,9 +144,9 @@ func (resolver *resolver) TypeDef(version Name, typ *TypeDef, location *yaml.Nod
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
-			if model, ok := resolver.ModelsMap[typ.Plain]; ok {
-				typ.Info = GetModelTypeInfo(&model)
-				resolver.Model(version, &model)
+			if model, ok := resolver.findModel(version.Source, typ.Plain); ok {
+				typ.Info = GetModelTypeInfo(model)
+				resolver.Model(version, model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info

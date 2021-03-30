@@ -18,7 +18,7 @@ bad_request:
   description: invalid request
 `
 	var responses Responses
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &responses)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &responses)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(responses), 2)
@@ -38,7 +38,7 @@ ok: empty            # success
 bad_request: empty   # invalid request
 `
 	var responses Responses
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &responses)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &responses)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(responses), 2)
@@ -55,7 +55,7 @@ bad_request: empty   # invalid request
 func Test_Response_WrongName_Error(t *testing.T) {
 	data := `bla: empty`
 	var responses Responses
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &responses)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &responses)
 	assert.Equal(t, err != nil, true)
 	assert.Equal(t, strings.Contains(err.Error(), "bla"), true)
 }

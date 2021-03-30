@@ -21,7 +21,7 @@ func (params *Params) unmarshalYAML(node *yaml.Node, paramsName string, namesFor
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWith(decodeOptions, &name)
+		err := keyNode.DecodeWith(decodeStrict, &name)
 		if err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func (params *Params) unmarshalYAML(node *yaml.Node, paramsName string, namesFor
 			return err
 		}
 		definition := DefinitionDefault{}
-		err = valueNode.DecodeWith(decodeOptions, &definition)
+		err = valueNode.DecodeWith(decodeStrict, &definition)
 		if err != nil {
 			return err
 		}

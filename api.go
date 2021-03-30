@@ -9,9 +9,14 @@ type Api struct {
 	Operations Operations
 }
 
-type Apis []Api
+type ApiArray []Api
 
-func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
+type ApiGroup struct {
+	Endpoint *string  `yaml:"endpoint"`
+	Apis     ApiArray `yaml:"apis"`
+}
+
+func (value *ApiArray) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "spec apis should be YAML mapping")
 	}
@@ -21,7 +26,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
 		name := Name{}
-		err := keyNode.DecodeWith(decodeOptions, &name)
+		err := keyNode.DecodeWith(decodeStrict, &name)
 		if err != nil {
 			return err
 		}
@@ -30,7 +35,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 			return err
 		}
 		operations := Operations{}
-		err = valueNode.DecodeWith(decodeOptions, &operations)
+		err = valueNode.DecodeWith(decodeLooze, &operations)
 		if err != nil {
 			return err
 		}

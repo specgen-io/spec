@@ -8,20 +8,20 @@ import (
 )
 
 type Spec struct {
-	IdlVersion  *string `yaml:"idl_version"`
-	ServiceName Name    `yaml:"service_name"`
+	IdlVersion  string  `yaml:"idl_version"`
+	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
 
-	Apis   Apis   `yaml:"operations"`
-	Models Models `yaml:"models"`
-	ResolvedModels Models
+	Http           Http            `yaml:"http"`
+	Models         VersionedModels `yaml:"models"`
+	ResolvedModels VersionedModels
 }
 
 type Meta struct {
-	IdlVersion  *string `yaml:"idl_version"`
-	ServiceName Name    `yaml:"service_name"`
+	IdlVersion  string  `yaml:"idl_version"`
+	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
@@ -29,7 +29,7 @@ type Meta struct {
 
 func unmarshalSpec(data []byte) (*Spec, error) {
 	var spec Spec
-	if err := yaml.UnmarshalWith(decodeOptions, data, &spec); err != nil {
+	if err := yaml.UnmarshalWith(decodeStrict, data, &spec); err != nil {
 		return nil, err
 	}
 	return &spec, nil
@@ -89,7 +89,7 @@ func ParseMeta(data []byte) (*Meta, error) {
 		return nil, err
 	}
 	var meta Meta
-	if err := yaml.UnmarshalWith(decodeOptions, data, &meta); err != nil {
+	if err := yaml.UnmarshalWith(decodeLooze, data, &meta); err != nil {
 		return nil, err
 	}
 	return &meta, nil

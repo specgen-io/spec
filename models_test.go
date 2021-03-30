@@ -26,8 +26,8 @@ Model4:
     one: Model1
     two: Model2
 `
-	var models Models
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &models)
+	var models ModelArray
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(models), 4)
@@ -56,7 +56,30 @@ model_one:
     prop1: string
     prop2: int32
 `
-	var models Models
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &models)
+	var models ModelArray
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
 	assert.ErrorContains(t, err, "model_one")
+}
+
+func Test_Models_Unmarshal_Versioned(t *testing.T) {
+	data := `
+v2:
+  TheModel:
+    prop1: string
+    prop2: int32
+TheModel:
+  prop1: string
+  prop2: int32
+`
+	var models VersionedModels
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &models)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, len(models), 2)
+
+	assert.Equal(t, models[0].Version.Source, "v2")
+	assert.Equal(t, models[0].Models[0].Name.Source, "TheModel")
+
+	assert.Equal(t, models[1].Version.Source, "")
+	assert.Equal(t, models[1].Models[0].Name.Source, "TheModel")
 }

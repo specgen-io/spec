@@ -1,9 +1,9 @@
 package spec
 
-import (
-	"fmt"
-	"github.com/vsapronov/yaml"
-)
+import "fmt"
+import "github.com/vsapronov/yaml"
+
+var IdlVersion = "2"
 
 type MetaIdlVersion struct {
 	IdlVersion  string `yaml:"idl_version"`
@@ -20,12 +20,8 @@ func ParseMetaIdlVersion(data []byte) (*MetaIdlVersion, error) {
 func checkIdlVersion(data []byte) error {
 	meta, err := ParseMetaIdlVersion(data)
 	if err != nil { return err }
-	foundIdlVersion := meta.IdlVersion
-	if foundIdlVersion == "" {
-		foundIdlVersion = "none"
-	}
-	if foundIdlVersion != "0" && foundIdlVersion != "1" {
-		return fmt.Errorf("unexpected IDL version, expected: 0 or 1, found: %s", foundIdlVersion)
+	if meta.IdlVersion != IdlVersion {
+		return fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, meta.IdlVersion)
 	}
 	return nil
 }

@@ -8,16 +8,17 @@ import (
 
 func Test_Resolve_Operations_Pass_EmbeddedType(t *testing.T) {
 	data := `
-operations:
-  test:
-    some_url:
-      endpoint: GET /some/url/{id:string}
-      query:
-        the_query: string
-      header:
-        The-Header: string
-      response:
-        ok: empty
+http:
+  apis:
+    test:
+      some_url:
+        endpoint: GET /some/url/{id:string}
+        query:
+          the_query: string
+        header:
+          The-Header: string
+        response:
+          ok: empty
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -29,16 +30,17 @@ operations:
 
 func Test_Resolve_Operations_Fail_UnknownType(t *testing.T) {
 	data := `
-operations:
-  test:
-    some_url:
-      endpoint: GET /some/url/{id:nonexisting1}
-      query:
-        the_query: nonexisting2
-      header:
-        The-Header: nonexisting3
-      response:
-        ok: empty
+http:
+  apis:
+    test:
+      some_url:
+        endpoint: GET /some/url/{id:nonexisting1}
+        query:
+          the_query: nonexisting2
+        header:
+          The-Header: nonexisting3
+        response:
+          ok: empty
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -53,13 +55,14 @@ operations:
 
 func Test_Resolve_Operations_Pass_CustomType(t *testing.T) {
 	data := `
-operations:
-  test:
-    some_url:
-      endpoint: GET /some/url
-      body: Custom1
-      response:
-        ok: Custom2
+http:
+  apis:
+    test:
+      some_url:
+        endpoint: GET /some/url
+        body: Custom1
+        response:
+          ok: Custom2
 models:
   Custom1:
     field: string
@@ -159,9 +162,12 @@ models:
 
 	ResolveTypes(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 2)
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model1")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
+	assert.Equal(t, len(spec.ResolvedModels), 1)
+	models := spec.ResolvedModels[0].Models
+	assert.Equal(t, len(models), 2)
+	assert.Equal(t, models[0].Name.Source, "Model1")
+	assert.Equal(t, models[1].Name.Source, "Model2")
+
 }
 
 func Test_Resolve_Models_Reversed_Order(t *testing.T) {
@@ -202,8 +208,10 @@ models:
 
 	ResolveTypes(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 3)
-	assert.Equal(t, spec.ResolvedModels[0].Name.Source, "Model3")
-	assert.Equal(t, spec.ResolvedModels[1].Name.Source, "Model2")
-	assert.Equal(t, spec.ResolvedModels[2].Name.Source, "Model1")
+	assert.Equal(t, len(spec.ResolvedModels), 1)
+	models := spec.ResolvedModels[0].Models
+	assert.Equal(t, len(models), 3)
+	assert.Equal(t, models[0].Name.Source, "Model3")
+	assert.Equal(t, models[1].Name.Source, "Model2")
+	assert.Equal(t, models[2].Name.Source, "Model1")
 }

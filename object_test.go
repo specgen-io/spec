@@ -14,7 +14,7 @@ prop2:
   description: some field
 `
 	var model Object
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &model)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &model)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(model.Fields), 2)
@@ -34,7 +34,7 @@ fields:
     description: some field
 `
 	var model Object
-	err := yaml.UnmarshalWith(decodeOptions, []byte(data), &model)
+	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &model)
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, *model.Description, "some model")

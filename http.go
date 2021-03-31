@@ -1,12 +1,23 @@
 package spec
 
 import (
+	"fmt"
 	"github.com/vsapronov/yaml"
 )
 
 type VersionedApiGroup struct {
 	Version Name
 	ApiGroup
+}
+
+func (group *VersionedApiGroup) GetUrl() string {
+	if group.Url != nil {
+		return *group.Url
+	}
+	if group.Version.Source != "" {
+		return fmt.Sprintf("/%s", group.Version.Source)
+	}
+	return ""
 }
 
 type ApiGroups []VersionedApiGroup

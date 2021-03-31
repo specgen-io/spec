@@ -12,8 +12,8 @@ type Api struct {
 type ApiArray []Api
 
 type ApiGroup struct {
-	Endpoint *string  `yaml:"endpoint"`
-	Apis     ApiArray `yaml:"apis"`
+	Url  *string  `yaml:"url"`
+	Apis ApiArray `yaml:"apis"`
 }
 
 func (value *ApiArray) UnmarshalYAML(node *yaml.Node) error {

@@ -9,7 +9,6 @@ import (
 func Test_Body_NonObject_Error(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -32,7 +31,6 @@ http:
 func Test_Response_NonObject_Error(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -54,7 +52,6 @@ http:
 func Test_Query_Param_Array_Allowed(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -77,7 +74,6 @@ http:
 func Test_Query_Param_Object_Errors(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -107,7 +103,6 @@ models:
 func Test_Params_SameName_Error(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -133,7 +128,6 @@ http:
 func Test_NonDefaultable_Type_Error(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -160,7 +154,6 @@ http:
 func Test_Defaulted_Format_Pass(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url
@@ -198,7 +191,6 @@ models:
 func Test_Defaulted_Format_Fail(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
       some_url:
         endpoint: GET /some/url

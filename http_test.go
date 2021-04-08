@@ -9,18 +9,17 @@ import (
 
 func Test_Http_Unmarshal_Apis(t *testing.T) {
 	data := `
-apis:
-  test:
+test:
     some_url:
-      endpoint: GET /some/url
-      response:
-        ok: empty
+        endpoint: GET /some/url
+        response:
+            ok: empty
     ping:
-      endpoint: GET /ping
-      query:
-        message: string?
-      response:
-        ok: empty
+        endpoint: GET /ping
+        query:
+            message: string?
+        response:
+            ok: empty
 `
 	var http Http
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &http)
@@ -49,19 +48,17 @@ apis:
 func Test_Http_Unmarshal_Versioned_Apis(t *testing.T) {
 	data := `
 v2:
-  apis:
     test:
-      some_url:
+        some_url:
+            endpoint: GET /some/url
+            response:
+                ok: empty
+
+test:
+    some_url:
         endpoint: GET /some/url
         response:
-          ok: empty
-
-apis:
-  test:
-    some_url:
-      endpoint: GET /some/url
-      response:
-        ok: empty
+            ok: empty
 `
 	var http Http
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &http)
@@ -89,21 +86,19 @@ apis:
 func Test_Http_Unmarshal_Apis_Urls(t *testing.T) {
 	data := `
 v2:
-  url: /version2
-  apis:
+    url: /version2
     test:
-      some_url:
-        endpoint: GET /some/url
-        response:
-          ok: empty
+        some_url:
+            endpoint: GET /some/url
+            response:
+                ok: empty
 
 url: /default
-apis:
-  test:
+test:
     some_url:
-      endpoint: GET /some/url
-      response:
-        ok: empty
+        endpoint: GET /some/url
+        response:
+            ok: empty
 `
 	var http Http
 	err := yaml.UnmarshalWith(decodeStrict, []byte(data), &http)

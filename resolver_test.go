@@ -9,16 +9,15 @@ import (
 func Test_Resolve_Operations_Pass_EmbeddedType(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
-      some_url:
-        endpoint: GET /some/url/{id:string}
-        query:
-          the_query: string
-        header:
-          The-Header: string
-        response:
-          ok: empty
+        some_url:
+            endpoint: GET /some/url/{id:string}
+            query:
+                the_query: string
+            header:
+                The-Header: string
+            response:
+                ok: empty
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -31,16 +30,15 @@ http:
 func Test_Resolve_Operations_Fail_UnknownType(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
-      some_url:
-        endpoint: GET /some/url/{id:nonexisting1}
-        query:
-          the_query: nonexisting2
-        header:
-          The-Header: nonexisting3
-        response:
-          ok: empty
+        some_url:
+            endpoint: GET /some/url/{id:nonexisting1}
+            query:
+                the_query: nonexisting2
+            header:
+                The-Header: nonexisting3
+            response:
+                ok: empty
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
@@ -56,18 +54,17 @@ http:
 func Test_Resolve_Operations_Pass_CustomType(t *testing.T) {
 	data := `
 http:
-  apis:
     test:
-      some_url:
-        endpoint: GET /some/url
-        body: Custom1
-        response:
-          ok: Custom2
+        some_url:
+            endpoint: GET /some/url
+            body: Custom1
+            response:
+                ok: Custom2
 models:
-  Custom1:
-    field: string
-  Custom2:
-    field: string
+    Custom1:
+        field: string
+    Custom2:
+        field: string
 `
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)

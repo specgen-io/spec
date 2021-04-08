@@ -32,18 +32,17 @@ idl_version: 2
 name: bla-api
 
 http:
-  apis:
     test:
-      some_url:
-        endpoint: GET /some/url
-        response:
-          ok: empty
-      ping:
-        endpoint: GET /ping
-        query:
-          message: string?
-        response:
-          ok: empty
+        some_url:
+            endpoint: GET /some/url
+            response:
+                ok: empty
+        ping:
+            endpoint: GET /ping
+            query:
+                message: string?
+            response:
+                ok: empty
 `
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)

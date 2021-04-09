@@ -47,9 +47,9 @@ http:
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, len(spec.Http.Groups), 1)
-	assert.Equal(t, len(spec.Http.Groups[0].Apis), 1)
-	api := spec.Http.Groups[0].Apis[0]
+	assert.Equal(t, len(spec.Http.Versions), 1)
+	assert.Equal(t, len(spec.Http.Versions[0].Apis), 1)
+	api := spec.Http.Versions[0].Apis[0]
 	assert.Equal(t, api.Name.Source, "test")
 	assert.Equal(t, len(api.Operations), 2)
 	assert.Equal(t, api.Operations[0].Name.Source, "some_url")

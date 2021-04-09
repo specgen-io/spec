@@ -82,7 +82,6 @@ ping:
 	assert.Equal(t, len(operations), 2)
 	operation1 := operations[0]
 	operation2 := operations[1]
-
 	assert.Equal(t, operation1.Name.Source, "some_url")
 	assert.Equal(t, operation2.Name.Source, "ping")
 }

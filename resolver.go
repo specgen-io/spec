@@ -81,10 +81,10 @@ func (resolver *resolver) Spec(spec *Spec) {
 			resolver.Model(spec.Models[verIndex].Version, &spec.Models[verIndex].Models[modIndex])
 		}
 	}
-	for grIndex := range spec.Http.Groups {
-		for apiIndex := range spec.Http.Groups[grIndex].Apis {
-			for opIndex := range spec.Http.Groups[grIndex].Apis[apiIndex].Operations {
-				resolver.Operation(spec.Http.Groups[grIndex].Version, &spec.Http.Groups[grIndex].Apis[apiIndex].Operations[opIndex])
+	for version := range spec.Http.Versions {
+		for api := range spec.Http.Versions[version].Apis {
+			for operation := range spec.Http.Versions[version].Apis[api].Operations {
+				resolver.Operation(spec.Http.Versions[version].Version, &spec.Http.Versions[version].Apis[api].Operations[operation])
 			}
 		}
 	}

@@ -41,10 +41,10 @@ func (validator *validator) Spec(spec *Spec) {
 			validator.Model(&models.Models[modelIndex])
 		}
 	}
-	for grIndex := range spec.Http.Groups {
-		for apiIndex := range spec.Http.Groups[grIndex].Apis {
-			for opIndex := range spec.Http.Groups[grIndex].Apis[apiIndex].Operations {
-				validator.Operation(&spec.Http.Groups[grIndex].Apis[apiIndex].Operations[opIndex])
+	for version := range spec.Http.Versions {
+		for api := range spec.Http.Versions[version].Apis {
+			for operation := range spec.Http.Versions[version].Apis[api].Operations {
+				validator.Operation(&spec.Http.Versions[version].Apis[api].Operations[operation])
 			}
 		}
 	}

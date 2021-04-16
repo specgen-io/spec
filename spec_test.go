@@ -17,21 +17,23 @@ models:
     prop1: string
     prop2: int32
 `
+
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, len(spec.Models), 1)
 	assert.Equal(t, len(spec.Models[0].Models), 2)
-	assert.Equal(t, spec.Models[0].Models[0].Name.Source, "Model1")
-	assert.Equal(t, spec.Models[0].Models[1].Name.Source, "Model2")
 }
 
 func Test_ParseSpec_Http(t *testing.T) {
 	data := `
-idl_version: 2
-name: bla-api
+idl_version: 0
+service_name: bla-api
+title: Bla API
+description: Some Bla API service
+version: 0
 
-http:
+operations:
     test:
         some_url:
             endpoint: GET /some/url
@@ -43,7 +45,15 @@ http:
                 message: string?
             response:
                 ok: empty
+
+models:
+  Model1:
+    prop1: string
+  Model2:
+    prop1: string
+    prop2: int32
 `
+
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
@@ -64,6 +74,7 @@ title: Bla API
 description: Some Bla API service
 version: 0
 `
+
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 

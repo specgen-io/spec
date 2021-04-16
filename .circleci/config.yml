@@ -6,7 +6,7 @@ jobs:
     working_directory: ~/go/src/spec
 
     environment:
-      GOPATH: /home/circleci/go
+      GOPATH: ~/go
       TEST_RESULTS: /tmp/test-results
 
     steps:

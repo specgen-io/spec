@@ -2,11 +2,11 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.12
+      - image: cimg/go:1.15.6
     working_directory: ~/go/src/spec
 
     environment:
-      GOPATH: ~/go
+      GOPATH: /home/circleci/go
       TEST_RESULTS: /tmp/test-results
 
     steps:

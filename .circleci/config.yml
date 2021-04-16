@@ -6,11 +6,14 @@ jobs:
     working_directory: ~/go/src/spec
 
     environment:
+      GOPATH: ~/go
       TEST_RESULTS: /tmp/test-results
 
     steps:
       - checkout
       - run: mkdir -p $TEST_RESULTS
+
+      - run: cat $GOPATH
 
       - run: dep ensure
 

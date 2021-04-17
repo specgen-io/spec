@@ -30,13 +30,14 @@ func checkIdlVersion(data []byte) ([]byte, error) {
 	}
 
 	if meta.IdlVersion == "0" || meta.IdlVersion == "1" {
-		idlVersion := getMappingValue(node.Content[0], "idl_version")
+		rootNode := node.Content[0]
+		idlVersion := getMappingValue(rootNode, "idl_version")
 		idlVersion.Value = "2"
-		operations := getMappingKey(node.Content[0], "operations")
+		operations := getMappingKey(rootNode, "operations")
 		if operations != nil {
 			operations.Value = "http"
 		}
-		serviceName := getMappingKey(node.Content[0], "service_name")
+		serviceName := getMappingKey(rootNode, "service_name")
 		serviceName.Value = "name"
 		data, err = yaml.Marshal(&node)
 		if err != nil {

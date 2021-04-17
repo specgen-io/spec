@@ -13,7 +13,7 @@ jobs:
       - checkout
       - run: mkdir -p $TEST_RESULTS
       - run: curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-      - run: $GOPTH/bin/dep ensure
+      - run: $GOPATH/bin/dep ensure
       - run: go get -u github.com/jstemmer/go-junit-report
       - run: go test -v 2>&1 | ../../bin/go-junit-report > ${TEST_RESULTS}/go-test-report.xml
       - store_artifacts:

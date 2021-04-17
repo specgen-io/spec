@@ -47,7 +47,8 @@ func specError(errs []ValidationError) error {
 }
 
 func ParseSpec(data []byte) (*Spec, error) {
-	if err := checkIdlVersion(data); err != nil {
+	data, err := checkIdlVersion(data)
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,7 +86,8 @@ func ReadSpec(filepath string) (*Spec, error) {
 }
 
 func ParseMeta(data []byte) (*Meta, error) {
-	if err := checkIdlVersion(data); err != nil {
+	data, err := checkIdlVersion(data)
+	if err != nil {
 		return nil, err
 	}
 	var meta Meta

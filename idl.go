@@ -1,12 +1,15 @@
 package spec
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 import "github.com/vsapronov/yaml"
 
 var IdlVersion = "2"
 
 type MetaIdlVersion struct {
-	IdlVersion  string `yaml:"idl_version"`
+	IdlVersion string `yaml:"idl_version"`
 }
 
 func ParseMetaIdlVersion(data []byte) (*MetaIdlVersion, error) {
@@ -17,11 +20,32 @@ func ParseMetaIdlVersion(data []byte) (*MetaIdlVersion, error) {
 	return &meta, nil
 }
 
-func checkIdlVersion(data []byte) error {
+func checkIdlVersion(data []byte) ([]byte, error) {
 	meta, err := ParseMetaIdlVersion(data)
-	if err != nil { return err }
-	if meta.IdlVersion != IdlVersion {
-		return fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, meta.IdlVersion)
+	var node yaml.Node
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	err = decoder.Decode(&node)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	if meta.IdlVersion == "0" || meta.IdlVersion == "1" {
+		rootNode := node.Content[0]
+		idlVersion := getMappingValue(rootNode, "idl_version")
+		idlVersion.Value = "2"
+		operations := getMappingKey(rootNode, "operations")
+		if operations != nil {
+			operations.Value = "http"
+		}
+		serviceName := getMappingKey(rootNode, "service_name")
+		serviceName.Value = "name"
+		data, err = yaml.Marshal(&node)
+		if err != nil {
+			return nil, err
+		}
+		return data, nil
+	} else if meta.IdlVersion != IdlVersion {
+		return nil, fmt.Errorf("unexpected IDL version, expected: %s, found: %s", IdlVersion, meta.IdlVersion)
+	}
+	return data, nil
 }

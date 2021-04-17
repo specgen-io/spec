@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/vsapronov/casee"
+	"github.com/pinzolo/casee"
 	"github.com/vsapronov/yaml"
 )
 

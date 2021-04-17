@@ -1,6 +1,6 @@
 [[constraint]]
   branch = "master"
-  name = "github.com/vsapronov/casee"
+  name = "github.com/pinzolo/casee"
 
 [[constraint]]
   branch = "v3"

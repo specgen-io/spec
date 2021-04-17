@@ -23,20 +23,20 @@
   version = "v0.2.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:809c6cf6c70b78fc94680ad8916266e09b2cb9c458160ba09f62573d5b0df442"
+  name = "github.com/pinzolo/casee"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "38877fea886d8de9024d37b9c0f851d9e2c7e78a"
+
+[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = "UT"
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:97ce0806c13c89499c5f7c2880b006e6c117d799c738b5b7b3fdd601614c529c"
-  name = "github.com/vsapronov/casee"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "9efa1dde4657d0fc3b40c2ad45bf110318ed518a"
 
 [[projects]]
   branch = "v3"
@@ -64,7 +64,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/vsapronov/casee",
+    "github.com/pinzolo/casee",
     "github.com/vsapronov/yaml",
     "gotest.tools/assert",
   ]

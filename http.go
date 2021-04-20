@@ -10,11 +10,6 @@ type Api struct {
 	Operations Operations
 }
 
-type Apis struct {
-	Url  *string
-	Apis []Api
-}
-
 type VersionedApis struct {
 	Version Name
 	Url  *string
@@ -35,14 +30,14 @@ func (apis *VersionedApis) GetUrl() string {
 	return ""
 }
 
-func unmarshalApis(node *yaml.Node) (*Apis, error) {
+func unmarshalApis(node *yaml.Node) (*string, []Api, error) {
 	if node.Kind != yaml.MappingNode {
-		return nil, yamlError(node, "apis should be YAML mapping")
+		return nil, nil, yamlError(node, "apis should be YAML mapping")
 	}
 
 	url, err := decodeStringOptional(node, "url")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	count := len(node.Content) / 2
@@ -54,22 +49,22 @@ func unmarshalApis(node *yaml.Node) (*Apis, error) {
 			name := Name{}
 			err := keyNode.DecodeWith(decodeStrict, &name)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			err = name.Check(SnakeCase)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			operations := Operations{}
 			err = valueNode.DecodeWith(decodeLooze, &operations)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			array = append(array, Api{Name: name, Operations: operations})
 		}
 	}
 
-	return &Apis{url, array}, nil
+	return url, array, nil
 }
 
 func (value *Http) UnmarshalYAML(node *yaml.Node) error {
@@ -93,18 +88,18 @@ func (value *Http) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 
-			apis, err := unmarshalApis(valueNode)
+			url, apis, err := unmarshalApis(valueNode)
 			if err != nil {
 				return err
 			}
-			versionedApis = append(versionedApis, VersionedApis{version, apis.Url, apis.Apis})
+			versionedApis = append(versionedApis, VersionedApis{version, url, apis})
 		}
 	}
-	apis, err := unmarshalApis(node)
+	url, apis, err := unmarshalApis(node)
 	if err != nil {
 		return err
 	}
-	versionedApis = append(versionedApis, VersionedApis{Name {}, apis.Url, apis.Apis})
+	versionedApis = append(versionedApis, VersionedApis{Name {}, url, apis})
 
 	*value = Http{versionedApis}
 	return nil

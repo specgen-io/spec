@@ -142,10 +142,15 @@ const (
 	StructureObject TypeStructure = 3
 )
 
+type ModelInfo struct {
+	Version  *Name
+	Model    *NamedModel
+}
+
 type TypeInfo struct {
 	Structure   TypeStructure
 	Defaultable bool
-	Model       *NamedModel
+	ModelInfo   *ModelInfo
 }
 
 var Types = map[string]TypeInfo{
@@ -163,12 +168,12 @@ var Types = map[string]TypeInfo{
 	TypeEmpty:    {StructureNone, false, nil},
 }
 
-func GetModelTypeInfo(model *NamedModel) *TypeInfo {
+func ModelTypeInfo(version *Name, model *NamedModel) *TypeInfo {
 	if model.IsObject() || model.IsOneOf() {
-		return &TypeInfo{StructureObject, false, model}
+		return &TypeInfo{StructureObject, false, &ModelInfo{version, model}}
 	}
 	if model.IsEnum() {
-		return &TypeInfo{StructureScalar, true, model}
+		return &TypeInfo{StructureScalar, true, &ModelInfo{version, model}}
 	}
 	panic(fmt.Sprintf("Unknown model kind: %v", model))
 }

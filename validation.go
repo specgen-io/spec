@@ -178,9 +178,9 @@ func (validator *validator) DefaultValue(typ TypeDef, value string, location *ya
 				validator.AddError(location, "default value "+err.Error())
 			}
 		default:
-			model := typ.Info.Model
-			if model != nil && model.IsEnum() {
-				if !enumContainsItem(model.Enum, value) {
+			modelInfo := typ.Info.ModelInfo
+			if modelInfo != nil && modelInfo.Model.IsEnum() {
+				if !enumContainsItem(modelInfo.Model.Enum, value) {
 					validator.AddError(location, fmt.Sprintf("default value %s is not defined in the enum %s", value, typ.Name))
 				}
 			}

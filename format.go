@@ -34,7 +34,7 @@ func (format *Format) Check(value string) error {
 
 var PascalCase = Format{Name: "pascal case", Regex: "^[A-Z][a-z0-9]+([A-Z][a-z0-9]+)*$", Example: "ThisIsPascalCase"}
 
-var UpperChainCase = Format{Name: "snake case", Regex: "^[A-Z][a-z0-9]*(-[A-Z][a-z0-9]*)*$", Example: "This-Is-Upper-Chain-Case"}
+var UpperChainCase = Format{Name: "upper chain case case", Regex: "^[A-Z][a-z0-9]*(-[A-Z][a-z0-9]*)*$", Example: "This-Is-Upper-Chain-Case"}
 
 var CamelCase = Format{Name: "camel case", Regex: "^[a-z][a-z0-9]*([A-Z][a-z0-9]+)*$", Example: "thisIsCamelCase"}
 

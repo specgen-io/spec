@@ -17,13 +17,6 @@ type NamedModel struct {
 
 type ModelArray []NamedModel
 
-type Models struct {
-	Version Name
-	Models  ModelArray
-}
-
-type VersionedModels []Models
-
 func (self *Model) IsObject() bool {
 	return self.Object != nil && self.Enum == nil && self.OneOf == nil
 }
@@ -67,7 +60,7 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func isVersionNode(node *yaml.Node) bool {
-	return Version.Check(node.Value) == nil
+	return VersionFormat.Check(node.Value) == nil
 }
 
 func unmarshalModel(keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, error) {
@@ -111,40 +104,6 @@ func (value *ModelArray) UnmarshalYAML(node *yaml.Node) error {
 			array = append(array, *model)
 		}
 	}
-	*value = array
-	return nil
-}
-
-func (value *VersionedModels) UnmarshalYAML(node *yaml.Node) error {
-	if node.Kind != yaml.MappingNode {
-		return yamlError(node, "models should be YAML mapping")
-	}
-	count := len(node.Content) / 2
-	array := VersionedModels{}
-	for index := 0; index < count; index++ {
-		keyNode := node.Content[index*2]
-		valueNode := node.Content[index*2+1]
-
-		if isVersionNode(keyNode) {
-			version := Name{}
-			err := keyNode.DecodeWith(decodeStrict, &version)
-			if err != nil {
-				return err
-			}
-			models := ModelArray{}
-			err = valueNode.DecodeWith(decodeStrict, &models)
-			if err != nil {
-				return err
-			}
-			array = append(array, Models{version, models})
-		}
-	}
-	models := ModelArray{}
-	err := node.DecodeWith(decodeStrict, &models)
-	if err != nil {
-		return err
-	}
-	array = append(array, Models{Name{}, models})
 	*value = array
 	return nil
 }

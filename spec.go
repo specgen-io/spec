@@ -8,15 +8,19 @@ import (
 )
 
 type Spec struct {
-	IdlVersion  string  `yaml:"idl_version"`
-	Name        Name    `yaml:"name"`
-	Title       *string `yaml:"title"`
-	Description *string `yaml:"description"`
-	Version     string  `yaml:"version"`
+	Meta
+	Versions       []Version
+}
 
-	Http           Http            `yaml:"http"`
-	Models         VersionedModels `yaml:"models"`
-	ResolvedModels VersionedModels
+type TheSpec struct {
+	Http    Apis        `yaml:"http"`
+	Models  ModelArray  `yaml:"models"`
+}
+
+type Version struct {
+	Version Name
+	TheSpec
+	ResolvedModels ModelArray
 }
 
 type Meta struct {
@@ -25,6 +29,43 @@ type Meta struct {
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
 	Version     string  `yaml:"version"`
+}
+
+func (value *Spec) UnmarshalYAML(node *yaml.Node) error {
+	if node.Kind != yaml.MappingNode {
+		return yamlError(node, "http should be YAML mapping")
+	}
+	versions := []Version{}
+	count := len(node.Content) / 2
+	for index := 0; index < count; index++ {
+		keyNode := node.Content[index*2]
+		valueNode := node.Content[index*2+1]
+
+		if isVersionNode(keyNode) {
+			version := Name{}
+			err := keyNode.DecodeWith(decodeStrict, &version)
+			if err != nil {
+				return err
+			}
+			err = version.Check(VersionFormat)
+			if err != nil {
+				return err
+			}
+
+			theSpec := TheSpec{}
+			valueNode.DecodeWith(decodeStrict, &theSpec)
+			versions = append(versions, Version{version, theSpec, nil})
+		}
+	}
+	theSpec := TheSpec{}
+	node.DecodeWith(decodeStrict, &theSpec)
+	versions = append(versions, Version{Name{}, theSpec, nil})
+
+	meta := Meta{}
+	node.DecodeWith(decodeStrict, &meta)
+
+	*value = Spec{meta, versions}
+	return nil
 }
 
 func unmarshalSpec(data []byte) (*Spec, error) {

@@ -98,7 +98,7 @@ func ParseSpec(data []byte) (*Spec, error) {
 		return nil, err
 	}
 
-	err = specError(ResolveTypes(spec))
+	err = specError(EnrichSpec(spec))
 	if err != nil {
 		return nil, err
 	}

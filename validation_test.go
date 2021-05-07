@@ -20,7 +20,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -41,7 +41,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -64,7 +64,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -90,7 +90,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -117,7 +117,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -142,7 +142,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -181,7 +181,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)
@@ -218,7 +218,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := EnrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	errors = Validate(spec)

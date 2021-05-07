@@ -16,6 +16,16 @@ type Apis struct {
 	Version *Version
 }
 
+func (apis *Apis) GetUrl() string {
+	if apis.Url != nil {
+		return *apis.Url
+	}
+	if apis.Version.Version.Source != "" {
+		return "/"+apis.Version.Version.Source
+	}
+	return ""
+}
+
 func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "apis should be YAML mapping")

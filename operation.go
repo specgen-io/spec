@@ -35,6 +35,10 @@ type NamedOperation struct {
 	Api *Api
 }
 
+func (op *NamedOperation) FullUrl() string {
+	return op.Api.Apis.GetUrl()+op.Endpoint.Url
+}
+
 type Operations []NamedOperation
 
 func (value *Operations) UnmarshalYAML(node *yaml.Node) error {

@@ -121,12 +121,15 @@ http:
 	v2Api := v2.Http.Apis[0]
 	assert.Equal(t, v2Api.Name.Source, "test")
 	assert.Equal(t, len(v2Api.Operations), 1)
+	assert.Equal(t, v2Api.Operations[0].FullUrl(), "/v2/some/url")
 
 	defaultVersion := spec.Versions[1]
 	assert.Equal(t, len(defaultVersion.Http.Apis), 1)
 	defaultApi := defaultVersion.Http.Apis[0]
 	assert.Equal(t, defaultApi.Name.Source, "test")
 	assert.Equal(t, len(defaultApi.Operations), 2)
+	assert.Equal(t, defaultApi.Operations[0].FullUrl(), "/some/url")
+	assert.Equal(t, defaultApi.Operations[1].FullUrl(), "/ping")
 }
 
 func Test_ParseSpec_V1(t *testing.T) {

@@ -7,11 +7,13 @@ import (
 type Api struct {
 	Name       Name
 	Operations Operations
+	Apis       *Apis
 }
 
 type Apis struct {
 	Url  *string
 	Apis []Api
+	Version *Version
 }
 
 func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
@@ -48,6 +50,6 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 		}
 	}
 
-	*value = Apis{url, array}
+	*value = Apis{Url: url, Apis: array}
 	return nil
 }

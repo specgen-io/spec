@@ -32,6 +32,7 @@ func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 type NamedOperation struct {
 	Name Name
 	Operation
+	Api *Api
 }
 
 type Operations []NamedOperation

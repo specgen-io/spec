@@ -13,6 +13,7 @@ type Model struct {
 type NamedModel struct {
 	Name Name
 	Model
+	Version *Version
 }
 
 type Models []NamedModel
@@ -84,7 +85,7 @@ func unmarshalModel(keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, erro
 	if model.IsObject() && model.Object.Description == nil {
 		model.Object.Description = getDescription(keyNode)
 	}
-	return &NamedModel{name, model}, nil
+	return &NamedModel{Name: name, Model: model}, nil
 }
 
 func (value *Models) UnmarshalYAML(node *yaml.Node) error {

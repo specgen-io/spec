@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test_Resolve_Operations_Pass_EmbeddedType(t *testing.T) {
+func Test_Resolve_Operations_Pass_BuiltinType(t *testing.T) {
 	data := `
 http:
     test:
@@ -213,4 +213,45 @@ models:
 	assert.Equal(t, models[0].Name.Source, "Model3")
 	assert.Equal(t, models[1].Name.Source, "Model2")
 	assert.Equal(t, models[2].Name.Source, "Model1")
+}
+
+func Test_Enrich_Operations(t *testing.T) {
+	data := `
+http:
+    test:
+        some_url:
+            endpoint: GET /some/url
+            response:
+                ok: empty
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := ResolveTypes(spec)
+	assert.Equal(t, len(errors), 0)
+
+	ver := &spec.Versions[0]
+	apis := &ver.Http
+	api := &apis.Apis[0]
+	op := &api.Operations[0]
+	assert.Equal(t, apis.Version, ver)
+	assert.Equal(t, api.Apis, apis)
+	assert.Equal(t, api.Apis, apis)
+	assert.Equal(t, op.Api, api)
+}
+
+func Test_Enrich_Models(t *testing.T) {
+	data := `
+models:
+  Model1:
+    field1: Model3
+    field2: Model2
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	ResolveTypes(spec)
+
+	ver := &spec.Versions[0]
+	assert.Equal(t, ver.Models[0].Version, ver)
 }

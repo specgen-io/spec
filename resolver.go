@@ -16,7 +16,7 @@ func ResolveTypes(spec *Spec) []ValidationError {
 
 func ResolveVersionTypes(version *Version) []ValidationError {
 	modelsMap := buildModelsMap(version.Models)
-	resolver := &resolver{version.Version, modelsMap, nil, nil}
+	resolver := &resolver{modelsMap, nil, nil}
 	resolver.Spec(version)
 	version.ResolvedModels = resolver.ResolvedModels
 	return resolver.Errors
@@ -33,7 +33,6 @@ func buildModelsMap(models Models) ModelsMap {
 }
 
 type resolver struct {
-	Version        Name
 	ModelsMap      ModelsMap
 	Errors         []ValidationError
 	ResolvedModels Models
@@ -61,12 +60,19 @@ func (resolver *resolver) addError(error ValidationError) {
 
 func (resolver *resolver) Spec(version *Version) {
 	for modIndex := range version.Models {
-		resolver.Model(&version.Models[modIndex])
+		model := &version.Models[modIndex]
+		model.Version = version
+		resolver.Model(model)
 	}
-	for apiIndex := range version.Http.Apis {
+	apis := &version.Http
+	apis.Version = version
+	for apiIndex := range apis.Apis {
 		api := &version.Http.Apis[apiIndex]
-		for operation := range api.Operations {
-			resolver.Operation(&api.Operations[operation])
+		api.Apis = apis
+		for opIndex := range api.Operations {
+			operation := &api.Operations[opIndex]
+			operation.Api = api
+			resolver.Operation(operation)
 		}
 	}
 }
@@ -126,7 +132,7 @@ func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 		switch typ.Node {
 		case PlainType:
 			if model, ok := resolver.findModel(typ.Plain); ok {
-				typ.Info = ModelTypeInfo(&resolver.Version, model)
+				typ.Info = ModelTypeInfo(model)
 				resolver.Model(model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {

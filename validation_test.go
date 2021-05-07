@@ -20,10 +20,10 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "body"), true)
 }
@@ -41,10 +41,10 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "response"), true)
 }
@@ -64,10 +64,10 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 0)
 }
 
@@ -90,10 +90,10 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 2)
 	assert.Equal(t, strings.Contains(errors[0].Message, "param1"), true)
 	assert.Equal(t, strings.Contains(errors[1].Message, "param2"), true)
@@ -117,10 +117,10 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "the_param"), true)
 }
@@ -142,10 +142,10 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 2)
 	assert.Equal(t, strings.Contains(errors[0].Message, "string?"), true)
 	assert.Equal(t, strings.Contains(errors[1].Message, "date?"), true)
@@ -181,10 +181,10 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 0)
 }
 
@@ -218,9 +218,9 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
-	errors = Validate(spec)
+	errors = validate(spec)
 	assert.Equal(t, len(errors), 10)
 }

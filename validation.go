@@ -23,7 +23,7 @@ type validator struct {
 	Errors []ValidationError
 }
 
-func Validate(spec *Spec) []ValidationError {
+func validate(spec *Spec) []ValidationError {
 	validator := &validator{}
 	validator.Spec(spec)
 	return validator.Errors

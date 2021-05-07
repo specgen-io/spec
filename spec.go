@@ -98,12 +98,12 @@ func ParseSpec(data []byte) (*Spec, error) {
 		return nil, err
 	}
 
-	err = specError(EnrichSpec(spec))
+	err = specError(enrichSpec(spec))
 	if err != nil {
 		return nil, err
 	}
 
-	err = specError(Validate(spec))
+	err = specError(validate(spec))
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"github.com/vsapronov/yaml"
 )
 
-func EnrichSpec(spec *Spec) []ValidationError {
+func enrichSpec(spec *Spec) []ValidationError {
 	errors := []ValidationError{}
 	for verIndex := range spec.Versions {
 		version := &spec.Versions[verIndex]

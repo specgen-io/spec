@@ -22,7 +22,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -43,7 +43,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 3)
 	assert.Equal(t, strings.Contains(errors[0].Message, "nonexisting1"), true)
@@ -69,7 +69,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -90,7 +90,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -104,7 +104,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
@@ -125,7 +125,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -140,7 +140,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
@@ -157,7 +157,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	EnrichSpec(spec)
+	enrichSpec(spec)
 
 	assert.Equal(t, len(spec.Versions), 1)
 	models := spec.Versions[0].ResolvedModels
@@ -180,7 +180,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	EnrichSpec(spec)
+	enrichSpec(spec)
 
 	assert.Equal(t, len(spec.Versions), 1)
 	models := spec.Versions[0].ResolvedModels
@@ -205,7 +205,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	EnrichSpec(spec)
+	enrichSpec(spec)
 
 	assert.Equal(t, len(spec.Versions), 1)
 	models := spec.Versions[0].ResolvedModels
@@ -227,7 +227,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := EnrichSpec(spec)
+	errors := enrichSpec(spec)
 	assert.Equal(t, len(errors), 0)
 
 	ver := &spec.Versions[0]
@@ -250,7 +250,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	EnrichSpec(spec)
+	enrichSpec(spec)
 
 	ver := &spec.Versions[0]
 	assert.Equal(t, ver.Models[0].Version, ver)

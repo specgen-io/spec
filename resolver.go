@@ -5,148 +5,129 @@ import (
 	"github.com/vsapronov/yaml"
 )
 
+func ResolveTypes(spec *Spec) []ValidationError {
+	errors := []ValidationError{}
+	for verIndex := range spec.Versions {
+		versionErrors := ResolveVersionTypes(&spec.Versions[verIndex])
+		errors = append(errors, versionErrors...)
+	}
+	return errors
+}
+
+func ResolveVersionTypes(version *Version) []ValidationError {
+	modelsMap := buildModelsMap(version.Models)
+	resolver := &resolver{version.Version, modelsMap, nil, nil}
+	resolver.Spec(version)
+	version.ResolvedModels = resolver.ResolvedModels
+	return resolver.Errors
+}
+
 type ModelsMap map[string]NamedModel
 
-func buildModelsMap(models VersionedModels) ModelsMap {
+func buildModelsMap(models Models) ModelsMap {
 	result := make(map[string]NamedModel)
-	for _, v := range models {
-		for _, m := range v.Models {
-			result[GetFullName(v.Version.Source, m.Name.Source)] = m
-		}
+	for _, m := range models {
+		result[m.Name.Source] = m
 	}
 	return result
 }
 
-func GetFullName(version string, name string) string {
-	if version != "" {
-		return fmt.Sprintf("%s.%s", version, name)
-	} else {
-		return name
-	}
-}
-
 type resolver struct {
+	Version        Name
 	ModelsMap      ModelsMap
 	Errors         []ValidationError
-	ResolvedModels VersionedModels
+	ResolvedModels Models
 }
 
-func (self *resolver) findModel(version string, name string) (*NamedModel, bool) {
-	if model, ok := self.ModelsMap[GetFullName(version, name)]; ok {
-		return &model, true
-	}
-	if model, ok := self.ModelsMap[GetFullName("", name)]; ok {
+func (self *resolver) findModel(name string) (*NamedModel, bool) {
+	if model, ok := self.ModelsMap[name]; ok {
 		return &model, true
 	}
 	return nil, false
 }
 
-func (resolver *resolver) AddResolvedVersion(version Name) *Models {
-	for verIndex := range resolver.ResolvedModels {
-		if resolver.ResolvedModels[verIndex].Version.Source == version.Source {
-			return &resolver.ResolvedModels[verIndex]
-		}
-	}
-	versionModels := Models{version, ModelArray{}}
-	resolver.ResolvedModels = append(resolver.ResolvedModels, versionModels)
-	return &resolver.ResolvedModels[len(resolver.ResolvedModels)-1]
-}
-
-func (resolver *resolver) AddResolvedModel(version Name, model *NamedModel) {
-	versionModels := resolver.AddResolvedVersion(version)
-
-	for index := range versionModels.Models {
-		if versionModels.Models[index].Name.Source == model.Name.Source {
+func (resolver *resolver) addResolvedModel(model *NamedModel) {
+	for _, m := range resolver.ResolvedModels {
+		if m.Name.Source == model.Name.Source {
 			return
 		}
 	}
-	versionModels.Models = append(versionModels.Models, *model)
+	resolver.ResolvedModels = append(resolver.ResolvedModels, *model)
 }
 
-func (resolver *resolver) AddError(error ValidationError) {
+func (resolver *resolver) addError(error ValidationError) {
 	resolver.Errors = append(resolver.Errors, error)
 }
 
-func ResolveTypes(spec *Spec) []ValidationError {
-	modelsMap := buildModelsMap(spec.Models)
-	resolver := &resolver{ModelsMap: modelsMap}
-	resolver.Spec(spec)
-	spec.ResolvedModels = resolver.ResolvedModels
-	return resolver.Errors
-}
-
-func (resolver *resolver) Spec(spec *Spec) {
-	for verIndex := range spec.Models {
-		for modIndex := range spec.Models[verIndex].Models {
-			resolver.Model(spec.Models[verIndex].Version, &spec.Models[verIndex].Models[modIndex])
-		}
+func (resolver *resolver) Spec(version *Version) {
+	for modIndex := range version.Models {
+		resolver.Model(&version.Models[modIndex])
 	}
-	for version := range spec.Http.Versions {
-		for api := range spec.Http.Versions[version].Apis {
-			for operation := range spec.Http.Versions[version].Apis[api].Operations {
-				resolver.Operation(spec.Http.Versions[version].Version, &spec.Http.Versions[version].Apis[api].Operations[operation])
-			}
+	for apiIndex := range version.Http.Apis {
+		api := &version.Http.Apis[apiIndex]
+		for operation := range api.Operations {
+			resolver.Operation(&api.Operations[operation])
 		}
 	}
 }
 
-func (resolver *resolver) Operation(version Name, operation *NamedOperation) {
-	resolver.Params(version, operation.Endpoint.UrlParams)
-	resolver.Params(version, operation.QueryParams)
-	resolver.Params(version, operation.HeaderParams)
+func (resolver *resolver) Operation(operation *NamedOperation) {
+	resolver.Params(operation.Endpoint.UrlParams)
+	resolver.Params(operation.QueryParams)
+	resolver.Params(operation.HeaderParams)
 
 	if operation.Body != nil {
-		resolver.Definition(version, operation.Body)
+		resolver.Definition(operation.Body)
 	}
 
 	for index := range operation.Responses {
-		resolver.Definition(version, &operation.Responses[index].Definition)
+		resolver.Definition(&operation.Responses[index].Definition)
 	}
 }
 
-func (resolver *resolver) Params(version Name, params []NamedParam) {
+func (resolver *resolver) Params(params []NamedParam) {
 	for index := range params {
-		resolver.DefinitionDefault(version, &params[index].DefinitionDefault)
+		resolver.DefinitionDefault(&params[index].DefinitionDefault)
 	}
 }
 
-func (resolver *resolver) Model(version Name, model *NamedModel) {
+func (resolver *resolver) Model(model *NamedModel) {
 	if model.IsObject() {
 		for index := range model.Object.Fields {
-			resolver.Definition(version, &model.Object.Fields[index].Definition)
+			resolver.Definition(&model.Object.Fields[index].Definition)
 		}
 	}
 	if model.IsOneOf() {
 		for index := range model.OneOf.Items {
-			resolver.Definition(version, &model.OneOf.Items[index].Definition)
+			resolver.Definition(&model.OneOf.Items[index].Definition)
 		}
 	}
-	resolver.AddResolvedModel(version, model)
+	resolver.addResolvedModel(model)
 }
 
-func (resolver *resolver) DefinitionDefault(version Name, definition *DefinitionDefault) {
+func (resolver *resolver) DefinitionDefault(definition *DefinitionDefault) {
 	if definition != nil {
-		resolver.Type(version, &definition.Type)
+		resolver.Type(&definition.Type)
 	}
 }
 
-func (resolver *resolver) Definition(version Name, definition *Definition) {
+func (resolver *resolver) Definition(definition *Definition) {
 	if definition != nil {
-		resolver.Type(version, &definition.Type)
+		resolver.Type(&definition.Type)
 	}
 }
 
-func (resolver *resolver) Type(version Name, typ *Type) {
-	resolver.TypeDef(version, &typ.Definition, typ.Location)
+func (resolver *resolver) Type(typ *Type) {
+	resolver.TypeDef(&typ.Definition, typ.Location)
 }
 
-func (resolver *resolver) TypeDef(version Name, typ *TypeDef, location *yaml.Node) *TypeInfo {
+func (resolver *resolver) TypeDef(typ *TypeDef, location *yaml.Node) *TypeInfo {
 	if typ != nil {
 		switch typ.Node {
 		case PlainType:
-			if model, ok := resolver.findModel(version.Source, typ.Plain); ok {
-				typ.Info = ModelTypeInfo(&version, model)
-				resolver.Model(version, model)
+			if model, ok := resolver.findModel(typ.Plain); ok {
+				typ.Info = ModelTypeInfo(&resolver.Version, model)
+				resolver.Model(model)
 			} else {
 				if info, ok := Types[typ.Plain]; ok {
 					typ.Info = &info
@@ -155,17 +136,17 @@ func (resolver *resolver) TypeDef(version Name, typ *TypeDef, location *yaml.Nod
 						Message:  fmt.Sprintf("unknown type: %s", typ.Plain),
 						Location: location,
 					}
-					resolver.AddError(error)
+					resolver.addError(error)
 				}
 			}
 		case NullableType:
-			childInfo := resolver.TypeDef(version, typ.Child, location)
+			childInfo := resolver.TypeDef(typ.Child, location)
 			typ.Info = NullableTypeInfo(childInfo)
 		case ArrayType:
-			resolver.TypeDef(version, typ.Child, location)
+			resolver.TypeDef(typ.Child, location)
 			typ.Info = ArrayTypeInfo()
 		case MapType:
-			resolver.TypeDef(version, typ.Child, location)
+			resolver.TypeDef(typ.Child, location)
 			typ.Info = MapTypeInfo()
 		default:
 			panic(fmt.Sprintf("Unknown type: %v", typ))

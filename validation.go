@@ -35,16 +35,15 @@ func (validator *validator) AddError(node *yaml.Node, message string) {
 }
 
 func (validator *validator) Spec(spec *Spec) {
-	for versionIndex := range spec.Models {
-		models := spec.Models[versionIndex]
-		for modelIndex := range models.Models {
-			validator.Model(&models.Models[modelIndex])
+	for versionIndex := range spec.Versions {
+		models := spec.Versions[versionIndex].Models
+		for modelIndex := range models {
+			validator.Model(&models[modelIndex])
 		}
-	}
-	for version := range spec.Http.Versions {
-		for api := range spec.Http.Versions[version].Apis {
-			for operation := range spec.Http.Versions[version].Apis[api].Operations {
-				validator.Operation(&spec.Http.Versions[version].Apis[api].Operations[operation])
+		apis := spec.Versions[versionIndex].Http.Apis
+		for apiIndex := range apis {
+			for operation := range apis[apiIndex].Operations {
+				validator.Operation(&apis[apiIndex].Operations[operation])
 			}
 		}
 	}

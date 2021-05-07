@@ -12,15 +12,15 @@ type Spec struct {
 	Versions       []Version
 }
 
-type TheSpec struct {
-	Http    Apis        `yaml:"http"`
-	Models  ModelArray  `yaml:"models"`
+type specification struct {
+	Http   Apis   `yaml:"http"`
+	Models Models `yaml:"models"`
 }
 
 type Version struct {
 	Version Name
-	TheSpec
-	ResolvedModels ModelArray
+	specification
+	ResolvedModels Models
 }
 
 type Meta struct {
@@ -52,12 +52,12 @@ func (value *Spec) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 
-			theSpec := TheSpec{}
+			theSpec := specification{}
 			valueNode.DecodeWith(decodeStrict, &theSpec)
 			versions = append(versions, Version{version, theSpec, nil})
 		}
 	}
-	theSpec := TheSpec{}
+	theSpec := specification{}
 	node.DecodeWith(decodeStrict, &theSpec)
 	versions = append(versions, Version{Name{}, theSpec, nil})
 

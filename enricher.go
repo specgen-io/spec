@@ -18,12 +18,13 @@ func enrichSpec(spec *Spec) []ValidationError {
 	return errors
 }
 
-type ModelsMap map[string]NamedModel
+type ModelsMap map[string]*NamedModel
 
 func buildModelsMap(models Models) ModelsMap {
-	result := make(map[string]NamedModel)
-	for _, m := range models {
-		result[m.Name.Source] = m
+	result := make(map[string]*NamedModel)
+	for modIndex := range models {
+		name := models[modIndex].Name.Source
+		result[name] = &models[modIndex]
 	}
 	return result
 }
@@ -31,12 +32,12 @@ func buildModelsMap(models Models) ModelsMap {
 type enricher struct {
 	ModelsMap      ModelsMap
 	Errors         []ValidationError
-	ResolvedModels Models
+	ResolvedModels []*NamedModel
 }
 
 func (enricher *enricher) findModel(name string) (*NamedModel, bool) {
 	if model, ok := enricher.ModelsMap[name]; ok {
-		return &model, true
+		return model, true
 	}
 	return nil, false
 }
@@ -47,7 +48,7 @@ func (enricher *enricher) addResolvedModel(model *NamedModel) {
 			return
 		}
 	}
-	enricher.ResolvedModels = append(enricher.ResolvedModels, *model)
+	enricher.ResolvedModels = append(enricher.ResolvedModels, model)
 }
 
 func (enricher *enricher) addError(error ValidationError) {

@@ -183,11 +183,15 @@ models:
 	enrichSpec(spec)
 
 	assert.Equal(t, len(spec.Versions), 1)
-	models := spec.Versions[0].ResolvedModels
+	version := &spec.Versions[0]
+	models := version.ResolvedModels
 	assert.Equal(t, len(models), 3)
 	assert.Equal(t, models[0].Name.Source, "Model3")
+	assert.Equal(t, models[0].Version, version)
 	assert.Equal(t, models[1].Name.Source, "Model2")
+	assert.Equal(t, models[1].Version, version)
 	assert.Equal(t, models[2].Name.Source, "Model1")
+	assert.Equal(t, models[2].Version, version)
 }
 
 func Test_Resolve_Models_Reversed_Order_With_Enum(t *testing.T) {

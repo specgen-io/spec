@@ -20,7 +20,7 @@ type specification struct {
 type Version struct {
 	Version Name
 	specification
-	ResolvedModels Models
+	ResolvedModels []*NamedModel
 }
 
 type Meta struct {

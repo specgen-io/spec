@@ -40,7 +40,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 	array := []Api{}
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
-		if !isVersionNode(keyNode) && !contains([]string{"url"}, keyNode) {
+		if !contains([]string{"url"}, keyNode) {
 			valueNode := node.Content[index*2+1]
 			name := Name{}
 			err := keyNode.DecodeWith(decodeStrict, &name)

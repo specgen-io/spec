@@ -7,7 +7,7 @@ import (
 
 func Test_ParseSpec_Models(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 
 models:
@@ -27,7 +27,7 @@ models:
 
 func Test_ParseSpec_Models_Versions(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 
 v2:
@@ -56,7 +56,7 @@ models:
 
 func Test_ParseSpec_Http(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 http:
     test:
@@ -86,7 +86,7 @@ http:
 
 func Test_ParseSpec_Http_Versions(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 
 v2:
@@ -164,7 +164,7 @@ models:
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, spec.IdlVersion, "2")
+	assert.Equal(t, spec.SpecVersion, "2")
 	assert.Equal(t, spec.Name.Source, "bla-api")
 	assert.Equal(t, *spec.Title, "Bla API")
 	assert.Equal(t, *spec.Description, "Some Bla API service")
@@ -182,7 +182,7 @@ models:
 
 func Test_ParseSpec_Meta(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 title: Bla API
 description: Some Bla API service
@@ -192,7 +192,7 @@ version: 0
 	spec, err := ParseSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, spec.IdlVersion, "2")
+	assert.Equal(t, spec.SpecVersion, "2")
 	assert.Equal(t, spec.Name.Source, "bla-api")
 	assert.Equal(t, *spec.Title, "Bla API")
 	assert.Equal(t, *spec.Description, "Some Bla API service")
@@ -201,7 +201,7 @@ version: 0
 
 func Test_ParseMeta(t *testing.T) {
 	data := `
-idl_version: 2
+spec: 2
 name: bla-api
 title: Bla API
 description: Some Bla API service
@@ -210,7 +210,7 @@ version: 0
 	meta, err := ParseMeta([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, meta.IdlVersion, "2")
+	assert.Equal(t, meta.SpecVersion, "2")
 	assert.Equal(t, meta.Name.Source, "bla-api")
 	assert.Equal(t, *meta.Title, "Bla API")
 	assert.Equal(t, *meta.Description, "Some Bla API service")
@@ -228,7 +228,7 @@ version: 0
 	meta, err := ParseMeta([]byte(data))
 	assert.Equal(t, err, nil)
 
-	assert.Equal(t, meta.IdlVersion, "2")
+	assert.Equal(t, meta.SpecVersion, "2")
 	assert.Equal(t, meta.Name.Source, "bla-api")
 	assert.Equal(t, *meta.Title, "Bla API")
 	assert.Equal(t, *meta.Description, "Some Bla API service")

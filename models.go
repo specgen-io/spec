@@ -96,14 +96,12 @@ func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 	array := Models{}
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
-		if !isVersionNode(keyNode) {
-			valueNode := node.Content[index*2+1]
-			model, err := unmarshalModel(keyNode, valueNode)
-			if err != nil {
-				return err
-			}
-			array = append(array, *model)
+		valueNode := node.Content[index*2+1]
+		model, err := unmarshalModel(keyNode, valueNode)
+		if err != nil {
+			return err
 		}
+		array = append(array, *model)
 	}
 	*value = array
 	return nil

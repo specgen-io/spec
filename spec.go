@@ -24,7 +24,7 @@ type Version struct {
 }
 
 type Meta struct {
-	IdlVersion  string  `yaml:"idl_version"`
+	SpecVersion string  `yaml:"spec"`
 	Name        Name    `yaml:"name"`
 	Title       *string `yaml:"title"`
 	Description *string `yaml:"description"`
@@ -88,7 +88,7 @@ func specError(errs []ValidationError) error {
 }
 
 func ParseSpec(data []byte) (*Spec, error) {
-	data, err := checkIdlVersion(data)
+	data, err := checkSpecVersion(data)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func ReadSpec(filepath string) (*Spec, error) {
 }
 
 func ParseMeta(data []byte) (*Meta, error) {
-	data, err := checkIdlVersion(data)
+	data, err := checkSpecVersion(data)
 	if err != nil {
 		return nil, err
 	}

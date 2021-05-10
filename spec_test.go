@@ -91,7 +91,6 @@ name: bla-api
 
 v2:
    http:
-       url: /myv2
        test:
            some_url:
                endpoint: GET /some/url
@@ -101,7 +100,6 @@ v2:
        MyModel:
            field: string
 
-url: /mydefault
 http:
     test:
         some_url:

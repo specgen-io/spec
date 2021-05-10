@@ -13,16 +13,10 @@ type Model struct {
 type NamedModel struct {
 	Name Name
 	Model
+	Version *Version
 }
 
-type ModelArray []NamedModel
-
-type Models struct {
-	Version Name
-	Models  ModelArray
-}
-
-type VersionedModels []Models
+type Models []NamedModel
 
 func (self *Model) IsObject() bool {
 	return self.Object != nil && self.Enum == nil && self.OneOf == nil
@@ -67,7 +61,7 @@ func (value *Model) UnmarshalYAML(node *yaml.Node) error {
 }
 
 func isVersionNode(node *yaml.Node) bool {
-	return Version.Check(node.Value) == nil
+	return VersionFormat.Check(node.Value) == nil
 }
 
 func unmarshalModel(keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, error) {
@@ -91,60 +85,24 @@ func unmarshalModel(keyNode *yaml.Node, valueNode *yaml.Node) (*NamedModel, erro
 	if model.IsObject() && model.Object.Description == nil {
 		model.Object.Description = getDescription(keyNode)
 	}
-	return &NamedModel{name, model}, nil
+	return &NamedModel{Name: name, Model: model}, nil
 }
 
-func (value *ModelArray) UnmarshalYAML(node *yaml.Node) error {
+func (value *Models) UnmarshalYAML(node *yaml.Node) error {
 	if node.Kind != yaml.MappingNode {
 		return yamlError(node, "models should be YAML mapping")
 	}
 	count := len(node.Content) / 2
-	array := ModelArray{}
-	for index := 0; index < count; index++ {
-		keyNode := node.Content[index*2]
-		if !isVersionNode(keyNode) {
-			valueNode := node.Content[index*2+1]
-			model, err := unmarshalModel(keyNode, valueNode)
-			if err != nil {
-				return err
-			}
-			array = append(array, *model)
-		}
-	}
-	*value = array
-	return nil
-}
-
-func (value *VersionedModels) UnmarshalYAML(node *yaml.Node) error {
-	if node.Kind != yaml.MappingNode {
-		return yamlError(node, "models should be YAML mapping")
-	}
-	count := len(node.Content) / 2
-	array := VersionedModels{}
+	array := Models{}
 	for index := 0; index < count; index++ {
 		keyNode := node.Content[index*2]
 		valueNode := node.Content[index*2+1]
-
-		if isVersionNode(keyNode) {
-			version := Name{}
-			err := keyNode.DecodeWith(decodeStrict, &version)
-			if err != nil {
-				return err
-			}
-			models := ModelArray{}
-			err = valueNode.DecodeWith(decodeStrict, &models)
-			if err != nil {
-				return err
-			}
-			array = append(array, Models{version, models})
+		model, err := unmarshalModel(keyNode, valueNode)
+		if err != nil {
+			return err
 		}
+		array = append(array, *model)
 	}
-	models := ModelArray{}
-	err := node.DecodeWith(decodeStrict, &models)
-	if err != nil {
-		return err
-	}
-	array = append(array, Models{Name{}, models})
 	*value = array
 	return nil
 }

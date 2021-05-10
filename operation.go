@@ -32,6 +32,11 @@ func (value *Operation) UnmarshalYAML(node *yaml.Node) error {
 type NamedOperation struct {
 	Name Name
 	Operation
+	Api *Api
+}
+
+func (op *NamedOperation) FullUrl() string {
+	return op.Api.Apis.GetUrl()+op.Endpoint.Url
 }
 
 type Operations []NamedOperation

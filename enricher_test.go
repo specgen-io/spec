@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test_Resolve_Operations_Pass_EmbeddedType(t *testing.T) {
+func Test_Resolve_Operations_Pass_BuiltinType(t *testing.T) {
 	data := `
 http:
     test:
@@ -22,7 +22,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -43,7 +43,7 @@ http:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 3)
 	assert.Equal(t, strings.Contains(errors[0].Message, "nonexisting1"), true)
@@ -69,7 +69,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -90,7 +90,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -104,7 +104,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
@@ -125,7 +125,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 0)
 }
@@ -140,7 +140,7 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	errors := ResolveTypes(spec)
+	errors := enrichSpec(spec)
 
 	assert.Equal(t, len(errors), 1)
 	assert.Equal(t, strings.Contains(errors[0].Message, "NonExisting"), true)
@@ -157,10 +157,10 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	ResolveTypes(spec)
+	enrichSpec(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 1)
-	models := spec.ResolvedModels[0].Models
+	assert.Equal(t, len(spec.Versions), 1)
+	models := spec.Versions[0].ResolvedModels
 	assert.Equal(t, len(models), 2)
 	assert.Equal(t, models[0].Name.Source, "Model1")
 	assert.Equal(t, models[1].Name.Source, "Model2")
@@ -180,14 +180,18 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	ResolveTypes(spec)
+	enrichSpec(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 1)
-	models := spec.ResolvedModels[0]
-	assert.Equal(t, len(models.Models), 3)
-	assert.Equal(t, models.Models[0].Name.Source, "Model3")
-	assert.Equal(t, models.Models[1].Name.Source, "Model2")
-	assert.Equal(t, models.Models[2].Name.Source, "Model1")
+	assert.Equal(t, len(spec.Versions), 1)
+	version := &spec.Versions[0]
+	models := version.ResolvedModels
+	assert.Equal(t, len(models), 3)
+	assert.Equal(t, models[0].Name.Source, "Model3")
+	assert.Equal(t, models[0].Version, version)
+	assert.Equal(t, models[1].Name.Source, "Model2")
+	assert.Equal(t, models[1].Version, version)
+	assert.Equal(t, models[2].Name.Source, "Model1")
+	assert.Equal(t, models[2].Version, version)
 }
 
 func Test_Resolve_Models_Reversed_Order_With_Enum(t *testing.T) {
@@ -205,12 +209,53 @@ models:
 	spec, err := unmarshalSpec([]byte(data))
 	assert.Equal(t, err, nil)
 
-	ResolveTypes(spec)
+	enrichSpec(spec)
 
-	assert.Equal(t, len(spec.ResolvedModels), 1)
-	models := spec.ResolvedModels[0].Models
+	assert.Equal(t, len(spec.Versions), 1)
+	models := spec.Versions[0].ResolvedModels
 	assert.Equal(t, len(models), 3)
 	assert.Equal(t, models[0].Name.Source, "Model3")
 	assert.Equal(t, models[1].Name.Source, "Model2")
 	assert.Equal(t, models[2].Name.Source, "Model1")
+}
+
+func Test_Enrich_Operations(t *testing.T) {
+	data := `
+http:
+    test:
+        some_url:
+            endpoint: GET /some/url
+            response:
+                ok: empty
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	errors := enrichSpec(spec)
+	assert.Equal(t, len(errors), 0)
+
+	ver := &spec.Versions[0]
+	apis := &ver.Http
+	api := &apis.Apis[0]
+	op := &api.Operations[0]
+	assert.Equal(t, apis.Version, ver)
+	assert.Equal(t, api.Apis, apis)
+	assert.Equal(t, api.Apis, apis)
+	assert.Equal(t, op.Api, api)
+}
+
+func Test_Enrich_Models(t *testing.T) {
+	data := `
+models:
+  Model1:
+    field1: Model3
+    field2: Model2
+`
+	spec, err := unmarshalSpec([]byte(data))
+	assert.Equal(t, err, nil)
+
+	enrichSpec(spec)
+
+	ver := &spec.Versions[0]
+	assert.Equal(t, ver.Models[0].Version, ver)
 }

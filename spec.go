@@ -58,7 +58,10 @@ func (value *Spec) UnmarshalYAML(node *yaml.Node) error {
 		}
 	}
 	theSpec := specification{}
-	node.DecodeWith(decodeStrict, &theSpec)
+	err := node.DecodeWith(decodeLooze, &theSpec)
+	if err != nil {
+		return err
+	}
 	versions = append(versions, Version{Name{}, theSpec, nil})
 
 	meta := Meta{}

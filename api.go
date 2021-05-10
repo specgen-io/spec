@@ -52,7 +52,7 @@ func (value *Apis) UnmarshalYAML(node *yaml.Node) error {
 				return err
 			}
 			operations := Operations{}
-			err = valueNode.DecodeWith(decodeLooze, &operations)
+			err = valueNode.DecodeWith(decodeStrict, &operations)
 			if err != nil {
 				return err
 			}

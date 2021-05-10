@@ -91,12 +91,17 @@ name: bla-api
 
 v2:
    http:
+       url: /myv2
        test:
            some_url:
                endpoint: GET /some/url
                response:
                    ok: empty
+   models:
+       MyModel:
+           field: string
 
+url: /mydefault
 http:
     test:
         some_url:
@@ -130,6 +135,31 @@ http:
 	assert.Equal(t, len(defaultApi.Operations), 2)
 	assert.Equal(t, defaultApi.Operations[0].FullUrl(), "/some/url")
 	assert.Equal(t, defaultApi.Operations[1].FullUrl(), "/ping")
+}
+
+func Test_ParseSpec_Broken(t *testing.T) {
+	data := `
+spec: 2
+name: test-service
+version: 1
+
+http:
+  v2:
+    echo:
+      echo_body:
+        endpoint: POST /echo/body
+        body: Message
+        response:
+          ok: Message
+  echo:
+    echo_body:
+      endpoint: POST /echo/body
+      body: Message
+      response:
+        ok: Message
+`
+	_, err := ParseSpec([]byte(data))
+	assert.ErrorContains(t, err, "echo_body")
 }
 
 func Test_ParseSpec_V1(t *testing.T) {

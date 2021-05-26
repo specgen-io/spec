@@ -1,11 +1,10 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
-
 
 func Test_Http_Unmarshal_Apis(t *testing.T) {
 	data := `

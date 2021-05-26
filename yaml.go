@@ -3,7 +3,7 @@ package spec
 import (
 	"errors"
 	"fmt"
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"strings"
 )
 

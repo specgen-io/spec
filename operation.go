@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 )
 
 type operation struct {
@@ -36,7 +36,7 @@ type NamedOperation struct {
 }
 
 func (op *NamedOperation) FullUrl() string {
-	return op.Api.Apis.GetUrl()+op.Endpoint.Url
+	return op.Api.Apis.GetUrl() + op.Endpoint.Url
 }
 
 type Operations []NamedOperation

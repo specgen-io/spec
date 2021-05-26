@@ -1,11 +1,11 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 )
 
 type EnumItem struct {
-	Value string `yaml:"value"`
+	Value       string  `yaml:"value"`
 	Description *string `yaml:"description"`
 }
 

@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 )
 
 type UrlParams Params

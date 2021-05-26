@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -46,7 +46,6 @@ response:
 	assert.Equal(t, queryParam.Name.Source, "message")
 	assert.Equal(t, queryParam.Type.Definition.Name, "string?")
 }
-
 
 func Test_Operation_Unmarshal_BodyDescription(t *testing.T) {
 	data := `

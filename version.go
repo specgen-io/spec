@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 )
-import "github.com/vsapronov/yaml"
+import yaml "gopkg.in/vsapronov/yaml.v3"
 
 var SpecVersion = "2"
 

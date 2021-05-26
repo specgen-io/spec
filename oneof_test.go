@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -29,4 +29,3 @@ oneOf:
 	assert.Equal(t, item3.Name.Source, "third")
 	assert.Equal(t, item3.Type.Definition, ParseType("TheThird"))
 }
-

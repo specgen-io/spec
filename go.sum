@@ -6,9 +6,11 @@ github.com/pinzolo/casee v0.0.0-20210416022938-38877fea886d h1:H0yi75/fE5pxq1DXc
 github.com/pinzolo/casee v0.0.0-20210416022938-38877fea886d/go.mod h1:dNs9tp0e1Tst75lQVHa7QJNLdGOaddO3fdyEMHkMKxQ=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
-github.com/vsapronov/yaml v0.0.0-20210524152850-f8bb619f377c h1:FwFZ+lBrHzp73BhQjGHuIqiDphA8mOr1AOKbbS2EmvA=
-github.com/vsapronov/yaml v0.0.0-20210524152850-f8bb619f377c/go.mod h1:iuWASCgwlYQtj0xZseEbF0UZ+oIGhdLylgieMy9BaeE=
+golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 h1:E7g+9GITq07hpfrRu66IVDexMakfv52eLZ2CXBWiKr4=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/vsapronov/yaml.v3 v3.0.0-20210526032505-672d34aebd3f h1:FR1QRN0/jpKOzCHtt6qRZA6dt4l61Yi0yn38gdhfKZo=
+gopkg.in/vsapronov/yaml.v3 v3.0.0-20210526032505-672d34aebd3f/go.mod h1:fBfJLwybvfdmqtTZD44tnj4upOs5Fnf7AuOB3JGFEgI=
 gotest.tools v2.2.0+incompatible h1:VsBPFP1AI068pPrMxtb/S8Zkgf9xEmTLJjfM+P5UIEo=
 gotest.tools v2.2.0+incompatible/go.mod h1:DsYFclhRJ6vuDpmuTbkuFWG+y2sxOXAzmJt81HFBacw=

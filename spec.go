@@ -3,13 +3,13 @@ package spec
 import (
 	"errors"
 	"fmt"
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"io/ioutil"
 )
 
 type Spec struct {
 	Meta
-	Versions       []Version
+	Versions []Version
 }
 
 type specification struct {

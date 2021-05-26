@@ -3,7 +3,7 @@ package spec
 import (
 	"errors"
 	"fmt"
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 	"strings"
 )
 
@@ -120,10 +120,10 @@ const (
 )
 
 var TypesAliases = map[string]string{
-	"int":   TypeInt32,
-	"long":  TypeInt64,
-	"bool":  TypeBoolean,
-	"str":   TypeString,
+	"int":  TypeInt32,
+	"long": TypeInt64,
+	"bool": TypeBoolean,
+	"str":  TypeString,
 }
 
 func mapTypeAlias(value string) string {
@@ -165,10 +165,10 @@ var Types = map[string]TypeInfo{
 
 func ModelTypeInfo(model *NamedModel) *TypeInfo {
 	if model.IsObject() || model.IsOneOf() {
-		return &TypeInfo{StructureObject, false, model }
+		return &TypeInfo{StructureObject, false, model}
 	}
 	if model.IsEnum() {
-		return &TypeInfo{StructureScalar, true, model }
+		return &TypeInfo{StructureScalar, true, model}
 	}
 	panic(fmt.Sprintf("Unknown model kind: %v", model))
 }

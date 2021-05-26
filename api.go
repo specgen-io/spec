@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/vsapronov/yaml"
+	yaml "gopkg.in/vsapronov/yaml.v3"
 )
 
 type Api struct {
@@ -11,8 +11,8 @@ type Api struct {
 }
 
 type Apis struct {
-	Url  *string
-	Apis []Api
+	Url     *string
+	Apis    []Api
 	Version *Version
 }
 
@@ -21,7 +21,7 @@ func (apis *Apis) GetUrl() string {
 		return *apis.Url
 	}
 	if apis.Version.Version.Source != "" {
-		return "/"+apis.Version.Version.Source
+		return "/" + apis.Version.Version.Source
 	}
 	return ""
 }

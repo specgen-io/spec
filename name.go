@@ -2,7 +2,7 @@ package spec
 
 import (
 	"github.com/pinzolo/casee"
-	yaml "gopkg.in/vsapronov/yaml.v3"
+	"gopkg.in/vsapronov/yaml.v3"
 )
 
 type Name struct {

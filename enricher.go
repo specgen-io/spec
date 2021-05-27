@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	yaml "gopkg.in/vsapronov/yaml.v3"
+	"gopkg.in/vsapronov/yaml.v3"
 )
 
 func enrichSpec(spec *Spec) []ValidationError {

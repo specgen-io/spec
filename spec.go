@@ -3,7 +3,7 @@ package spec
 import (
 	"errors"
 	"fmt"
-	yaml "gopkg.in/vsapronov/yaml.v3"
+	"gopkg.in/vsapronov/yaml.v3"
 	"io/ioutil"
 )
 

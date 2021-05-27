@@ -1,7 +1,7 @@
 package spec
 
 import (
-	yaml "gopkg.in/vsapronov/yaml.v3"
+	"gopkg.in/vsapronov/yaml.v3"
 )
 
 type NamedDefinition struct {

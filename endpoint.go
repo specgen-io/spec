@@ -2,7 +2,7 @@ package spec
 
 import (
 	"errors"
-	yaml "gopkg.in/vsapronov/yaml.v3"
+	"gopkg.in/vsapronov/yaml.v3"
 	"regexp"
 	"strings"
 )

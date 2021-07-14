@@ -1,6 +1,6 @@
 module github.com/specgen-io/spec
 
-go 1.15
+go 1.16
 
 require (
 	github.com/fatih/camelcase v1.0.0 // indirect
